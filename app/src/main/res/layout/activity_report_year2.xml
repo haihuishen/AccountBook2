@@ -1,0 +1,99 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@mipmap/bg_image8">
+
+    <include layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_text_translucent">
+            <TextView
+                android:id="@+id/tv_year1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/LINE_COLOR_BLUE"
+                android:textStyle="bold"
+                android:textSize="10dp"
+                android:hint="选择年份"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+            <TextView
+                android:id="@+id/tv_year2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/LINE_COLOR_VIOLET"
+                android:textStyle="bold"
+                android:textSize="10dp"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+
+            <TextView
+                android:id="@+id/tv_year3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/LINE_COLOR_GREEN"
+                android:textStyle="bold"
+                android:textSize="10dp"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+
+            <TextView
+                android:id="@+id/tv_year4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/LINE_COLOR_ORANGE"
+                android:textStyle="bold"
+                android:textSize="10dp"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+            <TextView
+                android:id="@+id/tv_year5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/LINE_COLOR_RED"
+                android:textStyle="bold"
+                android:textSize="10dp"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+
+        <Button
+            android:id="@+id/btn_query"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_white_and_orange_black_stroke"
+            android:text="查询"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@drawable/btn_text_color_b_w"/>
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_white_and_orange_black_stroke"
+            android:text="清空"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@drawable/btn_text_color_b_w"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="MergeRootFrame" >
+
+    </FrameLayout>
+</LinearLayout>

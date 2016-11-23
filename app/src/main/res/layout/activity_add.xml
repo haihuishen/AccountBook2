@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/title_bar" />
+        <!--<ImageView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@drawable/viewpage_tianjia"/>-->
+
+        <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false"
+            android:layout_gravity="center_horizontal"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <com.shen.accountbook2.widget.WheelView
+                android:id="@+id/wheel_maintype"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <com.shen.accountbook2.widget.WheelView
+                android:id="@+id/wheel_type1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/et_concreteness"
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_marginLeft="2dp"
+                android:layout_height="40dp"
+                android:background="@drawable/txtborder_orange"
+                android:hint="具体名称(可不填)"/>
+
+            <EditText
+                android:id="@+id/et_price"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_height="40dp"
+                android:inputType="numberDecimal"
+                android:ems="10"
+                android:background="@drawable/txtborder_orange"
+                android:hint="总价"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <EditText
+                android:id="@+id/et_unitPrice"
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:layout_marginLeft="2dp"
+                android:layout_height="40dp"
+                android:background="@drawable/txtborder_orange"
+                android:inputType="numberDecimal"
+                android:hint="单价(单价+数量 or 总价)"/>
+
+            <EditText
+                android:id="@+id/et_number"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_height="40dp"
+                android:inputType="number"
+                android:ems="10"
+                android:background="@drawable/txtborder_orange"
+                android:hint="数量"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <LinearLayout
+                android:id="@+id/linearLayout_pv"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:background="@color/list_bg">
+                <com.bm.library.PhotoView
+                    android:id="@+id/pv_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/list_bg"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:gravity="center"
+                android:orientation="vertical">
+                <Button
+                    android:id="@+id/btn_camera"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="拍照"
+                    android:background="@drawable/selector_login"
+                    />
+                <Button
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/btn_clear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="清除"
+                    android:background="@drawable/selector_login"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="150dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="10dp"
+            android:text="添加"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/selector_login"
+            />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#e0000000" />
+
+        <com.bm.library.PhotoView
+            android:id="@+id/img"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
+
+</RelativeLayout>

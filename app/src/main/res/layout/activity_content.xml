@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <!--<com.shen.accountbook2.ui.view.NoScrollViewPager-->
+        <!--android:id="@+id/vp_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1" />-->
+
+    <FrameLayout
+        android:id="@+id/frame_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+    </FrameLayout>
+
+
+    <!-- 下面的"标题" -->
+    <RadioGroup
+        android:id="@+id/rg_group"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:background="@drawable/bottom_tab_bg"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <!-- android:drawableTop="@drawable/tab_home_selector"  图片选择器
+             android:checked="true" 默认选中
+         -->
+        <RadioButton
+            android:id="@+id/rb_home"
+            style="@style/Bottom_Tab_Style"
+            android:drawableTop="@drawable/tab_home_selector"
+            android:checked="true"
+            android:text="首页" />
+
+        <RadioButton
+            android:id="@+id/rb_mine"
+            style="@style/Bottom_Tab_Style"
+            android:drawableTop="@drawable/tab_mine_selector"
+            android:text="我的" />
+
+        <RadioButton
+            android:id="@+id/rb_other"
+            style="@style/Bottom_Tab_Style"
+            android:drawableTop="@drawable/tab_setting_selector"
+            android:text="其他" />
+
+    </RadioGroup>
+</LinearLayout>

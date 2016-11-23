@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@mipmap/bg_image6">
+
+    <include layout="@layout/title_bar" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="@drawable/bg_text_translucent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_choice_m_y"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="选择日期"
+            android:textStyle="bold"
+            android:textSize="30dp"
+            android:textColor="@color/black"
+            android:background="@drawable/bg_text_translucent"/>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_text_translucent"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_text_translucent">
+            <CheckBox
+                android:id="@+id/cb_type"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/tv_type"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:hint="主类型/次类型"/>
+
+        </LinearLayout>
+        <Button
+            android:id="@+id/btn_query"
+            android:layout_width="0dp"
+            android:layout_height="35dp"
+            android:layout_weight="1"
+            android:background="@drawable/btn_bg_transparency"
+            android:textColor="@drawable/btn_text_color_b_w"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:text="查询"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_text_translucent"
+        android:padding="5dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_text_translucent"
+            android:padding="5dp">
+        <TextView
+            android:id="@+id/tv_AllPriceName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="本消费:"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"/>
+        <TextView
+            android:id="@+id/tv_AllPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:textColor="@color/red"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--android:divider="#00000000"//设置间隔线的颜色透明-->
+    <!--android:dividerHeight="5dp"//间隔线的高度-->
+    <ListView
+        android:id="@+id/lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="1dp"
+        android:divider="#00000000"
+        android:dividerHeight="10dp"
+        android:background="@drawable/bg_text_translucent">
+    </ListView>
+</LinearLayout>

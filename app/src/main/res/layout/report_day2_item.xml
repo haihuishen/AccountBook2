@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="@drawable/bg_pink">
+    <RelativeLayout
+        android:layout_marginBottom="2dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+
+        <TextView
+            android:id="@+id/tv_day"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="x日"
+            android:textColor="#000000"
+            android:textSize="15dp"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"/>
+
+        <LinearLayout
+            android:id="@+id/layout_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/tv_Price"
+                android:layout_width="80dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="-0"
+                android:textColor="#f52116"
+                android:textSize="15dp"
+                android:gravity="center"
+                android:layout_alignParentLeft="true"/>
+
+            <!--<TextView-->
+            <!--android:id="@+id/tv_AllPrice"-->
+            <!--android:layout_width="70dp"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:text="-0"-->
+            <!--android:textColor="#0bab16"-->
+            <!--android:textSize="15dp"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_alignParentLeft="true"/>-->
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="5dp">
+        <ProgressBar
+            android:id="@+id/pb_price"
+            android:layout_width="match_parent"
+            android:layout_height="16dp"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:max="100"
+            android:progress="70"
+            />
+        <TextView
+            android:id="@+id/tv_progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="shen"
+            android:textSize="14dp"
+            android:textColor="#000000"
+            />
+    </RelativeLayout>
+</LinearLayout>

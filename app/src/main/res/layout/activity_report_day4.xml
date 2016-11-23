@@ -1,0 +1,78 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/title_bar" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
+
+                <TextView
+                    android:id="@+id/tv_date"
+                    android:paddingLeft="10dp"
+                    android:gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="30dp"
+                    android:textStyle="bold"
+                    android:background="@drawable/btn_bg_white_and_orange_black_stroke"
+                    android:hint="2016-11-18"/>
+                <com.github.sundeepk.compactcalendarview.CompactCalendarView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/compactcalendar_view"
+                    android:layout_below="@+id/tv_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    app:compactCalendarTargetHeight="250dp"
+                    app:compactCalendarTextSize="18sp"
+                    app:compactCalendarBackgroundColor="@color/pickerview_timebtn_nor"
+                    app:compactCalendarTextColor="#fff"
+                    app:compactCalendarCurrentSelectedDayBackgroundColor="@color/orange"
+                    app:compactCalendarCurrentDayBackgroundColor="@color/LINE_COLOR_RED"
+                    app:compactCalendarCurrentDayIndicatorStyle="fill_large_indicator"
+                    app:compactCalendarEventIndicatorStyle="small_indicator"
+                    />
+
+            <ListView
+                android:id="@+id/lv_content"
+                android:layout_below="@+id/compactcalendar_view"
+                android:layout_marginTop="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:divider="#00000000">
+            </ListView>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#e0000000" />
+
+        <com.bm.library.PhotoView
+            android:id="@+id/img"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+</RelativeLayout>

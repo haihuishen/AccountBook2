@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_height="wrap_content"
+              android:layout_width="match_parent"
+              android:background="#ffffff"
+              android:orientation="vertical"
+              android:id="@+id/dialog">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dip"
+        android:paddingLeft="5dp"
+        android:orientation="vertical"
+        android:gravity="left">
+
+            <CheckBox
+                android:id="@+id/cb_toggleLabels"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="显示/隐藏峰点文本"
+                android:textSize="20dp"
+                android:textColor="#0804f9"/>
+            <CheckBox
+                android:id="@+id/cb_toggleFilled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="填充区域"
+                android:textSize="20dp"
+                android:textColor="#0804f9"/>
+
+    </LinearLayout>
+
+    <CheckBox
+
+        android:layout_marginLeft="5dp"
+        android:id="@+id/cb_selectYX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="坐标轴是否可以拉动"
+        android:textSize="20dp"
+        android:textColor="#0804f9"/>
+
+    <RadioGroup
+        android:id="@+id/rg_selectYX"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="5dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="5dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_YX"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="XY"
+            android:textSize="20dp"
+            android:textColor="#faac02"/>
+        <RadioButton
+            android:id="@+id/rb_Y"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Y"
+            android:textSize="20dp"
+            android:textColor="#faac02"/>
+        <RadioButton
+            android:id="@+id/rb_X"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="X"
+            android:textSize="20dp"
+            android:textColor="#faac02"/>
+    </RadioGroup>
+
+</LinearLayout>

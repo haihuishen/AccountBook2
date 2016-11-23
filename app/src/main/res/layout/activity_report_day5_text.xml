@@ -1,0 +1,188 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/title_bar" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:paddingLeft="10dp"
+                android:gravity="center"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"
+                android:hint="2016-11-18"/>
+            <com.github.sundeepk.compactcalendarview.CompactCalendarView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/compactcalendar_view"
+                android:layout_below="@+id/tv_date"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                app:compactCalendarTargetHeight="250dp"
+                app:compactCalendarTextSize="18sp"
+                app:compactCalendarBackgroundColor="@color/pickerview_timebtn_nor"
+                app:compactCalendarTextColor="#fff"
+                app:compactCalendarCurrentSelectedDayBackgroundColor="@color/orange"
+                app:compactCalendarCurrentDayBackgroundColor="@color/LINE_COLOR_RED"
+                app:compactCalendarCurrentDayIndicatorStyle="fill_large_indicator"
+                app:compactCalendarEventIndicatorStyle="small_indicator"
+                />
+
+            <TextView
+                android:id="@+id/tv_all_price"
+                android:paddingLeft="10dp"
+                android:gravity="center"
+                android:layout_below="@+id/compactcalendar_view"
+                android:layout_marginTop="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="30dp"
+                android:textStyle="bold"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"
+                android:hint="当日消费"/>
+            <LinearLayout
+                android:id="@+id/layout_teble_title"
+                android:layout_below="@+id/tv_all_price"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pink_stroke_black"
+                android:orientation="horizontal" >
+
+                <View
+                    android:layout_width="0.5px"
+                    android:layout_height="match_parent"
+                    android:background="#B8B8B8"
+                    android:visibility="visible" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:layout_height="40dp"
+                    android:padding="3dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="商品"
+                        android:gravity="right|center_vertical"/>
+                </LinearLayout>
+                <View
+                    android:layout_width="0.5px"
+                    android:layout_height="match_parent"
+                    android:background="#B8B8B8"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tableItem_tv_UnitPrice"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="单价"
+                    android:gravity="right|center_vertical"/>
+
+                <View
+                    android:layout_width="0.5px"
+                    android:layout_height="match_parent"
+                    android:background="#B8B8B8"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tableItem_tv_Number"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="数量"
+                    android:gravity="right|center_vertical"/>
+
+                <View
+                    android:layout_width="0.5px"
+                    android:layout_height="match_parent"
+                    android:background="#B8B8B8"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tableItem_tv_Price"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="总价"
+                    android:gravity="right|center_vertical"/>
+
+                <View
+                    android:layout_width="0.5px"
+                    android:layout_height="match_parent"
+                    android:background="#B8B8B8"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="图片"
+                    android:gravity="right|center_vertical"/>
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview"
+                android:layout_below="@+id/layout_teble_title"
+                android:background="@color/white"
+                android:scrollbars="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:overScrollMode="never"
+                />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/bg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#e0000000" />
+
+        <com.bm.library.PhotoView
+            android:id="@+id/img"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+</RelativeLayout>

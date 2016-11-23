@@ -1,0 +1,5 @@
+include ':app', ':HelloCharts', ':PhotoView', ':pickerview', ':CompactCalendarView'
+project(':HelloCharts').projectDir = new File('libraries/HelloCharts')
+project(':PhotoView').projectDir = new File('libraries/PhotoView')
+project(':pickerview').projectDir = new File('libraries/pickerview')
+project(':CompactCalendarView').projectDir = new File('libraries/CompactCalendarView')

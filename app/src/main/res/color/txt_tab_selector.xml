@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 文本颜色选择器 -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 选中时 颜色为：红色 -->
+    <item android:color="@color/orange" android:state_checked="true"/>
+    <!-- 默认 颜色为：白色-->
+    <item android:color="#fff"/>
+
+</selector>

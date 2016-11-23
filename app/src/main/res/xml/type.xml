@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Type>
+    <MainType name="就餐">
+        <type1>就餐</type1>
+        <type1>早餐</type1>
+        <type1>午餐</type1>
+        <type1>晚餐</type1>
+        <type1>夜宵</type1>
+        <type1>饭局</type1>
+        <type1>非正餐</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="交通">
+        <type1>船</type1>
+        <type1>火车</type1>
+        <type1>地铁</type1>
+        <type1>公交车</type1>
+        <type1>飞机</type1>
+        <type1>神州n号</type1>
+        <type1>的士</type1>
+        <type1>快车</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="零食">
+        <type1>饮料</type1>
+        <type1>酒</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="蒲">
+        <type1>喝酒</type1>
+        <type1>唱K</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="教育">
+        <type1>学车</type1>
+        <type1>夜校</type1>
+        <type1>孩子学费</type1>
+        <type1>技能考试</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="生活用品">
+        <type1>洗头水</type1>
+        <type1>沐浴露</type1>
+        <type1>牙膏</type1>
+        <type1>洗衣粉</type1>
+        <type1>毛巾</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="各种月租">
+        <type1>仅房租</type1>
+        <type1>房租+水电</type1>
+        <type1>水费</type1>
+        <type1>电费</type1>
+        <type1>话费</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="家电">
+        <type1>电视</type1>
+        <type1>洗衣机</type1>
+        <type1>空调</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="电子产品">
+        <type1>手机</type1>
+        <type1>手表</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="交通工具">
+        <type1>自行车</type1>
+        <type1>摩托</type1>
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="游戏">
+        <type1>其他</type1>
+    </MainType>
+    <MainType name="其他">
+        <type1>其他</type1>
+    </MainType>
+</Type>

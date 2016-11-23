@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.SplashActivity">
+
+    <!-- android:background="@drawable/splash_bg_newyear"   设置背景图片 -->
+
+    <!--在清单文件中 设置了——没"标题"和"状态栏（电量、时间）"的主题
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" -->
+
+    <ImageView
+        android:id="@+id/iv_splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/splash_acitvity"/>
+
+</RelativeLayout>

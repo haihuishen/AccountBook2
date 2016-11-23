@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <include layout="@layout/title_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/tv_total_assets"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="25dp"
+            android:textColor="@color/red"
+            android:textStyle="bold"
+            android:text="shen"
+            android:background="@drawable/bg_pink"/>
+        <!--android:divider="#00000000"   去掉线-->
+        <!--android:dividerHeight="10dp"-->
+        <ListView
+            android:id="@+id/lv_asset"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:divider="#00000000"
+            android:dividerHeight="10dp"
+            android:background="@drawable/bg_white">
+
+        </ListView>
+    </LinearLayout>
+</LinearLayout>

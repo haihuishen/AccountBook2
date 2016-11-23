@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!--Android中的Selector主要是用来改变ListView和Button控件的默认背景。其使用方法可以按一下步骤来设计:-->
+
+    <!--（以在mylist_view.xml为例）-->
+
+    <!--1.创建mylist_view.xml文件-->
+    <!--首先在res目录下新建drawable文件夹，再在新建的drawable文件夹中新建mylist_view.xml，其目录结构为：res/drawable/mylist_view.xml。-->
+
+    <!--2.根据具体需求编辑mylist_view.xml文件-->
+    <!--新建mylist_view.xml文件后，在没有添加任何属性时其内部代码结构为：-->
+    <!--[html] view plain copy-->
+    <!--<?xml version="1.0" encoding="utf-8" ?>-->
+    <!--<selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+
+    <!--</selector>-->
+
+    <!--下面就可以根据项目需求，在其内部定义为自己想要的样式了，主要属性如下：-->
+    <!--[html] view plain copy-->
+    <!--<?xml version="1.0" encoding="utf-8" ?>-->
+    <!--<selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+        <!--&lt;!&ndash; 默认时的背景图片&ndash;&gt;-->
+        <!--<item android:drawable="@drawable/pic1" />-->
+        <!--&lt;!&ndash; 没有焦点时的背景图片 &ndash;&gt;-->
+        <!--<item android:state_window_focused="false"-->
+              <!--android:drawable="@drawable/pic1" />-->
+        <!--&lt;!&ndash; 非触摸模式下获得焦点并单击时的背景图片 &ndash;&gt;-->
+        <!--<item android:state_focused="true" android:state_pressed="true"   android:drawable= "@drawable/pic2" />-->
+        <!--&lt;!&ndash; 触摸模式下单击时的背景图片&ndash;&gt;-->
+        <!--<item android:state_focused="false" android:state_pressed="true"   android:drawable="@drawable/pic3" />-->
+        <!--&lt;!&ndash;选中时的图片背景&ndash;&gt;-->
+        <!--<item android:state_selected="true"   android:drawable="@drawable/pic4" />-->
+        <!--&lt;!&ndash;获得焦点时的图片背景&ndash;&gt;-->
+        <!--<item android:state_focused="true"   android:drawable="@drawable/pic5" />-->
+    <!--</selector>-->
+
+    <!--3.引用mylist_view.xml文件-->
+
+    <!--三种方法可以来引用刚才创建的文件：-->
+    <!--（1）在ListView中添加如下属性代码-->
+    <!--[html] view plain copy-->
+    <!--android:listSelector="@drawable/mylist_view"-->
+
+    <!--（2）在ListView的item界面中添加如下属性代码-->
+    <!--[html] view plain copy-->
+    <!--android:background="@drawable/mylist_view"-->
+
+    <!--（3）利用JAVA代码直接编写-->
+    <!--[java] view plain copy-->
+    <!--Drawable drawable = getResources().getDrawable(R.drawable.mylist_view);-->
+    <!--listView.setSelector(drawable);-->
+
+    <!--为了防止列表拉黑的情况发生，需要在ListView中添加以下的属性代码-->
+    <!--[html] view plain copy-->
+    <!--android:cacheColorHint="@android:color/transparent"-->
+
+    <!--属性介绍：-->
+    <!--android:state_selected 选中-->
+    <!--android:state_focused  获得焦点-->
+    <!--android:state_pressed  点击-->
+    <!--android:state_enabled  设置是否响应事件,指所有事件-->
+
+
+
+
+</selector>

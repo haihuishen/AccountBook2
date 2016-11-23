@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<color name="colorPrimary">#3F51B5</color>
+<color name="colorPrimaryDark">#303F9F</color>
+<color name="colorAccent">#46ff40</color>
+
+<color name="blue">#1ed6ff</color>
+<color name="schedule_week">#40b0fc</color>
+<color name="list_bg">#777777</color>
+<color name="white">#ffffff</color>
+<color name="black">#000000</color>
+<color name="border">#C7C7C7</color>
+
+<color name="holo_red_light">#ffff4444</color>
+
+<color name="province_line_border">#C7C7C7</color>
+
+<color name="orange">#f2b84b</color>
+<color name="red">#ffff4444</color>
+<color name="green">#00FF00</color>
+
+    <!--深林绿-->
+<color name="forestgreen">#228822</color>
+
+<color name="f2f2f2">#f2f2f2</color>
+
+
+    <color name="gray">#C7C7C7</color>
+    <color name="transparent">#00000000</color>
+    <color name="translucent">#0e000000</color>
+
+
+
+    <color name="LINE_COLOR_BLUE">#33B5E5</color>
+    <color name="LINE_COLOR_VIOLET">#AA66CC</color>
+    <color name="LINE_COLOR_GREEN">#99CC00</color>
+    <color name="LINE_COLOR_ORANGE">#FFBB33</color>
+    <color name="LINE_COLOR_RED">#FF4444</color>
+
+    <!--红色：255,0,0——web颜色值：#ff0000-->
+    <!--橙红：255,51,0——web颜色值：#ff3300-->
+    <!--橙色：255,102,0——web颜色值：#ff6600-->
+    <!--橙黄：255,153,0——web颜色值：#ff9900-->
+    <!--黄色：255,255,0——web颜色值：#ffff00-->
+    <!--黄绿：153,255,0——web颜色值：#99ff00-->
+    <!--绿色：0,255,0——web颜色值：#00ff00-->
+    <!--蓝绿：0,255,255——web颜色值：#00ffff-->
+    <!--蓝色：0,0,255——web颜色值：#0000ff-->
+    <!--蓝紫：102,0,255——web颜色值：#6600ff-->
+    <!--紫色：255,0,255——web颜色值：#ff00ff-->
+    <!--紫红：255,0,102——web颜色值：ff0066-->
+
+</resources>
