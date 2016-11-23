@@ -1,4 +1,4 @@
-package com.shen.accountbook2.widget.MyMenuRecyclerView;
+package com.shen.accountbook2.ui.view.MyMenuRecyclerView;
 
 import android.content.Context;
 import android.database.ContentObserver;

@@ -1,40 +1,44 @@
 package com.shen.accountbook2.ui.fragment.activity;
 
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
+import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import com.bigkoo.pickerview.OptionsPickerView;
+import com.bigkoo.pickerview.TimePickerView;
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.DateTimeFormat;
 import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.Utils.ToFormatUtil;
-import com.shen.accountbook2.clander.SpecialCalendar;
+import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
-import com.shen.accountbook2.domain.TypeModelManage;
 import com.shen.accountbook2.global.AccountBookApplication;
-import com.shen.accountbook2.widget.OnWheelChangedListener;
-import com.shen.accountbook2.widget.WheelView;
-import com.shen.accountbook2.widget.adapters.ArrayWheelAdapter;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -49,61 +53,88 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.util.ChartUtils;
 import lecho.lib.hellocharts.view.LineChartView;
 
+
 /**
  * Created by shen on 9/24 0024.
  */
-public class ReportForType_LineChar_Activity extends FragmentActivity implements View.OnClickListener,OnWheelChangedListener,CompoundButton.OnCheckedChangeListener{
+public class ReportForType_LineChar_Activity extends FragmentActivity implements View.OnClickListener,PopupWindow.OnDismissListener {
+
+    public static Context mContext;
+    /******************************标题***********************************/
+    private TextView mTvTitle;
+    private ImageButton mBtnMenu;
+    private ImageButton mBtnBack;
+    private ImageButton mBtnSet;
+
+    /****************************popwindow--选择"显示样式"********************************/
+    private CheckBox mPopCbToggleLabels;
+    private CheckBox mPopCbToggleFilled;
+
+    private CheckBox mPopCbSelectYX;
+    private RadioGroup mPopRgSelectYX;
+    private RadioButton mPopRbYX;
+    private RadioButton mPopRbY;
+    private RadioButton mPopRbX;
+
+    private Button mPopBtnConfirm;
+    private Button mPopBtnCancel;
+
+    /** popwindows--曲线图设置*/
+    PopupWindow pop;
+
+    /******************************popwindows--年月选择***********************************/
+    /** "年份"选择器*/
+    TimePickerView pvTimeYear;
+    /** "年月"选择器*/
+    TimePickerView pvTimeYearMonth;
+    //popwindows
+    RelativeLayout mRlPopsNull;
+    TextView mTvPopsCancel;
+    TextView mTvPopsChoiceYear;
+    TextView mTvPopsChoiceYearMonth;
+
+    /** 选择"年份"还是"年月"*/
+    PopupWindow pops;
+
+
+    /******************************popwindowss--类型选择***********************************/
+    /** "主类型"选择器*/
+    OptionsPickerView pvOptionsMainType;
+    /** "次类型"选择器*/
+    OptionsPickerView pvOptionsType1;
+    //popwindowss
+    RelativeLayout mRlPopssNull;
+    TextView mTvPopssCancel;
+    TextView mTvPopssChoiceMainType;
+    TextView mTvPopssChoiceType1;
+
+    /** 选择"主类型"还是"次类型"*/
+    PopupWindow popss;
+
+
+    private TextView mTvChoiceYM;                   // 选择年月
+    private TextView mTvChoiceType;               // 选择类型
+
+    private int mTop = 100;                         // 坐标轴y轴
+
+    private Button mBtnQuery;
+    private Button mBtnClear;
+
+    TableEx tableEx;
 
     PlaceholderFragment placeholderFragment;
-
-    private TextView tv_top_query;           // 顶部显示"年份"的 文本
-    private ImageView iv_back;              // 返回
-    private ImageView iv_menu;              // 显示菜单
-
-
-
-    private Date date;
-    private SimpleDateFormat sdf;
-    private String currentDate;
-    private String c_year;
-    private String c_month;
-
-
-    /*****************************************************************/
-    private CheckBox cb_year;
-    private CheckBox cb_month;
-    private CheckBox cb_mainType;
-    private CheckBox cb_type1;
-    private WheelView wv_year;
-    private WheelView wv_month;
-    private WheelView wv_mainType;
-    private WheelView wv_type1;
-
-
-
-    /****************************对话框的--选择"显示样式"********************************/
-    private AlertDialog.Builder dialog_SHOW; // 样式选择对话框
-    private View dialogLayout_SHOW;
-    private CheckBox cb_toggleLabels;
-    private CheckBox cb_toggleFilled;
-
-    private CheckBox cb_selectYX;
-    private RadioGroup rg_selectYX;
-    private RadioButton rb_YX;
-    private RadioButton rb_Y;
-    private RadioButton rb_X;
-    private TypeModelManage m;
-
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_line_chart_type);
+        setContentView(R.layout.activity_report_type);
 
-        boolean label = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLELABELS_TYPE_ISCHECK,false);
-        boolean fill = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLEFILLED_TYPE_ISCHECK,false);
-        boolean select = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_ISCHECK,false);
-        int type = SharePrefUtil.getInt(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE,2);
+        mContext = this;
+
+        boolean label = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLELABELS_YEAR_ISCHECK,false);
+        boolean fill = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLEFILLED_YEAR_ISCHECK,false);
+        boolean select = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_YEAR_ISCHECK,false);
+        int type = SharePrefUtil.getInt(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_YEAR_TYPE,2);
 
         placeholderFragment = new PlaceholderFragment(label, fill, select, type);
 
@@ -112,278 +143,559 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
             getSupportFragmentManager().beginTransaction().add(R.id.container, placeholderFragment).commit();
         }
 
-        initUI();
-        iniData();
+
+        initView();
         initListener();
-        initAlertDialog_SHOW();
-
-    }
-
-    /** 更新UI*/
-    private void initUI() {
-        tv_top_query = (TextView) findViewById(R.id.tv_query);
-        iv_back = (ImageView) findViewById(R.id.iv_back);
-        iv_menu = (ImageView) findViewById(R.id.iv_menu);
-
-        cb_month = (CheckBox) findViewById(R.id.cb_month);
-        cb_type1 = (CheckBox) findViewById(R.id.cb_type1);
-
-        wv_year = (WheelView) findViewById(R.id.wv_year);
-        wv_month = (WheelView) findViewById(R.id.wv_month);
-        wv_mainType = (WheelView) findViewById(R.id.wv_mainType);
-        wv_type1 = (WheelView) findViewById(R.id.wv_type1);
-    }
-
-    /**
-     * 初始化"监听"
-     */
-    private void initListener(){
-        tv_top_query.setOnClickListener(this);
-        iv_back.setOnClickListener(this);
-        iv_menu.setOnClickListener(this);
-
-    }
-
-    /**
-     * 初始化"数据"
-     */
-    private void iniData(){
-        date = new Date();
-        sdf = new SimpleDateFormat("yyyy-MM-dd");
-        currentDate = sdf.format(date);//当期日期
-        c_year = currentDate.split("-")[0];
-
-        // 拿到当前"系统年份"在Constant.dialogYear数组中的"索引"
-        int index_year = 0;
-        for (index_year = 0; index_year < Constant.dialogYear.length; index_year++) {
-            if (c_year.equals(Constant.dialogYear[index_year]))
-                break;
-        }
-
-        ArrayWheelAdapter<String> yearAdapter = new ArrayWheelAdapter<String>(this, Constant.dialogYear);
-        yearAdapter.setTextSize(20);                // 文本(字体)大小
-        wv_year.setViewAdapter(yearAdapter);      // 添加适配器
-        wv_year.setVisibleItems(1);               // 可见数目，默认是5
-        wv_year.setCurrentItem(index_year);
-
-        ArrayWheelAdapter<String> monthAdapter = new ArrayWheelAdapter<String>(this, Constant.dialogMonth);
-        monthAdapter.setTextSize(20);                // 文本(字体)大小
-        wv_month.setViewAdapter(monthAdapter);      // 添加适配器
-        wv_month.setVisibleItems(1);               // 可见数目，默认是5
-        wv_month.setCurrentItem(index_year);
-
-        m = new TypeModelManage(this);
-        wv_mainType.setVisibleItems(3);
-        wv_type1.setVisibleItems(3);
-
-        wv_mainType.setViewAdapter(new ArrayWheelAdapter<String>(this, m.mainType()));
-        wv_type1.setViewAdapter(new ArrayWheelAdapter<String>(this, m.type1(wv_mainType.getCurrentItem())));
-
-        // 添加change事件
-        wv_mainType.addChangingListener(this);
-        // 添加change事件
-        wv_type1.addChangingListener(this);
-
-
+        initDate();
+        initialPopup();
+        initialPopups();
+        initialPopupss();
     }
 
 
-    /**
-     * 初始化Dialog——选择显示样式
-     */
-    private void initAlertDialog_SHOW(){
+    private void initView(){
+        /******************************标题***********************************/
+        mTvTitle = (TextView) findViewById(R.id.tv_title);
+        mBtnMenu = (ImageButton) findViewById(R.id.btn_menu);
+        mBtnBack = (ImageButton) findViewById(R.id.btn_back);
+        mBtnSet = (ImageButton) findViewById(R.id.btn_title_set);
+
+        // 选择年份
+        mTvChoiceYM = (TextView) findViewById(R.id.tv_choiceYM);
+        mTvChoiceType = (TextView) findViewById(R.id.tv_choiceType);
+
+        mBtnQuery = (Button) findViewById(R.id.btn_query);
+        mBtnClear = (Button) findViewById(R.id.btn_clear);
+    }
+
+    private void initListener() {
+        // 标题
+        mTvTitle.setOnClickListener(this);
+        mBtnBack.setOnClickListener(this);
+        mBtnSet.setOnClickListener(this);
+
+        mTvChoiceYM.setOnClickListener(this);
+        mTvChoiceType.setOnClickListener(this);
+
+        mBtnQuery.setOnClickListener(this);
+        mBtnClear.setOnClickListener(this);
+    }
+
+    private void initDate() {
+        /******************************标题***********************************/
+        mBtnMenu.setVisibility(View.GONE);
+        mBtnBack.setVisibility(View.VISIBLE);
+        mBtnSet.setVisibility(View.VISIBLE);
+        mTvTitle.setText("类型报表");
 
 
-        //        public View inflate(int Resourece,ViewGroup root)
-        //        作用：填充一个新的视图层次结构从指定的XML资源文件中
-        //        Resource：View的layout的ID
-        //        root： 生成的层次结构的根视图
-        //        return 填充的层次结构的根视图。如果参数root提供了，那么root就是根视图；否则填充的XML文件的根就是根视图。
-        //        其余几个重载的inflate函数类似。
-        LayoutInflater inflater = getLayoutInflater();
-        dialogLayout_SHOW = inflater.inflate(R.layout.dialog_select_show,(ViewGroup) findViewById(R.id.dialog));
+        tableEx = new TableEx(mContext);
 
-        cb_toggleLabels = (CheckBox) dialogLayout_SHOW.findViewById(R.id.cb_toggleLabels);
-        cb_toggleFilled = (CheckBox) dialogLayout_SHOW.findViewById(R.id.cb_toggleFilled);
 
-        cb_selectYX = (CheckBox) dialogLayout_SHOW.findViewById(R.id.cb_selectYX);
-        rg_selectYX = (RadioGroup) dialogLayout_SHOW.findViewById(R.id.rg_selectYX);
-        rb_YX = (RadioButton) dialogLayout_SHOW.findViewById(R.id.rb_YX);
-        rb_Y = (RadioButton) dialogLayout_SHOW.findViewById(R.id.rb_Y);
-        rb_X = (RadioButton) dialogLayout_SHOW.findViewById(R.id.rb_X);
-
-        final ZoomType[][] zoomType = {new ZoomType[1]};
-        final int[] type = {2};
-        rg_selectYX.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        /******************************************************************************/
+        //"年份"选择器
+        pvTimeYear = new TimePickerView(this, TimePickerView.Type.YEAR);
+        //控制时间范围
+        //Calendar calendar = Calendar.getInstance();
+        //pvTimeYear.setRange(calendar.get(Calendar.YEAR) - 116, calendar.get(Calendar.YEAR) + 50);//要在setTime 之前才有效果哦
+        pvTimeYear.setTitle("年份");         // 设置"标题"
+        pvTimeYear.setTime(new Date());         // 设置当前的时间，到时间选择器
+        pvTimeYear.setCyclic(false);             // 是否循环滚动
+        pvTimeYear.setCancelable(false);         // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //时间选择后回调
+        pvTimeYear.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
             @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
-                    case R.id.rb_YX:
-                        zoomType[0][0] = ZoomType.HORIZONTAL_AND_VERTICAL;
-                        type[0] = 2;
-                        break;
-                    case R.id.rb_Y:
-                        zoomType[0][0] = ZoomType.VERTICAL;
-                        type[0] = 1;
-                        break;
-                    case R.id.rb_X:
-                        zoomType[0][0] = ZoomType.HORIZONTAL;
-                        type[0] = 0;
-                        break;
-                    default:
-                        break;
-                }
+            public void onTimeSelect(Date date) {
+                mTvChoiceYM.setText(DateTimeFormat.getTime(date,"yyyy"));
+            }
+        });
+
+        /******************************************************************************/
+        //"年月"选择器
+        pvTimeYearMonth = new TimePickerView(this, TimePickerView.Type.YEAR_MONTH);
+        //控制时间范围
+        //Calendar calendar = Calendar.getInstance();
+        //pvTimeYearMonth.setRange(calendar.get(Calendar.YEAR) - 116, calendar.get(Calendar.YEAR) + 50);//要在setTime 之前才有效果哦
+        pvTimeYearMonth.setTitle("年月份");         // 设置"标题"
+        pvTimeYearMonth.setTime(new Date());         // 设置当前的时间，到时间选择器
+        pvTimeYearMonth.setCyclic(false);             // 是否循环滚动
+        pvTimeYearMonth.setCancelable(false);         // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //时间选择后回调
+        pvTimeYearMonth.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date) {
+                mTvChoiceYM.setText(DateTimeFormat.getTime(date,  "yyyy-MM"));
             }
         });
 
 
-        switch (SharePrefUtil.getInt(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE,2))
-        {
-            case 0: rb_X.setChecked(true); break;
-            case 1: rb_Y.setChecked(true); break;
-            case 2: rb_YX.setChecked(true); break;
+        /******************************************************************************/
+        //"年份"选择器
+        pvTimeYear = new TimePickerView(this, TimePickerView.Type.YEAR);
+        //控制时间范围
+        //Calendar calendar = Calendar.getInstance();
+        //pvTimeYear.setRange(calendar.get(Calendar.YEAR) - 116, calendar.get(Calendar.YEAR) + 50);//要在setTime 之前才有效果哦
+        pvTimeYear.setTitle("年份");         // 设置"标题"
+        pvTimeYear.setTime(new Date());         // 设置当前的时间，到时间选择器
+        pvTimeYear.setCyclic(false);             // 是否循环滚动
+        pvTimeYear.setCancelable(false);         // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //时间选择后回调
+        pvTimeYear.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date) {
+                mTvChoiceYM.setText(DateTimeFormat.getTime(date,"yyyy"));
+            }
+        });
+
+        /******************************************************************************/
+        //"年月"选择器
+        pvTimeYearMonth = new TimePickerView(this, TimePickerView.Type.YEAR_MONTH);
+        //控制时间范围
+        //Calendar calendar = Calendar.getInstance();
+        //pvTimeYearMonth.setRange(calendar.get(Calendar.YEAR) - 116, calendar.get(Calendar.YEAR) + 50);//要在setTime 之前才有效果哦
+        pvTimeYearMonth.setTitle("年月份");         // 设置"标题"
+        pvTimeYearMonth.setTime(new Date());         // 设置当前的时间，到时间选择器
+        pvTimeYearMonth.setCyclic(false);             // 是否循环滚动
+        pvTimeYearMonth.setCancelable(false);         // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //时间选择后回调
+        pvTimeYearMonth.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date) {
+                mTvChoiceYM.setText(DateTimeFormat.getTime(date,  "yyyy-MM"));
+            }
+        });
+
+        /******************************************************************************/
+        //次类型选择器
+        pvOptionsType1 = new OptionsPickerView(this);
+        pvOptionsType1.setCancelable(false);     // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //三级联动效果
+        pvOptionsType1.setPicker(AccountBookApplication.getMainTypeList(),
+                AccountBookApplication.getListType1List(), null, true);
+        //设置选择的三级单位
+        // pwOptions.setLabels("主类型", "次类型", "次次类型");
+        pvOptionsType1.setTitle("次类型");
+        pvOptionsType1.setCyclic(false, false, true);         // 三级联动，哪个可以循环滚动
+
+        //设置默认选中的三级项目
+        //监听确定选择按钮
+        pvOptionsType1.setSelectOptions(0, 0, 0);
+        //选项选择器后回调
+        pvOptionsType1.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
+
+            @Override
+            public void onOptionsSelect(int options1, int option2, int options3) {
+                //返回的分别是三个级别的选中位置
+                String tx = AccountBookApplication.getMainTypeList().get(options1)
+                        +"-"+
+                        AccountBookApplication.getListType1List().get(options1).get(option2);
+                //     + options3Items.get(options1).get(option2).get(options3).getPickerViewText();
+                mTvChoiceType.setText(tx);
+            }
+        });
+
+        /******************************************************************************/
+        //主类型选择器
+        pvOptionsMainType = new OptionsPickerView(this);
+        pvOptionsMainType.setCancelable(false);     // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //三级联动效果
+        pvOptionsMainType.setPicker(AccountBookApplication.getMainTypeList(),
+                null, null, true);
+        //设置选择的三级单位
+        // pwOptions.setLabels("主类型", "次类型", "次次类型");
+        pvOptionsMainType.setTitle("主类型");
+        pvOptionsMainType.setCyclic(false, false, true);         // 三级联动，哪个可以循环滚动
+
+        //设置默认选中的三级项目
+        //监听确定选择按钮
+        pvOptionsMainType.setSelectOptions(0, 0, 0);
+        //选项选择器后回调
+        pvOptionsMainType.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
+
+            @Override
+            public void onOptionsSelect(int options1, int option2, int options3) {
+                //返回的分别是三个级别的选中位置
+                String tx = AccountBookApplication.getMainTypeList().get(options1);
+                //        +"-"+
+                //        AccountBookApplication.getListType1List().get(options1).get(option2);
+                //     + options3Items.get(options1).get(option2).get(options3).getPickerViewText();
+                mTvChoiceType.setText(tx);
+            }
+        });
+    }
+
+    /**
+     * 初始化popupwindow
+     * 曲线图的，设置
+     */
+    private void initialPopup() {
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        // 引入窗口配置文件
+        View view = inflater.inflate(R.layout.popupwindow_line_char_set, null);
+
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        // 创建PopupWindow对象
+        pop = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, false);
+        pop.setOnDismissListener(this);
+
+        mPopCbToggleLabels = (CheckBox) view.findViewById(R.id.cb_toggleLabels);
+        mPopCbToggleFilled = (CheckBox) view.findViewById(R.id.cb_toggleFilled);
+
+        mPopCbSelectYX = (CheckBox) view.findViewById(R.id.cb_selectYX);
+        mPopRgSelectYX = (RadioGroup) view.findViewById(R.id.rg_selectYX);
+        mPopRbYX = (RadioButton) view.findViewById(R.id.rb_YX);
+        mPopRbY = (RadioButton) view.findViewById(R.id.rb_Y);
+        mPopRbX = (RadioButton) view.findViewById(R.id.rb_X);
+        mPopBtnConfirm = (Button) view.findViewById(R.id.btn_confirm);
+        mPopBtnCancel = (Button) view.findViewById(R.id.btn_cancel);
+
+        mPopBtnConfirm.setOnClickListener(this);
+        mPopBtnCancel.setOnClickListener(this);
+
+        // 需要顺利让PopUpWindow dimiss（即点击PopuWindow之外的地方此或者back键PopuWindow会消失）；
+        // PopUpWindow的背景不能为空。必须在popuWindow.showAsDropDown(v);
+        // 或者其它的显示PopuWindow方法之前设置它的背景不为空：
+
+        // 需要设置一下此参数，点击外边可消失
+        //pop.setBackgroundDrawable(new BitmapDrawable());
+        // 设置点击窗口外边窗口消失
+        //pop.setOutsideTouchable(true);                // 不设置就没有
+        // 设置此参数获得焦点，否则无法点击
+        //pop.setFocusable(true);                       // 不设置就没有
+    }
+
+    /**
+     * 显示popupwindow
+     */
+    private void showPopupWindow() {
+
+        if (pop.isShowing()) {
+            // 隐藏窗口，如果设置了点击窗口外小时即不需要此方式隐藏
+            pop.dismiss();
+        } else {
+
+            switch (SharePrefUtil.getInt(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE,2))
+            {
+                case 0: mPopRbX.setChecked(true); break;
+                case 1: mPopRbY.setChecked(true); break;
+                case 2: mPopRbYX.setChecked(true); break;
+            }
+            mPopCbToggleLabels.setChecked(SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLELABELS_TYPE_ISCHECK,false));
+            mPopCbToggleFilled.setChecked(SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLEFILLED_TYPE_ISCHECK,false));
+            mPopCbSelectYX.setChecked(SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_ISCHECK,false));
+
+            // 显示窗口
+            // pop.showAsDropDown(v);
+            // 获取屏幕和PopupWindow的width和height
+            pop.setAnimationStyle(R.style.MenuAnimationFade);           // 动画怎么设置，怎会动!
+            // 设置了，就铺满窗口
+            pop.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+            // pop.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+            // 设置显示PopupWindow的位置位于View的左下方，x,y表示坐标偏移量
+            pop.showAsDropDown(mTvTitle, 0, 20);           // 绑定哪个控件来"控制"控件弹出  ???
+
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.alpha = 0.7f;
+            getWindow().setAttributes(params);
         }
-
-        cb_toggleLabels.setChecked(SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLELABELS_TYPE_ISCHECK,false));
-        cb_toggleFilled.setChecked(SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLEFILLED_TYPE_ISCHECK,false));
-        cb_selectYX.setChecked(SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_ISCHECK,false));
-
-        //  初始化"对话框"——选择样式
-        dialog_SHOW = new AlertDialog.Builder(this).setTitle("选择样式").setView(dialogLayout_SHOW)
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        SharePrefUtil.saveBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLELABELS_TYPE_ISCHECK,cb_toggleLabels.isChecked());
-                        SharePrefUtil.saveBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLEFILLED_TYPE_ISCHECK,cb_toggleFilled.isChecked());
-                        SharePrefUtil.saveBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_ISCHECK,cb_selectYX.isChecked());
-
-                        placeholderFragment.toggleLabels(cb_toggleLabels.isChecked());     // 在"节点(峰点)"中显示"文本(峰点值)"
-                        placeholderFragment.toggleFilled(cb_toggleFilled.isChecked());     // 区域的填充颜色(图形和坐标轴包围的区域)
-                        placeholderFragment.generateData();
-
-                        placeholderFragment.chart.setZoomEnabled(cb_selectYX.isChecked()); // 是否允许，触摸放大
-                        placeholderFragment.chart.setZoomType(zoomType[0][0]);
-                        SharePrefUtil.saveInt(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE, type[0]);
-                    }
-                })
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
     }
 
 
     /**
-     * 更新数据
+     * 初始化popupwindows
+     * 选择年月
      */
-    public void upViewData(String year,String month, String mainType, String type1) {
+    private void initialPopups() {
 
-        SpecialCalendar calendar = new SpecialCalendar();
-        boolean isLeapYear = calendar.isLeapYear(Integer.valueOf(year));
-        int days = calendar.getDaysOfMonth(isLeapYear,Integer.valueOf(month));
+        LayoutInflater inflater = LayoutInflater.from(this);
+        // 引入窗口配置文件
+        View view = inflater.inflate(R.layout.popupwindow_choice_year_month, null);
 
-        TableEx tableEx = new TableEx(getApplicationContext());
-        float[][] NumbersTab = new float[1][12];
-        int maxNumberOfLines = 1;
-        int[] numberOfPoints = new int[]{12};
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        // 创建PopupWindow对象
+        pops = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, false);
+        pops.setOnDismissListener(this);
 
-        int top = 0;
-        int right = 31;
+        mRlPopsNull = (RelativeLayout) view.findViewById(R.id.layout_null);
+        mTvPopsCancel = (TextView) view.findViewById(R.id.tv_choiceYM_cancel);
+        mTvPopsChoiceYear = (TextView) view.findViewById(R.id.tv_year);
+        mTvPopsChoiceYearMonth = (TextView) view.findViewById(R.id.tv_year_month);
 
-        maxNumberOfLines = 1;
-        numberOfPoints = new int[maxNumberOfLines];
+        mRlPopsNull.setOnClickListener(this);
+        mTvPopsCancel.setOnClickListener(this);
+        mTvPopsChoiceYear.setOnClickListener(this);
+        mTvPopsChoiceYearMonth.setOnClickListener(this);
 
-        if(cb_month.isChecked()) {
-            NumbersTab = new float[maxNumberOfLines][days];
-            right = days;
-        }else{
-            NumbersTab = new float[maxNumberOfLines][12];
-            right = 12;
+        // 需要顺利让PopUpWindow dimiss（即点击PopuWindow之外的地方此或者back键PopuWindow会消失）；
+        // PopUpWindow的背景不能为空。必须在popuWindow.showAsDropDown(v);
+        // 或者其它的显示PopuWindow方法之前设置它的背景不为空：
+
+        // 需要设置一下此参数，点击外边可消失
+        pops.setBackgroundDrawable(new BitmapDrawable());
+        // 设置点击窗口外边窗口消失
+        pops.setOutsideTouchable(true);
+        // 设置此参数获得焦点，否则无法点击
+        pops.setFocusable(true);
+    }
+
+    /**
+     * 显示popupwindows
+     */
+    private void showPopupWindows() {
+
+        if (pops.isShowing()) {
+            // 隐藏窗口，如果设置了点击窗口外小时即不需要此方式隐藏
+            pops.dismiss();
+        } else {
+            // 显示窗口
+            // pop.showAsDropDown(v);
+            // 获取屏幕和PopupWindow的width和height
+            pops.setAnimationStyle(R.style.MenuAnimationFade);           // 动画怎么设置，怎会动!
+            pops.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+            pops.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+            // 设置显示PopupWindow的位置位于View的左下方，x,y表示坐标偏移量
+            pops.showAsDropDown(mTvChoiceYM, 0, 0);                  // 绑定哪个控件来"控制"控件弹出  ???
+
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.alpha = 0.7f;
+            getWindow().setAttributes(params);
+        }
+    }
+
+
+    /**
+     * 初始化popupwindowss
+     * 选择类型
+     */
+    private void initialPopupss() {
+
+        LayoutInflater inflater = LayoutInflater.from(this);
+        // 引入窗口配置文件
+        View view = inflater.inflate(R.layout.popupwindow_choice_maintype_type1, null);
+
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        // 创建PopupWindow对象
+        popss = new PopupWindow(view, ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, false);
+        popss.setOnDismissListener(this);
+
+        mRlPopssNull = (RelativeLayout) view.findViewById(R.id.layout_type_null);
+        mTvPopssCancel = (TextView) view.findViewById(R.id.tv_choiceType_cancel);
+        mTvPopssChoiceMainType = (TextView) view.findViewById(R.id.tv_mainType);
+        mTvPopssChoiceType1 = (TextView) view.findViewById(R.id.tv_type1);
+
+        mRlPopssNull.setOnClickListener(this);
+        mTvPopssCancel.setOnClickListener(this);
+        mTvPopssChoiceMainType.setOnClickListener(this);
+        mTvPopssChoiceType1.setOnClickListener(this);
+
+        // 需要顺利让PopUpWindow dimiss（即点击PopuWindow之外的地方此或者back键PopuWindow会消失）；
+        // PopUpWindow的背景不能为空。必须在popuWindow.showAsDropDown(v);
+        // 或者其它的显示PopuWindow方法之前设置它的背景不为空：
+
+        // 需要设置一下此参数，点击外边可消失
+        popss.setBackgroundDrawable(new BitmapDrawable());
+        // 设置点击窗口外边窗口消失
+        popss.setOutsideTouchable(true);
+        // 设置此参数获得焦点，否则无法点击
+        popss.setFocusable(true);
+    }
+
+    /**
+     * 显示popupwindowss
+     */
+    private void showPopupWindowss() {
+
+        if (popss.isShowing()) {
+            // 隐藏窗口，如果设置了点击窗口外小时即不需要此方式隐藏
+            popss.dismiss();
+        } else {
+            // 显示窗口
+            // pop.showAsDropDown(v);
+            // 获取屏幕和PopupWindow的width和height
+            popss.setAnimationStyle(R.style.MenuAnimationFade);           // 动画怎么设置，怎会动!
+            popss.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
+            popss.setHeight(WindowManager.LayoutParams.MATCH_PARENT);
+            // 设置显示PopupWindow的位置位于View的左下方，x,y表示坐标偏移量
+            popss.showAsDropDown(mTvChoiceType, 0, 0);                  // 绑定哪个控件来"控制"控件弹出  ???
+
+            WindowManager.LayoutParams params = getWindow().getAttributes();
+            params.alpha = 0.7f;
+            getWindow().setAttributes(params);
+        }
+    }
+
+
+    /**
+     * 保存样式
+     */
+    private void saveStyle(){
+        ZoomType zoomType = null;
+        if(mPopRbX.isChecked()) {
+            SharePrefUtil.saveInt(getApplicationContext(), SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE, 0);
+            zoomType = ZoomType.HORIZONTAL;
+        }
+        if(mPopRbY.isChecked()) {
+            SharePrefUtil.saveInt(getApplicationContext(), SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE, 1);
+            zoomType = ZoomType.VERTICAL;
+        }
+        if(mPopRbYX.isChecked()) {
+            SharePrefUtil.saveInt(getApplicationContext(), SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_TYPE, 2);
+            zoomType = ZoomType.HORIZONTAL_AND_VERTICAL;
         }
 
-        for (int i = 0; i < maxNumberOfLines; i++) {
-            if(cb_month.isChecked()) {
-                numberOfPoints[i] = days;
-                for (int j = 0; j < numberOfPoints[i]; j++) {   // 一个个点添加
-                    Cursor cursor = null;
-                    if(cb_type1.isChecked()) {
-                        cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
-                                new String[]{"sum(price)"}, "date=? and mainType=? and type1=? and user=?",
-                                new String[]{year + "-" + ToFormatUtil.stringToNumberFormat(month,2) + "-"+ ToFormatUtil.toNumberFormat(j+1,2),
-                                        mainType, type1, AccountBookApplication.getUserInfo().getUserName()},
-                                null, null, null);
-                    }else{
-                        cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
-                                new String[]{"sum(price)"}, "date=? and mainType=? and user=?",
-                                new String[]{year + "-" + ToFormatUtil.stringToDecimalFormat(month,2) + "-"+ ToFormatUtil.toDecimalFormat(j+1,2),
-                                        mainType, AccountBookApplication.getUserInfo().getUserName()},
-                                null, null, null);
-                    }
-                    if (cursor.getCount() == 0) {
-                        NumbersTab[i][j] = 0;
-                    } else {
-                        cursor.moveToNext();
-                        NumbersTab[i][j] = cursor.getFloat(0);
-                    }
-                    Log.i("多年NumbersTab[" + i + "][" + j + "]:", NumbersTab[i][j] + "");
-                    cursor.close();
-                    top = (int)(top>NumbersTab[i][j] ? top:NumbersTab[i][j]);
-                }
-            }else{
-                numberOfPoints[i] = 12;
+        SharePrefUtil.saveBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLELABELS_TYPE_ISCHECK,mPopCbToggleLabels.isChecked());
+        SharePrefUtil.saveBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.TOGGLEFILLED_TYPE_ISCHECK,mPopCbToggleFilled.isChecked());
+        SharePrefUtil.saveBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_TYPE_ISCHECK,mPopCbSelectYX.isChecked());
 
-                for (int j = 0; j < numberOfPoints[i]; j++) {   // 一个个点添加
-                    Cursor cursor = null;
-                    if(cb_type1.isChecked()) {
-                        cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
-                                new String[]{"sum(price)"}, "date like ? and mainType=? and type1=? and user=?",
-                                new String[]{year + "-" + ToFormatUtil.toNumberFormat(j+1,2) + "-%", mainType, type1, AccountBookApplication.getUserInfo().getUserName()},
-                                null, null, null);
-                    }else{
-                        cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
-                                new String[]{"sum(price)"}, "date like ? and mainType=? and user=?",
-                                new String[]{year + "-" + ToFormatUtil.toNumberFormat(j+1,2) + "-%", mainType, AccountBookApplication.getUserInfo().getUserName()},
-                                null, null, null);
-                    }
-                    if (cursor.getCount() == 0) {
-                        NumbersTab[i][j] = 0;
-                    } else {
-                        cursor.moveToNext();
-                        NumbersTab[i][j] = cursor.getFloat(0);
-                    }
-                    Log.i("多年NumbersTab[" + i + "][" + j + "]:", NumbersTab[i][j] + "");
-                    cursor.close();
-                    top = (int)(top>NumbersTab[i][j] ? top:NumbersTab[i][j]);
-                }
+        placeholderFragment.toggleLabels(mPopCbToggleLabels.isChecked());     // 在"节点(峰点)"中显示"文本(峰点值)"
+        placeholderFragment.toggleFilled(mPopCbToggleFilled.isChecked());     // 区域的填充颜色(图形和坐标轴包围的区域)
+        placeholderFragment.generateData();
+
+        placeholderFragment.chart.setZoomEnabled(mPopCbSelectYX.isChecked()); // 是否允许，触摸放大
+        placeholderFragment.chart.setZoomType(zoomType);
+
+    }
+
+    /**
+     * 查询
+     */
+    private void query(){
+
+        if(TextUtils.isEmpty(mTvChoiceYM.getText().toString())){
+            ToastUtil.show("请选择年份");
+            return;
+        }
+        if( TextUtils.isEmpty(mTvChoiceType.getText().toString())){
+            ToastUtil.show("请选择类型");
+            return;
+        }
+        boolean flag = true;        // 游标的记录数 < 月份的天数， 当循环大于就 false
+
+        int maxNumberOfLines = 1;
+        int[] numberOfPoints = new int[1];
+        float[][] NumbersTab = new float[1][13];                      // 因为从0开始的，但是坐标我从1开始的所以最大32
+
+        String date = mTvChoiceYM.getText().toString();
+        String type = mTvChoiceType.getText().toString();
+        String[] dates = date.split("-");
+        String[] types = type.split("-");
+
+        Calendar calendar = Calendar.getInstance();
+        Cursor cursor = null;
+        mTop = 100;
+
+        /*年月*/
+        if(dates.length == 1){                                // 年
+            ToastUtil.show("dates.length == 1");
+            numberOfPoints[0] = 12 + 1;                     // 因为从0开始的，但是这里从 1开始，所以要多加一个点
+            NumbersTab = new float[1][numberOfPoints[0]];
+
+            if(types.length == 1){                                        // 主类型
+                ToastUtil.show("types.length == 1");
+                cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
+                        new String[]{"sum(price),strftime('%Y-%m',date)"}, "date like ? and user=? and maintype=?",
+                        new String[]{date + "%", AccountBookApplication.getUserInfo().getUserName(), type},
+                        "strftime('%Y-%m',date)", null, null);
+
+            }else if(types.length == 2) {                                 // 次类型
+                ToastUtil.show("types.length == 2");
+                cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
+                        new String[]{"sum(price),strftime('%Y-%m',date)"}, "date like ? and user=? and maintype=? and type1=?",
+                        new String[]{date + "%", AccountBookApplication.getUserInfo().getUserName(), types[0], types[1]},
+                        "strftime('%Y-%m',date)", null, null);
+            }
+        }else if(dates.length == 2) {                         // 年月
+            ToastUtil.show("dates.length == 2");
+            try {
+                calendar.setTime(new SimpleDateFormat("yyyy-MM").parse(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            int dayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);      // 这个月多少天
+            numberOfPoints[0] = dayOfMonth + 1;                     // 因为从0开始的，但是这里从 1开始，所以要多加一个点
+            NumbersTab = new float[1][numberOfPoints[0]];
+
+            if(types.length == 1){                                        // 主类型
+                cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
+                        new String[]{"sum(price),date"}, "date like ? and user=? and maintype=?",
+                        new String[]{date + "%", AccountBookApplication.getUserInfo().getUserName(), type},
+                        "date", null, null);
+
+            }else if(types.length == 2) {                                 // 次类型
+                cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
+                        new String[]{"sum(price),date"}, "date like ? and user=? and maintype=? and type1=?",
+                        new String[]{date + "%", AccountBookApplication.getUserInfo().getUserName(), types[0], types[1]},
+                        "date", null, null);
             }
         }
-        top = setTop(top);
+
+        int num = cursor.getCount();
+        try {
+            if (num != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
+                cursor.moveToFirst();
+                if (cursor.getString(0) != null) {        // 没记录，返回1，这里返回的是 "null"
+                    if (Float.valueOf(cursor.getString(0)) >= 0) {
+                        System.out.println("数量：" + num);
+
+                        for (int i = 1; i < numberOfPoints[0]; i++) {
+                            System.out.println("循环的:" + date + "-" + ToFormatUtil.toNumberFormat(i, 2));
+                            if (flag) {
+                                System.out.println("text:" + cursor.getString(1) + ":" + cursor.getString(0));
+                                if ((date + "-" + ToFormatUtil.toNumberFormat(i, 2)).equals(cursor.getString(1))) {
+                                    System.out.println("if:" + cursor.getString(1) + ":" + cursor.getString(0));
+                                    NumbersTab[0][i] = cursor.getInt(0);
+                                    if(mTop < cursor.getInt(0))
+                                        mTop = cursor.getInt(0);
+                                    if (!cursor.moveToNext()) {
+                                        System.out.println("进来这里了!");
+                                        flag = false;
+                                    }
+                                } else {
+                                    NumbersTab[0][i] = 0;
+                                    System.out.println("else:0");
+                                }
+                            } else {
+                                NumbersTab[0][i] = 0;
+                                System.out.println("flag:else:0");
+                            }
+                        }
+                    } else {
+                        // 不处理
+                    }
+                } else {
+                    // 不处理
+                }
+            } else {
+                // 不处理
+            }
+        } catch (Exception e) {
+            System.out.println("查询资产error:" + e.getMessage());
+        }
+
         placeholderFragment.setMaxNumberOfLines(maxNumberOfLines);
         placeholderFragment.setNumberOfLines(maxNumberOfLines);
         placeholderFragment.setNumberOfPoints(numberOfPoints);
         placeholderFragment.setRandomNumbersTab(NumbersTab);
-
         placeholderFragment.generateData();
-        placeholderFragment.resetViewport(top, right);
+        placeholderFragment.resetViewport(setTop(mTop), numberOfPoints[0]-1);
 
-        tableEx.closeDBConnect();
     }
 
-
     /**
-     * 点击"查询"
+     * 清理
      */
-    private void query() {
+    private void clear(){
+        placeholderFragment.generateValues();
+        placeholderFragment.generateData();
+        placeholderFragment.resetViewport(100, 12);
 
-        String year = Constant.dialogYear[wv_year.getCurrentItem()];
-        String month = Constant.dialogMonth[wv_month.getCurrentItem()];
-        String mainType = m.mainType()[wv_mainType.getCurrentItem()];
-        String type1 = m.type1(wv_mainType.getCurrentItem())[wv_type1.getCurrentItem()];
-        upViewData(year, month, mainType, type1);
 
+        mTvChoiceYM.setText("");
+        mTvChoiceType.setText("");
     }
 
     /**
@@ -392,56 +704,205 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
      * @return
      */
     private int setTop(int top){
-        if(0<=top && top<=100)
-            return 100;
-        else if(100<=top && top<=1000)
-            return 1000;
-        else if(1000<=top && top<=10000)
-            return 10000;
-        else if(10000<=top && top<=100000)
-            return 100000;
-        else if(100000<=top && top<=1000000)
-            return 1000000;
+
+        if(0<=top && top<=100) return 100;
+        else if(100<=top && top<=200) return 200;
+        else if(200<=top && top<=300) return 300;
+        else if(300<=top && top<=400) return 400;
+        else if(400<=top && top<=500) return 500;
+        else if(500<=top && top<=600) return 600;
+        else if(600<=top && top<=700) return 700;
+        else if(700<=top && top<=800) return 800;
+        else if(800<=top && top<=900) return 900;
+        else if(900<=top && top<=1000) return 1000;
+
+        else if(1000<=top && top<=2000) return 2000;
+        else if(2000<=top && top<=3000) return 3000;
+        else if(3000<=top && top<=4000) return 4000;
+        else if(4000<=top && top<=5000) return 5000;
+        else if(5000<=top && top<=6000) return 6000;
+        else if(6000<=top && top<=7000) return 7000;
+        else if(7000<=top && top<=8000) return 8000;
+        else if(8000<=top && top<=9000) return 9000;
+        else if(9000<=top && top<=10000) return 10000;
+
+        else if(10000<=top && top<=20000) return 20000;
+        else if(20000<=top && top<=30000) return 30000;
+        else if(30000<=top && top<=40000) return 40000;
+        else if(40000<=top && top<=50000) return 50000;
+        else if(50000<=top && top<=60000) return 60000;
+        else if(60000<=top && top<=70000) return 70000;
+        else if(70000<=top && top<=80000) return 80000;
+        else if(80000<=top && top<=90000) return 90000;
+        else if(90000<=top && top<=100000) return 100000;
+
+        else if(100000<=top && top<=200000) return 200000;
+        else if(200000<=top && top<=300000) return 300000;
+        else if(300000<=top && top<=400000) return 400000;
+        else if(400000<=top && top<=500000) return 500000;
+        else if(500000<=top && top<=600000) return 600000;
+        else if(600000<=top && top<=700000) return 700000;
+        else if(700000<=top && top<=800000) return 800000;
+        else if(800000<=top && top<=900000) return 900000;
+        else if(900000<=top && top<=1000000) return 1000000;
+
+        else if(1000000<=top && top<=2000000) return 2000000;
+        else if(2000000<=top && top<=3000000) return 3000000;
+        else if(3000000<=top && top<=4000000) return 4000000;
+        else if(4000000<=top && top<=5000000) return 5000000;
+        else if(5000000<=top && top<=6000000) return 6000000;
+        else if(6000000<=top && top<=7000000) return 7000000;
+        else if(7000000<=top && top<=8000000) return 8000000;
+        else if(8000000<=top && top<=9000000) return 9000000;
+        else if(9000000<=top && top<=10000000) return 10000000;
+
+        else if(10000000<=top && top<=20000000) return 20000000;
+        else if(20000000<=top && top<=30000000) return 30000000;
+        else if(30000000<=top && top<=40000000) return 40000000;
+        else if(40000000<=top && top<=50000000) return 50000000;
+        else if(50000000<=top && top<=60000000) return 60000000;
+        else if(60000000<=top && top<=70000000) return 70000000;
+        else if(70000000<=top && top<=80000000) return 80000000;
+        else if(80000000<=top && top<=90000000) return 90000000;
+        else if(90000000<=top && top<=100000000) return 100000000;
+
         else
             return 100;
     }
 
     @Override
     public void onClick(View v) {
+        Intent intent;
         switch (v.getId()) {
-            case R.id.tv_query:
-                query();
-                break;
-            case R.id.iv_back:
+            case R.id.btn_back:                                         // 退出本Activity
                 finish();
                 break;
-            case R.id.iv_menu:
-                initAlertDialog_SHOW();
-                dialog_SHOW.create().show();
+
+            case R.id.btn_title_set:                               // 点击"设置"
+                showPopupWindow();
+                ToastUtil.show("设置");
+                break;
+
+            /****************************popup_set**************************************/
+            case R.id.btn_confirm:                               // 确认
+                if (pop != null) {
+                    pop.dismiss();
+                }
+                saveStyle();
+                break;
+            case R.id.btn_cancel:                               // 取消
+                if (pop != null) {
+                    pop.dismiss();
+                }
+                break;
+
+            /****************************年份月份**************************************/
+            case R.id.tv_choiceYM:                  // 弹出pop窗口，选择"年份"或"年月"
+                showPopupWindows();
+                break;
+
+            case R.id.layout_null:                  // popupwindows上的"空白布局"
+                if (pops != null) {
+                    pops.dismiss();
+                }
+                break;
+
+            case R.id.tv_year:                      // popupwindows上的"选择年份"
+                if (pops != null) {
+                    pops.dismiss();
+                }
+                pvTimeYear.show();
+                break;
+
+            case R.id.tv_year_month:                // popupwindows上的"选择年月"
+                if (pops != null) {
+                    pops.dismiss();
+                }
+                pvTimeYearMonth.show();
+                break;
+
+            case R.id.tv_choiceYM_cancel:            // popupwindows上的"选择年月"
+                if (pops != null) {
+                    pops.dismiss();
+                }
+                break;
+
+            /****************************类型**************************************/
+            case R.id.tv_choiceType:                            // 选择类型
+                showPopupWindowss();
+                break;
+
+            case R.id.layout_type_null:                 // popupwindowss上的"空白布局"
+                if (popss != null) {
+                    popss.dismiss();
+                }
+                break;
+
+            case R.id.tv_mainType:                      // popupwindowss上的"选择年份"
+                if (popss != null) {
+                    popss.dismiss();
+                }
+                pvOptionsMainType.show();
+                break;
+
+            case R.id.tv_type1:                         // popupwindowss上的"选择年月"
+                if (popss != null) {
+                    popss.dismiss();
+                }
+                pvOptionsType1.show();
+                break;
+
+            case R.id.tv_choiceType_cancel:            // popupwindowss上的"选择年月"
+                if (popss != null) {
+                    popss.dismiss();
+                }
+                break;
+
+            /****************************查询、清空**************************************/
+            case R.id.btn_query:                                 // 查询
+                query();
+                break;
+            case R.id.btn_clear:                                // 清空
+                clear();
                 break;
         }
     }
 
-
+    // 按钮监听
     @Override
-    public void onChanged(WheelView wheel, int oldValue, int newValue) {
-//        if (wheel == wv_5years_start) {
-//
-//        }
-        if (wheel == wv_mainType) {
-            wv_type1.setViewAdapter(new ArrayWheelAdapter<String>(this, m.type1(wv_mainType.getCurrentItem())));
-            wv_type1.setCurrentItem(0);
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {                 // 如果点击的是"返回按钮"
+
+            if(pvTimeYear.isShowing()){
+                pvTimeYear.dismiss();
+                return true;
+            }
+            if(pvTimeYearMonth.isShowing()){
+                pvTimeYearMonth.dismiss();
+                return true;
+            }
+            if(pvOptionsMainType.isShowing()){
+                pvOptionsMainType.dismiss();
+                return true;
+            }
+            if(pvOptionsType1.isShowing()){
+                pvOptionsType1.dismiss();
+                return true;
+            }
         }
+        return super.onKeyDown(keyCode, event);
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+    public void onDismiss() {
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.alpha = 1f;
+        getWindow().setAttributes(params);
     }
 
-
+    /******************************************************************************************************/
+    /******************************************************************************************************/
     /**
-     *
      * A fragment containing a line chart.
      * 填充成"fragment"的类
      */
@@ -449,16 +910,24 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
 
         private LineChartView chart;
         private LineChartData data;
-        /** 添加了第几条线(用于在数组中找到画哪一条线)*/
+        /**
+         * 添加了第几条线(用于在数组中找到画哪一条线)
+         */
         private int numberOfLines = 1;
 
-        /** 最多4条线*/
+        /**
+         * 最多4条线
+         */
         private int maxNumberOfLines = 1;
 
-        /** 每一条线12个点*/
-        private int[] numberOfPoints = new int[]{12};
+        /**
+         * 每一条线12个点
+         */
+        private int[] numberOfPoints = new int[]{31};
 
-        /** 这个应该是放置随机数的!*/
+        /**
+         * 这个应该是放置随机数的!
+         */
         float[][] randomNumbersTab = new float[maxNumberOfLines][numberOfPoints[0]];
 
         //Axes ['æksiːz]  轴线;轴心;坐标轴
@@ -467,24 +936,42 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
         //Cubic ['kjuːbɪk] 立方体;立方的
         //Label ['leɪb(ə)l] 标签
 
-        /** 显示/隐藏"坐标轴" true:显示坐标轴/false:隐藏坐标轴*/
+        /**
+         * 显示/隐藏"坐标轴" true:显示坐标轴/false:隐藏坐标轴
+         */
         private boolean hasAxes = true;
-        /** 显示/隐藏"坐标轴名称" true:显示/false:隐藏*/
+        /**
+         * 显示/隐藏"坐标轴名称" true:显示/false:隐藏
+         */
         private boolean hasAxesNames = false;
-        /** true:连线  false：不连线(只有点)*/
+        /**
+         * true:连线  false：不连线(只有点)
+         */
         private boolean hasLines = true;
-        /** true:显示"节点(峰)"  false:去掉"节点(峰)"--就不可点击了*/
+        /**
+         * true:显示"节点(峰)"  false:去掉"节点(峰)"--就不可点击了
+         */
         private boolean hasPoints = true;
         private ValueShape shape = ValueShape.CIRCLE;
-        /** 区域的填充颜色(图形和坐标轴包围的区域) false:不填充/true:填充*/
+        /**
+         * 区域的填充颜色(图形和坐标轴包围的区域) false:不填充/true:填充
+         */
         private boolean isFilled = false;
-        /** 在"节点(峰点)"中显示"文本(峰点值)" false:不显示/true:显示*/
+        /**
+         * 在"节点(峰点)"中显示"文本(峰点值)" false:不显示/true:显示
+         */
         private boolean hasLabels = false;
-        /** false:折线/true:滑线*/
+        /**
+         * false:折线/true:滑线
+         */
         private boolean isCubic = false;
-        /** 点击"节点(峰点)"时，是否有"节点标签" true:点击时显示"峰点标签值"/ false:点击时不显示"峰点标签值"*/
+        /**
+         * 点击"节点(峰点)"时，是否有"节点标签" true:点击时显示"峰点标签值"/ false:点击时不显示"峰点标签值"
+         */
         private boolean hasLabelForSelected = false;
-        /** 让"节点(峰点)"变色--变一种*/
+        /**
+         * 让"节点(峰点)"变色--变一种
+         */
         private boolean pointsHaveDifferentColor;
 
         private boolean isZoom = false;     // 是否可以触摸放大
@@ -543,16 +1030,16 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
             this.randomNumbersTab = randomNumbersTab;
         }
 
-        int top = 100;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
             //hasMenu——如果这是真的,显示fragment菜单项
             setHasOptionsMenu(true);
             //第一个参数传入布局的资源ID，生成fragment视图，
             // 第二个参数是视图的父视图，通常我们需要父视图来正确配置组件。
             // 第三个参数告知布局生成器是否将生成的视图添加给父视图。
-            View rootView = inflater.inflate(R.layout.fragment_line_chart_year, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_line_chart, container, false);
 
             chart = (LineChartView) rootView.findViewById(R.id.chart);
             // 这个应该是"点击峰点"
@@ -566,66 +1053,36 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
 
             // Disable viewport recalculations, see toggleCubic() method for more info.
             // 禁用窗口重新计算,看到toggleCubic更多信息()方法。
-            chart.setViewportCalculationEnabled(false);
-            resetViewport(top, 31);
 
-            // 只有设置坐标轴拖动(不用重新设置数据)
+            chart.setViewportCalculationEnabled(false);
+            resetViewport(100, 12);
+
             chart.setZoomEnabled(isZoom); // 是否允许，触摸放大
             chart.setZoomType(zoomType);
 
             return rootView;
+
         }
 
         /**
-         * 生成一些值(用于画点的;y轴坐标;x轴默认递增) <br>
-         * 存放到 ： randomNumbersTab[i][j] <br>
-         * 4 条 折线              maxNumberOfLines <br>
-         * 每条折线是12个点       numberOfPoints <br>
+         * 让曲线图区空白<p>
+         *
          */
         private void generateValues() {
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-M-d");
-            String currentDate = sdf.format(date);//当期日期
-            String c_year = currentDate.split("-")[0];
-
-            TableEx tableEx = new TableEx(getActivity());
-
-            maxNumberOfLines = 1;
-            numberOfLines = 1;
-            numberOfPoints[0] = 12;
-
-            for (int i = 0; i < 12; i++) {
-                Cursor cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
-                        new String[]{"sum(price)"}, "date like ? and user=?",
-                        new String[]{c_year + "-" + ToFormatUtil.toNumberFormat(i+1,2) + "-%", AccountBookApplication.getUserInfo().getUserName()},
-                        null, null, null);
-
-                if (cursor.getCount() == 0)
-                    randomNumbersTab[0][i] = 0;
-                else {
-                    cursor.moveToNext();
-                    randomNumbersTab[0][i] = cursor.getFloat(0);
-                }
-                Log.i(" NumbersTab[0][" + i + "]:", randomNumbersTab[0][i] + "");
-                cursor.close();
-                top = (int)(top>randomNumbersTab[0][i] ? top:randomNumbersTab[0][i]);
-            }
-            top = setTop(top);
-            tableEx.closeDBConnect();
+            maxNumberOfLines = 0;               //  让曲线图区空白
+            numberOfLines = 0;                  //  让曲线图区空白
         }
 
         /***
          * 根据值，画点，处理生成"图表"--全局变量：chart
          */
         public void generateData() {
-            Log.i("shen","shen1");
+
             List<Line> lines = new ArrayList<Line>();
             for (int i = 0; i < numberOfLines; ++i) {
-                Log.i("shen","shen2:"+i);
                 List<PointValue> values = new ArrayList<PointValue>();
                 for (int j = 0; j < numberOfPoints[i]; ++j) {
-                    values.add(new PointValue(j+1, randomNumbersTab[i][j]));
-                    Log.i("Data:NumbersTab[0][" + i + "]:", randomNumbersTab[i][j] + "");
+                    values.add(new PointValue(j, randomNumbersTab[i][j]));
                 }
                 Line line = new Line(values);
                 line.setColor(ChartUtils.COLORS[i]);
@@ -642,7 +1099,7 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
                 lines.add(line);
             }
             data = new LineChartData(lines);
-            Log.i("shen","shen3");
+
             if (hasAxes) {
                 Axis axisX = new Axis();
                 Axis axisY = new Axis().setHasLines(true);
@@ -671,7 +1128,6 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
             v.bottom = 0;
             v.top = top;
             v.left = 1;
-//            v.right = numberOfPoints - 1;
             v.right = right;
             chart.setMaximumViewport(v);
             chart.setCurrentViewport(v);
@@ -695,26 +1151,6 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
             //generateData();
         }
 
-
-        /**
-         * 设置y轴的最大值
-         * @param top
-         * @return
-         */
-        private int setTop(int top){
-            if(0<=top && top<=100)
-                return 100;
-            else if(100<=top && top<=1000)
-                return 1000;
-            else if(1000<=top && top<=10000)
-                return 10000;
-            else if(10000<=top && top<=100000)
-                return 100000;
-            else if(100000<=top && top<=1000000)
-                return 1000000;
-            else
-                return 100;
-        }
 
         /**
          * 点击"峰点"后

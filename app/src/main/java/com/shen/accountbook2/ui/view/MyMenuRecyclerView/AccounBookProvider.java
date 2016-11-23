@@ -1,4 +1,4 @@
-package com.shen.accountbook2.widget.MyMenuRecyclerView;
+package com.shen.accountbook2.ui.view.MyMenuRecyclerView;
 
 /**
  * Created by shen on 11/20 0020.
@@ -20,7 +20,7 @@ import com.shen.accountbook2.db.helper.DatabaseHelper;
 public class AccounBookProvider extends ContentProvider {
 
     //主机名信息：对应清单文件的authorities属性
-    private static final String AUTHORITY="com.shen.accountbook2.widget.MyMenuRecyclerView.AccounBookProvider";
+    private static final String AUTHORITY="com.shen.accountbook2.ui.view.MyMenuRecyclerView.AccounBookProvider";
     public static final Uri URI_ACCOUNTBOOK2_ALL=Uri.parse("content://"+AUTHORITY+"/accountbook2");
 
     private static UriMatcher matcher;

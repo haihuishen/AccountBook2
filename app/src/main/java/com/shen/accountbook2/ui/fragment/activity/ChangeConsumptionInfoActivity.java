@@ -27,14 +27,14 @@ import com.bigkoo.pickerview.TimePickerView;
 import com.bm.library.Info;
 import com.bm.library.PhotoView;
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.DateTimeFormat;
 import com.shen.accountbook2.Utils.ImageFactory;
-import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.Utils.ToFormatUtil;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.global.AccountBookApplication;
-import com.shen.accountbook2.widget.MyMenuRecyclerView.AccounBookProvider;
+import com.shen.accountbook2.ui.view.MyMenuRecyclerView.AccounBookProvider;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -66,6 +66,8 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
     private String mUnitPrice;
     private String mImage;
     private String mDate;
+
+    private Boolean mImageChange;
 
     /** 用户民称文本*/
     private TextView tvUser;
@@ -236,7 +238,7 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         pvTime.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
             @Override
             public void onTimeSelect(Date date) {
-                tvTime.setText(getTime(date));
+                tvTime.setText(DateTimeFormat.getTime(date,"yyyy-MM-dd"));
             }
         });
 
@@ -291,12 +293,11 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
             }
         });
 
+        mImageChange = false;
         if(!TextUtils.isEmpty(mImage)) {
             bitmap = ImageFactory.getBitmap(Constant.IMAGE_PATH + File.separator + mImage);
-            SharePrefUtil.saveBoolean(mContext, SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE, true);
         }else {
             bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png");
-            SharePrefUtil.saveBoolean(mContext, SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE, false);
         }
 
         pvCamaraPhoto.disenable();// 把PhotoView当普通的控件，把触摸功能关掉
@@ -373,16 +374,6 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         }
     };
 
-    /**
-     * 将传进来的"时间"，按照一定的格式生成"时间字符串"
-     * @param date 传进来的时间
-     * @return
-     */
-    public static String getTime(Date date) {
-        //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(date);
-    }
 
     /**
      * 点击"修改按钮"<p>
@@ -396,15 +387,14 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
 
         // 根据全局变量，添加时是否将图片添加到数据库(这个只是"图片名")
         // true:压缩图片保存在指定位置
-        Boolean saveImage = SharePrefUtil.getBoolean(mContext, SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE, false);
-        if(saveImage) {
+        if(mImageChange) {  // 换了照片才压缩
             try {
                 ImageFactory.ratioAndGenThumb(Constant.CACHE_IMAGE_PATH + "/CacheImage.jpg", Constant.IMAGE_PATH + "/" + imageName, 300, 300, false);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }else{
-            imageName = "";   // 空不要写成 ""  ，不要写成 "null" 要写成String imageName = null
+            imageName = mImage;   // 空不要写成 ""  ，不要写成 "null" 要写成String imageName = null
         }
 
         // 数据库
@@ -487,7 +477,7 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            SharePrefUtil.saveBoolean(mContext,SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE,true);              // 拍照返回才设置这个标志
+            mImageChange = true;        // 拍照返回，设置这个标志为true
             bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"/CacheImage.jpg", 300, 300);
             pvCamaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
 
@@ -518,8 +508,8 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
                 break;
 
             case R.id.btn_clear:                                       // 清除预览控件的图片;为默认图片
-                SharePrefUtil.saveBoolean(mContext,SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE,false);
                 bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH +"/no_preview_picture.png");
+                mImage = "";                                        // 将传过来的图片名置为空
                 pvCamaraPhoto.setImageBitmap(bitmap);              // 将图片显示在ImageView里
                 mPhotoView.setImageBitmap(bitmap);
                 break;

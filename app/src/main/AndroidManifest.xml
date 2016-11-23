@@ -29,7 +29,6 @@
 
         <activity android:name=".ui.MainActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.AddActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".ui.AddActivity2" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.LoginActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.RegisterActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.AddAssetActivity" android:screenOrientation="portrait"></activity>
@@ -37,22 +36,15 @@
         <activity android:name=".ui.AssetManagerActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.ChangeAssetActivity" android:screenOrientation="portrait"></activity>
 
-        <activity android:name=".ui.fragment.activity.ReportForD_Activity"></activity>
-
-        <activity android:name=".ui.fragment.activity.ReportForM_LineChar_Activity"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForM2_LineChar_Activity"
+        <activity android:name=".ui.fragment.activity.ReportForM_LineChar_Activity"
                   android:configChanges="orientation|keyboardHidden|screenSize"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForY_LineChar_Activity"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForY2_LineChar_Activity"
+        <activity android:name=".ui.fragment.activity.ReportForY_LineChar_Activity"
                   android:configChanges="orientation|keyboardHidden|screenSize"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForType_LineChar_Activity"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForType2_LineChar_Activity"
+        <activity android:name=".ui.fragment.activity.ReportForType_LineChar_Activity"
                   android:configChanges="orientation|keyboardHidden|screenSize"></activity>
 
-        <activity android:name=".ui.fragment.activity.ReportForD2_Activity"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForD3_Activity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForD4_Activity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".ui.fragment.activity.ReportForD5_Activity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".ui.fragment.activity.ReportForMixture_Activity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".ui.fragment.activity.ReportForD_Activity" android:screenOrientation="portrait"></activity>
 
         <activity android:name=".ui.fragment.activity.MineInfoActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.fragment.activity.ChangeConsumptionInfoActivity" android:screenOrientation="portrait"></activity>
@@ -60,9 +52,9 @@
         <!-- 不要忘记exported这个属性，如果不加，可能会导致外部程序访问失败，错误信息为权限拒绝 -->
         <!-- authorities这个属性就是我们在ContentProvider中使用的addURI方法时的第一个参数的取值 -->
         <provider
-            android:name="com.shen.accountbook2.widget.MyMenuRecyclerView.AccounBookProvider"
+            android:name=".ui.view.MyMenuRecyclerView.AccounBookProvider"
             android:exported="true"
-            android:authorities="com.shen.accountbook2.widget.MyMenuRecyclerView.AccounBookProvider" >
+            android:authorities="com.shen.accountbook2.ui.view.MyMenuRecyclerView.AccounBookProvider" >
         </provider>
 
     </application>

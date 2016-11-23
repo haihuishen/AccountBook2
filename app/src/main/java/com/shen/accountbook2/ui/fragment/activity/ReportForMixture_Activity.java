@@ -38,7 +38,7 @@ import java.util.Date;
 /**
  * Created by shen on 10/14 0014.
  */
-public class ReportForD3_Activity extends BaseReportActivity implements PopupWindow.OnDismissListener {
+public class ReportForMixture_Activity extends BaseReportActivity implements PopupWindow.OnDismissListener {
 
     private Context mContext;
     private TextView mTvChoiceYM;
@@ -72,7 +72,7 @@ public class ReportForD3_Activity extends BaseReportActivity implements PopupWin
 
     private static float progressMax = 1;            // 最大值
 
-    public ReportForD3_Activity(){
+    public ReportForMixture_Activity(){
 
     }
 
@@ -85,7 +85,7 @@ public class ReportForD3_Activity extends BaseReportActivity implements PopupWin
 
     @Override
     public void initView() {
-        setContentView(R.layout.activity_report_day3);
+        setContentView(R.layout.activity_report_mixture);
         super.initView();
 
         mTvChoiceYM = (TextView) findViewById(R.id.tv_choice_m_y);
@@ -124,7 +124,7 @@ public class ReportForD3_Activity extends BaseReportActivity implements PopupWin
     public void initData() {
         super.initData();
 
-        mTitle.setText("日报表");
+        mTitle.setText("混合报表");
         mMeun.setVisibility(View.GONE);
         mBack.setVisibility(View.VISIBLE);
 
@@ -334,7 +334,7 @@ public class ReportForD3_Activity extends BaseReportActivity implements PopupWin
             ViewHolder viewHolder= new ViewHolder();
             // 将 layout 填充成"View"
             LayoutInflater inflater=(LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE );
-            View view = inflater.inflate(R.layout.report_day3_item,parent,false); // listview中每一项的布局
+            View view = inflater.inflate(R.layout.report_day_item,parent,false); // listview中每一项的布局
 
             viewHolder.tvDay = (TextView) view.findViewById(R.id.tv_day);
             viewHolder.pbPrice = (ProgressBar) view.findViewById(R.id.pb_price);

@@ -14,17 +14,10 @@ import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.ui.AddActivity;
-import com.shen.accountbook2.ui.AddActivity2;
-import com.shen.accountbook2.ui.fragment.activity.ReportForD2_Activity;
-import com.shen.accountbook2.ui.fragment.activity.ReportForD3_Activity;
-import com.shen.accountbook2.ui.fragment.activity.ReportForD4_Activity;
-import com.shen.accountbook2.ui.fragment.activity.ReportForD5_Activity;
+import com.shen.accountbook2.ui.fragment.activity.ReportForMixture_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForD_Activity;
-import com.shen.accountbook2.ui.fragment.activity.ReportForM2_LineChar_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForM_LineChar_Activity;
-import com.shen.accountbook2.ui.fragment.activity.ReportForType2_LineChar_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForType_LineChar_Activity;
-import com.shen.accountbook2.ui.fragment.activity.ReportForY2_LineChar_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForY_LineChar_Activity;
 import com.shen.accountbook2.ui.view.CommonProgressDialog;
 
@@ -38,20 +31,17 @@ public class HomeFragment extends BaseFragment{
     /******************************标题***********************************/
     private TextView tvTitle;
 
-    private Button btn_report_day;
-    private Button btn_report_month;
+
     private Button btn_report_month2;
-    private Button btn_report_year;
+
     private Button btn_report_year2;
-    private Button btn_report_type;
+
     private Button btn_report_type2;
 
-    private Button btn_report_day2;
     private Button btn_report_day3;
-    private Button btn_report_day4;
+
     private Button btn_report_day5;
 
-    private Button mBtnAdd;                 // 添加按钮
     private Button mBtnAdd2;                 // 添加按钮
     private Button mBtnAddTest;             // 添加测试数据
 
@@ -72,21 +62,15 @@ public class HomeFragment extends BaseFragment{
         /******************************标题***********************************/
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
 
-        btn_report_day = (Button) view.findViewById(R.id.btn_D);
-        btn_report_month = (Button) view.findViewById(R.id.btn_M);
-        btn_report_month2 = (Button) view.findViewById(R.id.btn_M2);
-        btn_report_year = (Button) view.findViewById(R.id.btn_Y);
-        btn_report_year2 = (Button) view.findViewById(R.id.btn_Y2);
-        btn_report_type = (Button) view.findViewById(R.id.btn_type);
-        btn_report_type2 = (Button) view.findViewById(R.id.btn_type2);
 
-        btn_report_day2 = (Button) view.findViewById(R.id.btn_D2);
-        btn_report_day3 = (Button) view.findViewById(R.id.btn_D3);
-        btn_report_day4 = (Button) view.findViewById(R.id.btn_D4);
-        btn_report_day5 = (Button) view.findViewById(R.id.btn_D5);
+        btn_report_month2 = (Button) view.findViewById(R.id.btn_M);
+        btn_report_year2 = (Button) view.findViewById(R.id.btn_Y);
+        btn_report_type2 = (Button) view.findViewById(R.id.btn_type);
 
-        mBtnAdd = (Button) view.findViewById(R.id.btn_add);
-        mBtnAdd2 = (Button) view.findViewById(R.id.btn_add2);
+        btn_report_day3 = (Button) view.findViewById(R.id.btn_Mixture);
+        btn_report_day5 = (Button) view.findViewById(R.id.btn_D);
+
+        mBtnAdd2 = (Button) view.findViewById(R.id.btn_add);
         mBtnAddTest = (Button) view.findViewById(R.id.btn_addTest);
 
         return view;
@@ -94,20 +78,13 @@ public class HomeFragment extends BaseFragment{
 
     @Override
     public void initListener() {
-        btn_report_day.setOnClickListener(this);
-        btn_report_month.setOnClickListener(this);
         btn_report_month2.setOnClickListener(this);
-        btn_report_year.setOnClickListener(this);
         btn_report_year2.setOnClickListener(this);
-        btn_report_type.setOnClickListener(this);
         btn_report_type2.setOnClickListener(this);
 
-        btn_report_day2.setOnClickListener(this);
         btn_report_day3.setOnClickListener(this);
-        btn_report_day4.setOnClickListener(this);
         btn_report_day5.setOnClickListener(this);
 
-        mBtnAdd.setOnClickListener(this);
         mBtnAdd2.setOnClickListener(this);
         mBtnAddTest.setOnClickListener(this);
     }
@@ -143,16 +120,9 @@ public class HomeFragment extends BaseFragment{
         Intent intent;
         if(AccountBookApplication.isLogin()){
             switch (v.getId()){
+
                 case R.id.btn_D:                       // 日报表
                     intent = new Intent(mContext, ReportForD_Activity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.btn_D4:                       // 日报表
-                    intent = new Intent(mContext, ReportForD4_Activity.class);
-                    startActivity(intent);
-                    break;
-                case R.id.btn_D5:                       // 日报表
-                    intent = new Intent(mContext, ReportForD5_Activity.class);
                     startActivity(intent);
                     break;
 
@@ -161,18 +131,8 @@ public class HomeFragment extends BaseFragment{
                     startActivity(intent);
                     break;
 
-                case R.id.btn_M2:                       // 月报表2
-                    intent = new Intent(mContext, ReportForM2_LineChar_Activity.class);
-                    startActivity(intent);
-                    break;
-
                 case R.id.btn_Y:                       // 年报表
                     intent = new Intent(mContext, ReportForY_LineChar_Activity.class);
-                    startActivity(intent);
-                    break;
-
-                case R.id.btn_Y2:                       // 年报表2
-                    intent = new Intent(mContext, ReportForY2_LineChar_Activity.class);
                     startActivity(intent);
                     break;
 
@@ -181,30 +141,14 @@ public class HomeFragment extends BaseFragment{
                     startActivity(intent);
                     break;
 
-                case R.id.btn_type2:                    // 类型报表2
-                    intent = new Intent(mContext, ReportForType2_LineChar_Activity.class);
-                    startActivity(intent);
-                    break;
 
-                case R.id.btn_D2:                     // 混合类报表
-                    intent = new Intent(mContext, ReportForD2_Activity.class);
-                    startActivity(intent);
-                    break;
-
-                case R.id.btn_D3:                     // 混合类报表
-                    intent = new Intent(mContext, ReportForD3_Activity.class);
+                case R.id.btn_Mixture:                     // 混合类报表
+                    intent = new Intent(mContext, ReportForMixture_Activity.class);
                     startActivity(intent);
                     break;
 
                 case R.id.btn_add:                      // 添加"消费"
                     intent = new Intent(mContext, AddActivity.class);
-                    // 解决在非Activity中使用startActivity;添加这个,如果要使用这种方式需要打开新的TASK。
-                    // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    break;
-
-                case R.id.btn_add2:                      // 添加"消费2"
-                    intent = new Intent(mContext, AddActivity2.class);
                     // 解决在非Activity中使用startActivity;添加这个,如果要使用这种方式需要打开新的TASK。
                     // intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

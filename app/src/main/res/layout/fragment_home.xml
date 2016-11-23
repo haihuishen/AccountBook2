@@ -21,91 +21,41 @@
             <!--android:layout_height="match_parent"-->
             <!--android:background="@drawable/viewpage_shouye"/>-->
 
+
             <Button
                 android:id="@+id/btn_D"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:text="日报表"/>
+
+            <Button
+                android:id="@+id/btn_Mixture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:text="混合类报表"/>
+
             <Button
                 android:id="@+id/btn_M"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:text="月报表"/>
+
             <Button
                 android:id="@+id/btn_Y"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:text="年报表"/>
+
             <Button
                 android:id="@+id/btn_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"
                 android:text="分类报表"/>
-
-            <Button
-                android:id="@+id/btn_D5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="日报表5"/>
-
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <!--<ImageView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:background="@drawable/viewpage_shouye"/>-->
-
-            <Button
-                android:id="@+id/btn_D2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="混合类报表2"/>
-
-            <Button
-                android:id="@+id/btn_D3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="混合类报表3"/>
-
-            <Button
-                android:id="@+id/btn_M2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="月报表2"/>
-
-            <Button
-                android:id="@+id/btn_Y2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="年报表2"/>
-
-            <Button
-                android:id="@+id/btn_type2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="分类报表2"/>
-
-            <Button
-                android:id="@+id/btn_D4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="日报表4"/>
-
 
         </LinearLayout>
     </LinearLayout>
@@ -121,13 +71,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="添加"
-            />
-
-        <Button
-            android:id="@+id/btn_add2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="添加2"
             />
 
         <Button

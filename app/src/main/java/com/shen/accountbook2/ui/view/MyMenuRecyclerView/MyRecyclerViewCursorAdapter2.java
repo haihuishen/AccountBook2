@@ -1,4 +1,4 @@
-package com.shen.accountbook2.widget.MyMenuRecyclerView;
+package com.shen.accountbook2.ui.view.MyMenuRecyclerView;
 
 
 import android.content.Context;
@@ -26,8 +26,6 @@ import java.io.File;
  *
  *     适合——数据类型是：Cursor
  *
- *  配合：com.shen.accountbook2.widget.MyMenuRecyclerView.RecyclerViewCursorAdapter
- *  com.shen.accountbook2.widget.MyMenuRecyclerView.CursorFilter
  *  使用的
  */
 public class MyRecyclerViewCursorAdapter2 extends RecyclerViewCursorAdapter<MyRecyclerViewCursorAdapter2.MyViewHolder> implements SlidingButtonView.IonSlidingButtonListener{

@@ -8,84 +8,78 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bigkoo.pickerview.OptionsPickerView;
+import com.bigkoo.pickerview.TimePickerView;
 import com.bm.library.Info;
 import com.bm.library.PhotoView;
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.DateTimeFormat;
 import com.shen.accountbook2.Utils.ImageFactory;
 import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.Utils.ToFormatUtil;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
-import com.shen.accountbook2.domain.ConsumptionMainType;
-import com.shen.accountbook2.domain.ConsumptionType1;
-import com.shen.accountbook2.domain.TypeManage;
-import com.shen.accountbook2.domain.TypeModelManage;
 import com.shen.accountbook2.global.AccountBookApplication;
-import com.shen.accountbook2.widget.OnWheelChangedListener;
-import com.shen.accountbook2.widget.WheelView;
-import com.shen.accountbook2.widget.adapters.ArrayWheelAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Date;
 
 /**
  * Created by shen on 10/20 0020.
  */
-public class AddActivity extends Activity implements OnWheelChangedListener, View.OnClickListener{
+public class AddActivity extends Activity implements View.OnClickListener{
 
     private Context mContext;
-
 
     TextView tvTitle;
     ImageButton btnMenu;
     ImageButton btnBack;
 
-    /** 时间选择控件*/
-    private DatePicker datePicker;
-
-    /** 主类型滑动选择控件*/
-    private WheelView wv_maintype;
-    /** 次类型滑动选择控件*/
-    private WheelView wv_type1;
+    /** 时间文本、条件文本*/
+    private TextView tvTime, tvOptions;
+    /** 时间选择器*/
+    TimePickerView pvTime;
+    /** 条件选择器*/
+    OptionsPickerView pvOptions;
+    View vMasker;
 
     /** 具体类型编辑框*/
-    private EditText et_concreteness;
-    /** 总价编辑框*/
-    private EditText et_price;
-    /** 数量编辑框*/
-    private EditText et_number;
+    private EditText etConcreteness;
     /** 单价编辑框*/
-    private EditText et_unitPrice;
+    private EditText etUnitPrice;
+    /** 数量编辑框*/
+    private EditText etNumber;
+    /** 总价编辑框*/
+    private EditText etPrice;
 
     /** 包裹预览图片的控件*/
-    private LinearLayout linearLayout_pv;
+    private LinearLayout linearLayoutPv;
     /** 预览图片控件*/
-    private PhotoView pv_camaraPhoto;
+    private PhotoView pvCamaraPhoto;
     /** 拍照按钮*/
     private Button btnCamera;
     /** 清除按钮*/
     private Button btnClear;
 
     /** 添加按钮*/
-    private Button btn_add;
-
+    private Button btnAdd;
 
     private Bitmap bitmap;
 
@@ -99,14 +93,6 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
     AlphaAnimation out;
 
 
-    private TypeManage typeManage;
-
-    private String[] s_mainType;
-
-    private List<String> list_mainType;
-    private Map<Integer,ArrayList<ConsumptionType1>> map_list_Type1;
-    private TypeModelManage m;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,8 +103,8 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
         initUI();
         initListener();
         initData();
-    }
 
+    }
 
     private void initUI(){
 
@@ -126,68 +112,106 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
         btnMenu = (ImageButton) findViewById(R.id.btn_menu);
         btnBack = (ImageButton) findViewById(R.id.btn_back);
 
-        datePicker = (DatePicker) findViewById(R.id.datePicker);
+        vMasker=findViewById(R.id.v_Masker);
+        tvTime=(TextView) findViewById(R.id.tv_Time);
+        tvOptions=(TextView) findViewById(R.id.tv_Options);
 
-        wv_maintype = (WheelView) findViewById(R.id.wheel_maintype);
-        wv_type1 = (WheelView) findViewById(R.id.wheel_type1);
+        etConcreteness = (EditText) findViewById(R.id.et_concreteness);
+        etPrice = (EditText) findViewById(R.id.et_price);
+        etNumber = (EditText) findViewById(R.id.et_number);
+        etUnitPrice = (EditText) findViewById(R.id.et_unitPrice);
 
-        et_concreteness = (EditText) findViewById(R.id.et_concreteness);
-        et_price = (EditText) findViewById(R.id.et_price);
-        et_number = (EditText) findViewById(R.id.et_number);
-        et_unitPrice = (EditText) findViewById(R.id.et_unitPrice);
-
-        linearLayout_pv = (LinearLayout) findViewById(R.id.linearLayout_pv);
-        pv_camaraPhoto = (PhotoView) findViewById(R.id.pv_image);
+        linearLayoutPv = (LinearLayout) findViewById(R.id.linearLayout_pv);
+        pvCamaraPhoto = (PhotoView) findViewById(R.id.pv_image);
         btnCamera = (Button) findViewById(R.id.btn_camera);
         btnClear = (Button) findViewById(R.id.btn_clear);
 
-        btn_add = (Button) findViewById(R.id.btn_add);
-
+        btnAdd = (Button) findViewById(R.id.btn_add);
 
         mParent = findViewById(R.id.parent);
         mBg = findViewById(R.id.bg);
         mPhotoView = (PhotoView) findViewById(R.id.img);
+
     }
 
 
     private void initListener(){
 
         btnBack.setOnClickListener(this);
+
+        tvTime.setOnClickListener(this);
+        tvOptions.setOnClickListener(this);
+
+        // 编辑框改变时，响应的事件
+        etUnitPrice.addTextChangedListener(unitPriceWatcher);
+        etNumber.addTextChangedListener(numberWatcher);
+
         btnCamera.setOnClickListener(this);
         btnClear.setOnClickListener(this);
-        btn_add.setOnClickListener(this);
+        btnAdd.setOnClickListener(this);
 
         mPhotoView.setOnClickListener(this);
-        linearLayout_pv.setOnClickListener(this);
+        linearLayoutPv.setOnClickListener(this);
 
-        // 添加change事件
-        wv_maintype.addChangingListener(this);
-        // 添加change事件
-        wv_type1.addChangingListener(this);
     }
 
     private void initData(){
+
         btnMenu.setVisibility(View.GONE);
         btnBack.setVisibility(View.VISIBLE);
 
-        typeManage = new TypeManage(mContext);
-        list_mainType = new ArrayList<String>();
+        tvTitle.setText("添加消费");
 
-        if (!typeManage.list_MainType.isEmpty()) {
-            for (ConsumptionMainType mt : typeManage.list_MainType) {
-                list_mainType.add(mt.getType());
+        etPrice.setEnabled(false);          // 总价，不可编辑
+        etPrice.setText("0");
+
+        /******************************************************************************/
+        //时间选择器
+        pvTime = new TimePickerView(this, TimePickerView.Type.YEAR_MONTH_DAY);
+        //控制时间范围
+        // Calendar calendar = Calendar.getInstance();
+        // pvTime.setRange(calendar.get(Calendar.YEAR) - 20, calendar.get(Calendar.YEAR));//要在setTime 之前才有效果哦
+        pvTime.setTitle("消费时间");         // 设置"标题"
+        pvTime.setTime(new Date());         // 设置当前的时间，到时间选择器
+        pvTime.setCyclic(false);
+        pvTime.setCancelable(false);         // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //时间选择后回调
+        pvTime.setOnTimeSelectListener(new TimePickerView.OnTimeSelectListener() {
+            @Override
+            public void onTimeSelect(Date date) {
+                tvTime.setText(DateTimeFormat.getTime(date,"yyyy-MM-dd"));
             }
-            s_mainType = new String[list_mainType.size()];
-            list_mainType.toArray(s_mainType);              // 将 List<String> 转换成 String[]
-        } else
-            ToastUtil.show("为空");
+        });
 
-        m = new TypeModelManage(mContext);
-        wv_maintype.setVisibleItems(3);
-        wv_type1.setVisibleItems(3);
+        //选项选择器
+        pvOptions = new OptionsPickerView(this);
+        pvOptions.setCancelable(false);     // true:点击弹出"布局"外部，收回"布局";false:没反应
+        //三级联动效果
+        pvOptions.setPicker(AccountBookApplication.getMainTypeList(),
+                AccountBookApplication.getListType1List(), null, true);
+        //设置选择的三级单位
+        // pwOptions.setLabels("主类型", "次类型", "次次类型");
+        pvOptions.setTitle("消费类型");
+        pvOptions.setCyclic(false, false, true);         // 三级联动，哪个可以循环滚动
 
-        wv_maintype.setViewAdapter(new ArrayWheelAdapter<String>(mContext, m.mainType()));
-        wv_type1.setViewAdapter(new ArrayWheelAdapter<String>(mContext, m.type1(wv_maintype.getCurrentItem())));
+        //设置默认选中的三级项目
+        //监听确定选择按钮
+        pvOptions.setSelectOptions(1, 1, 0);
+        //选项选择器后回调
+        pvOptions.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
+
+            @Override
+            public void onOptionsSelect(int options1, int option2, int options3) {
+                //返回的分别是三个级别的选中位置
+                String tx = AccountBookApplication.getMainTypeList().get(options1)
+                        +"-"+
+                        AccountBookApplication.getListType1List().get(options1).get(option2);
+                //     + options3Items.get(options1).get(option2).get(options3).getPickerViewText();
+                tvOptions.setText(tx);
+                vMasker.setVisibility(View.GONE);
+            }
+        });
+        /******************************************************************************/
 
         SharePrefUtil.saveBoolean(mContext, SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE, false);
 
@@ -212,36 +236,104 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
 
         bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png");
 
-        pv_camaraPhoto.disenable();// 把PhotoView当普通的控件，把触摸功能关掉
-        pv_camaraPhoto.setImageBitmap(bitmap);
+        pvCamaraPhoto.disenable();// 把PhotoView当普通的控件，把触摸功能关掉
+        pvCamaraPhoto.setImageBitmap(bitmap);
 
         mPhotoView.setImageBitmap(bitmap);
         mPhotoView.enable();
-
     }
+
+    /*********************** 单价编辑框文本改变监听 ***********************/
+    private TextWatcher unitPriceWatcher = new TextWatcher() {
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(etUnitPrice.isFocused()){
+
+                    if (etUnitPrice.getText().toString().equals(".")) {                         // 单价编辑框，首位不能为"."
+                        etUnitPrice.setText("");
+                        etUnitPrice.setSelection(etUnitPrice.getText().toString().length());//将光标移至文字末尾
+                    } else {
+                        if (!TextUtils.isEmpty(etUnitPrice.getText().toString())) {                // 单价编辑框，不为空 ; 空：不处理
+                            if (!TextUtils.isEmpty(etNumber.getText().toString())) {               // 数量编辑框，不为空 ; 空：不处理
+
+                                int number = Integer.valueOf(etNumber.getText().toString());
+                                float unitPrice = Float.valueOf(etUnitPrice.getText().toString());
+
+                                // etUnitPrice.setText(ToFormatUtil.toDecimalFormat(unitPrice, 2));
+                                etPrice.setText(ToFormatUtil.toDecimalFormat(number * unitPrice, 2));
+                            } else
+                                etPrice.setText("0");
+                        } else
+                            etPrice.setText("0");
+                    }
+            }
+        }
+    };
+
+
+    /*********************** 数量编辑框文本改变监听 ***********************/
+    private TextWatcher numberWatcher = new TextWatcher() {
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(etNumber.isFocused()) {
+                    if (!TextUtils.isEmpty(etNumber.getText().toString())) {                // 单价编辑框，不为空 ; 空：不处理
+                        if (!TextUtils.isEmpty(etUnitPrice.getText().toString())) {               // 数量编辑框，不为空 ; 空：不处理
+
+                            int number = Integer.valueOf(etNumber.getText().toString());
+                            float unitPrice = Float.valueOf(etUnitPrice.getText().toString());
+
+                            // etNumber.setText(number + "");
+                            etPrice.setText(ToFormatUtil.toDecimalFormat(number * unitPrice, 2));
+                            Log.i("TAG", "unitPrice: " + unitPrice + "number: " + number);
+                        } else
+                            etPrice.setText("0");
+                    } else
+                        etPrice.setText("0");
+            }
+        }
+    };
+
 
     /**
      * 点击"添加按钮"<p>
      * 将这次消费添加到数据库
      */
     private void add(){
-
+        // 根据当前的时间，组合成"照片名称"
         SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS");
         String currentTime = sDateFormat.format(new java.util.Date());
         String imageName = currentTime+".jpg";
 
+        // 根据全局变量，添加时是否将图片添加到数据库(这个只是"图片名")
+        // true:压缩图片保存在指定位置
         Boolean saveImage = SharePrefUtil.getBoolean(mContext, SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE, false);
-
-        System.out.println("SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE："+saveImage);
         if(saveImage) {
             try {
-                ImageFactory.ratioAndGenThumb(Constant.CACHE_IMAGE_PATH + "/CacheImage.jpg", Constant.IMAGE_PATH + "/" + imageName, 200, 200, false);
+                ImageFactory.ratioAndGenThumb(Constant.CACHE_IMAGE_PATH + "/CacheImage.jpg", Constant.IMAGE_PATH + "/" + imageName, 300, 300, false);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }else{
-            imageName = null;   // 空不要写成 ""  ，不要写成 "null" 要写成String imageName = null
+            imageName = "";   // 空不要写成 ""  ，不要写成 "null" 要写成String imageName = null
         }
+
+        // 数据库
         TableEx consumptionEx = new TableEx(mContext);
 
         String id = null;   // 空不要写成 ""  ，不要写成 "null" 要写成String id = null;  主键可以不写
@@ -251,29 +343,29 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
         float price = 0;
         int number = 0;
         float unitPrice = 0;
-        String image = null;    // 空不要写成 ""  ，不要写成 "null" 要写成String image = null;
         String date = null;
 
-        maintype = m.mainType()[wv_maintype.getCurrentItem()];
-        type1 = m.type1(wv_maintype.getCurrentItem())[wv_type1.getCurrentItem()];
+        maintype = tvOptions.getText().toString().split("-")[0];
+        type1 = tvOptions.getText().toString().split("-")[1];
 
-        concreteness = et_concreteness.getText().toString();
-        date = getDatePicker();
+        concreteness = etConcreteness.getText().toString();                // 得到的是 "" ，不会是 null
+        date = tvTime.getText().toString();                                 // 得到的是 "" ，不会是 null
 
 
-        if(!et_unitPrice.getText().toString().isEmpty()){
-            unitPrice = Float.valueOf(et_unitPrice.getText().toString());
+        if(!etUnitPrice.getText().toString().isEmpty()){
+            unitPrice = Float.valueOf(etUnitPrice.getText().toString());
         }else{
             unitPrice = 0;
         }
-        if(!et_number.getText().toString().isEmpty()){
-            number = Integer.valueOf(et_number.getText().toString());
+        if(!etNumber.getText().toString().isEmpty()){
+            number = Integer.valueOf(etNumber.getText().toString());
         }else{
             number = 0;
         }
-        if(!et_price.getText().toString().isEmpty()){
-            price = Float.valueOf(et_price.getText().toString());
-            if(!et_unitPrice.getText().toString().isEmpty() && !et_number.getText().toString().isEmpty()){
+
+        if(!etPrice.getText().toString().isEmpty()){
+            price = Float.valueOf(etPrice.getText().toString());
+            if(!etUnitPrice.getText().toString().isEmpty() && !etNumber.getText().toString().isEmpty()){
                 price = unitPrice * number;
             }
         }else{
@@ -301,37 +393,12 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
         values.put("unitPrice", ToFormatUtil.toDecimalFormat(unitPrice, 2));
         values.put("image", imageName);
         values.put("date", date);   // 这里只要填写 YYYY-MM-DD  ，不用填date(2016-09-12 00:00:00) 这么麻烦
-        consumptionEx.Add(Constant.TABLE_CONSUMPTION, values);
 
-    }
-
-    /**
-     * 将 拿到"年月日==>""YYYY-MM-DD"<p>
-     *
-     * @return String YYYY-MM-DD
-     */
-    private String getDatePicker(){
-
-        NumberFormat nf = NumberFormat.getInstance();   // 得到一个NumberFormat的实例
-        nf.setGroupingUsed(false);                      // 设置是否使用分组
-        nf.setMaximumIntegerDigits(2);                  // 设置最大整数位数
-        nf.setMinimumIntegerDigits(2);                  // 设置最小整数位数
-
-        int y = datePicker.getYear();
-        int m = datePicker.getMonth()+1;
-        int d = datePicker.getDayOfMonth();
-
-        String s_date = y + "-" + nf.format(m) + "-" + nf.format(d);        // "补零"后 // YYYY-MM-DD
-
-        return s_date;
-    }
-
-    @Override
-    public void onChanged(WheelView wheel, int oldValue, int newValue) {
-        if (wheel == wv_maintype) {
-            wv_type1.setViewAdapter(new ArrayWheelAdapter<String>(mContext,m.type1(wv_maintype.getCurrentItem())));
-            wv_type1.setCurrentItem(0);
-        }
+        long num = consumptionEx.Add(Constant.TABLE_CONSUMPTION, values);
+        if(num != -1)
+            ToastUtil.show("添加成功");
+        else
+            ToastUtil.show("添加失败");
     }
 
     @Override
@@ -342,16 +409,26 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
 
         if (resultCode == Activity.RESULT_OK) {
             SharePrefUtil.saveBoolean(mContext,SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE,true);
-            bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"/CacheImage.jpg", 200, 200);
-            pv_camaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
+            bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"/CacheImage.jpg", 300, 300);
+            pvCamaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
+
         }
     }
+
 
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btn_back:                                         // 退出本Activity
                 finish();
+                break;
+
+            case R.id.tv_Time:                                          //弹出时间选择器
+                pvTime.show();
+                break;
+
+            case R.id.tv_Options:                                       //点击弹出选项选择器
+                pvOptions.show();
                 break;
 
             case R.id.btn_camera:                                       // 点击"拍照按钮"，跳到"拍照界面"
@@ -364,7 +441,7 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
             case R.id.btn_clear:                                       // 清除预览控件的图片;为默认图片
                 SharePrefUtil.saveBoolean(mContext,SharePrefUtil.IMAGE_KEY.IS_ADD_IMAGE,false);
                 bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH +"/no_preview_picture.png");
-                pv_camaraPhoto.setImageBitmap(bitmap);              // 将图片显示在ImageView里
+                pvCamaraPhoto.setImageBitmap(bitmap);              // 将图片显示在ImageView里
                 mPhotoView.setImageBitmap(bitmap);
                 break;
 
@@ -377,24 +454,30 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
                     }
                 });
                 break;
+
             case R.id.linearLayout_pv:                              // 点击"包裹预览图片控件的布局"，放大、那个预览布局设为可见.
-                mInfo = pv_camaraPhoto.getInfo();                   // 拿到pv_camaraPhoto的信息(如：位置)，用于动画
+                mInfo = pvCamaraPhoto.getInfo();                   // 拿到pv_camaraPhoto的信息(如：位置)，用于动画
 
                 mPhotoView.setImageBitmap(bitmap);
                 mBg.startAnimation(in);             // 执行动画
                 mBg.setVisibility(View.VISIBLE);
-                mParent.setVisibility(View.VISIBLE);;
+                mParent.setVisibility(View.VISIBLE);
                 mPhotoView.animaFrom(mInfo);
                 ToastUtil.show("点击了预览图片");
                 break;
+
             case R.id.btn_add:                                              // 点击"添加"
                 if(AccountBookApplication.isLogin()){
                     if(AccountBookApplication.getUserInfo() != null){
-                        if(!et_price.getText().toString().isEmpty() ||
-                                ((!et_unitPrice.getText().toString().isEmpty())&&(!et_number.getText().toString().isEmpty()))){
-                            add();
+                        if(!TextUtils.isEmpty(tvTime.getText().toString()) || !TextUtils.isEmpty(tvOptions.getText().toString())){
+                            if(!TextUtils.isEmpty(etPrice.getText().toString()) &&
+                                    ((!TextUtils.isEmpty(etUnitPrice.getText().toString()))&&(!TextUtils.isEmpty(etNumber.getText().toString())))){
+                                add();
+                            }else{
+                                ToastUtil.show("＇单价、数量＇不能为空");
+                            }
                         }else{
-                            ToastUtil.show("＇总价＇或＇单价、数量＇不能为空");
+                            ToastUtil.show("请选择消费时间、类型");
                         }
                     }else{
                         AccountBookApplication.setIsLogin(false);
@@ -404,6 +487,37 @@ public class AddActivity extends Activity implements OnWheelChangedListener, Vie
                     ToastUtil.show("请登陆后再添加!!!");
                 break;
 
+            default:
+                break;
         }
     }
+
+    // 按钮监听
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {                 // 如果点击的是"返回按钮"
+            if(pvOptions.isShowing()||pvTime.isShowing()){
+                pvOptions.dismiss();
+                pvTime.dismiss();
+                return true;
+            }
+            if(pvTime.isShowing()){
+                pvTime.dismiss();
+                return true;
+            }
+
+            if(mParent.getVisibility() == View.VISIBLE && mBg.getVisibility() == View.VISIBLE){   // 缩小、隐藏那个预览布局
+                mBg.startAnimation(out);
+                mPhotoView.animaTo(mInfo, new Runnable() {
+                    @Override
+                    public void run() {
+                        mParent.setVisibility(View.GONE);
+                    }
+                });
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 }
