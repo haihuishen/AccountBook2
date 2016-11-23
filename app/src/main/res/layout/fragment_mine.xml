@@ -29,12 +29,16 @@
 
                 <com.shen.accountbook2.ui.view.CircleImageView
                     android:id="@+id/CircleImage_head"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:scaleType="centerCrop"
                     imagecontrol:border_color="@color/orange"
                     imagecontrol:border_width="2dp"
-                    android:src="@drawable/icon"/>
+                    android:src="@mipmap/icon"/>
+
+
 
             </RelativeLayout>
 

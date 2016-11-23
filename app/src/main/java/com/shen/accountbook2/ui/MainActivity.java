@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.widget.RadioGroup;
 
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.ui.fragment.HomeFragment;
 import com.shen.accountbook2.ui.fragment.MineFragment;
 import com.shen.accountbook2.ui.fragment.OtherFragment;
@@ -17,7 +19,8 @@ import com.shen.accountbook2.ui.fragment.OtherFragment;
  */
 public class MainActivity extends FragmentActivity{
 
-//    private Handler handler = AccountBookApplication.getHandler();
+    /** 第一次点击的时间(拿到当前系统的时间); 第二次点击时(拿到那时系统的时间)，相减不超过一定的值，就结束程序*/
+    private long mExitTime = 0;
 
     // 底部标签切换的Fragment
     private Fragment mHomeFragment,mMineFragment,mOtherFragment,mCurrentFragment;
@@ -56,7 +59,7 @@ public class MainActivity extends FragmentActivity{
                             addOrShowFragment(getSupportFragmentManager().beginTransaction(), mHomeFragment);
                         break;
 
-                    case R.id.rb_mine:						     // 添加
+                    case R.id.rb_mine:						     // 我的
                         if (mMineFragment == null)
                             mMineFragment = new MineFragment();
                         addOrShowFragment(getSupportFragmentManager().beginTransaction(), mMineFragment);
@@ -88,9 +91,7 @@ public class MainActivity extends FragmentActivity{
 
         if (!mHomeFragment.isAdded()) {
             // 提交事务
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.frame_content, mHomeFragment).commit();
-
+            getSupportFragmentManager().beginTransaction().add(R.id.frame_content, mHomeFragment).commit();
             // 记录当前Fragment
             mCurrentFragment = mHomeFragment;
         }
@@ -102,20 +103,33 @@ public class MainActivity extends FragmentActivity{
      * @param transaction
      * @param fragment
      */
-    private void addOrShowFragment(FragmentTransaction transaction,
-                                   Fragment fragment) {
+    private void addOrShowFragment(FragmentTransaction transaction, Fragment fragment) {
         if (mCurrentFragment == fragment)
             return;
 
-
         if (!fragment.isAdded()) {      // 如果当前fragment未被添加，则添加到Fragment管理器中
-            transaction.hide(mCurrentFragment)
-                    .add(R.id.frame_content, fragment).commit();
+            transaction.hide(mCurrentFragment).add(R.id.frame_content, fragment).commit();
         } else {                       // 如果存在，直接隐藏之前的，显示现在这个
             transaction.hide(mCurrentFragment).show(fragment).commit();
         }
 
         mCurrentFragment = fragment;
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
+            if((System.currentTimeMillis()- mExitTime) > 2000){           // 2秒内
+                ToastUtil.show("再按一次退出程序");
+                mExitTime = System.currentTimeMillis();
+            } else {
+                finish();
+                System.exit(0);
+            }
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

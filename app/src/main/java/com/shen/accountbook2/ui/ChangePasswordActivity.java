@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
-import com.shen.accountbook2.db.biz.UserEx;
+import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.global.AccountBookApplication;
 
 /**
@@ -76,11 +76,11 @@ public class ChangePasswordActivity extends Activity implements View.OnClickList
                         if(!TextUtils.isEmpty(etNewPassWordConfirm.getText())){
                             if(etNewPassWord.getText().toString().equals(etNewPassWordConfirm.getText().toString())){
 
-                                UserEx userEx = new UserEx(this);
+                                TableEx tableEx = new TableEx(this.getApplication());
 
                                 ContentValues values = new ContentValues();
                                 values.put("password", etNewPassWordConfirm.getText().toString());
-                                int num = userEx.Update(Constant.TABLE_USER, values, "password=?", new String[]{etOldPassWord.getText().toString()});
+                                int num = tableEx.Update(Constant.TABLE_USER, values, "password=?", new String[]{etOldPassWord.getText().toString()});
 
                                 if(num != 0) {
                                     AccountBookApplication.getUserInfo().setPassWord(etNewPassWordConfirm.getText().toString());

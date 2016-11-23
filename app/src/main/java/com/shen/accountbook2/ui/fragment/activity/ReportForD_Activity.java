@@ -251,28 +251,17 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
                 Intent intent = new Intent(ReportForD_Activity.this, ChangeConsumptionInfoActivity.class);
                 Bundle bundle = new Bundle();
-                Log.i(TAG,"add项___________________date1：");
-                bundle.putString(Constant.TABLE_CONSUMPTION__id_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION__id_STRING).toString());
-                Log.i(TAG,"add项___________________date2：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_user_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_user_STRING).toString());
-                Log.i(TAG,"add项___________________date3：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_maintype_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_maintype_STRING).toString());
-                Log.i(TAG,"add项___________________date4：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_type1_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_type1_STRING).toString());
-                Log.i(TAG,"add项___________________date5：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_concreteness_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_concreteness_STRING).toString());
-                Log.i(TAG,"add项___________________date6：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_unitprice_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_unitprice_STRING).toString());
-                Log.i(TAG,"add项___________________date7：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_number_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_number_STRING).toString());
-                Log.i(TAG,"add项___________________date8：");
-                bundle.putString(Constant.TABLE_CONSUMPTION_price_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_price_STRING).toString());
-                Log.i(TAG,"add项___________________date9：");
 
+                bundle.putString(Constant.TABLE_CONSUMPTION__id_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION__id_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_user_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_user_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_maintype_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_maintype_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_type1_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_type1_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_concreteness_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_concreteness_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_unitprice_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_unitprice_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_number_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_number_STRING).toString());
+                bundle.putString(Constant.TABLE_CONSUMPTION_price_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_price_STRING).toString());
                 bundle.putString(Constant.TABLE_CONSUMPTION_image_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_image_STRING).toString());
-                Log.i(TAG,"add项___________________date10：");
                 bundle.putString(Constant.TABLE_CONSUMPTION_date_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION_date_STRING).toString());
-                Log.i(TAG,"add项___________________date20：");
 
                 intent.putExtras(bundle);
 
@@ -529,6 +518,8 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
             //设置内容布局的宽为屏幕宽度
             holder.layoutContent.getLayoutParams().width = GetWindowParaUtils.getScreenWidth(mContext);
+            // 每隔item之间颜色不同
+            holder.layoutContent.setBackgroundResource((holder.getLayoutPosition()) % 2 == 0 ? R.drawable.bg_green : R.drawable.bg_bule);
 
             holder.layoutContent.setOnClickListener(new OnClickListener() {
                 @Override

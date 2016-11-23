@@ -12,10 +12,8 @@ import android.widget.Toast;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.config.Constant;
-import com.shen.accountbook2.db.biz.UserEx;
+import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.db.helper.DatabaseHelper;
-import com.shen.accountbook2.domain.MainTypeInfo;
-import com.shen.accountbook2.domain.TypeModelManage;
 import com.shen.accountbook2.domain.UserInfo;
 import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.xml.PullTypeParser;
@@ -25,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * 闪屏<p>
@@ -52,7 +49,7 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
     /** APP当前的版本*/
     private int dbVersion = 1;
 
-    private UserEx userEx = null;
+    private TableEx mTableEx = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +70,7 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
         //在此调用下面方法，才能捕获到线程中的异常
         Thread.setDefaultUncaughtExceptionHandler(this);
 
-        initAddressDB("Type.db");
-        initAddressDB("Type.xml");
+        initTypeXML("Type.xml");
         initSrc(Constant.CACHE_IMAGE_PATH,"test.png");
         initSrc(Constant.CACHE_IMAGE_PATH,"no_preview_picture.png");
         initSrc(Constant.IMAGE_PATH,"test.png");
@@ -89,15 +85,7 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
 
 
     private void initData() {
-        TypeModelManage manage = new TypeModelManage(getApplicationContext());
-        List<MainTypeInfo> mainTypeList = manage.getMainTypeList();
-        Log.i("shen", "mainTypeList.size()  " + mainTypeList.size());
-        for(int i=0; i< mainTypeList.size(); i++){
-//            mainTypeList.get(i).getName();
-//            String[] type1 = mainTypeList.get(i).getType1().getName();
-            Log.i("shen",mainTypeList.get(i).toString());
 
-        }
     }
 
     /**
@@ -120,7 +108,7 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
      * <br>如：复制后的data/data/com.shen.accountbook/files/xx.db"
      * @param dbName	数据库名称
      */
-    private void initAddressDB(String dbName) {
+    private void initTypeXML(String dbName) {
         //1,在files文件夹下创建同名dbName数据库文件过程
         File files = getFilesDir();
         // 在files文件夹下生成一个"dbName名字"的文件
@@ -278,8 +266,8 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
 
             // System.out.println( "shen:"+mSp_user + ":" + mSp_password );
             // 从数据库查询
-            UserEx userEx = new UserEx(this.getApplication());
-            Cursor cursor = userEx.Query(Constant.TABLE_USER,new String[]{"name,password,sex,image,birthday,qq"}, "name=? and password=?",
+            mTableEx = new TableEx(this.getApplication());
+            Cursor cursor = mTableEx.Query(Constant.TABLE_USER,new String[]{"name,password,sex,image,birthday,qq"}, "name=? and password=?",
                     new String[]{mSp_user,mSp_password},null,null,null);
 
             if(!cursor.moveToFirst() == false) {

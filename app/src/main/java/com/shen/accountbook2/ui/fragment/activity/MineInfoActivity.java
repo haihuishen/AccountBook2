@@ -31,7 +31,7 @@ import com.shen.accountbook2.Utils.PhotoSelectedHelper;
 import com.shen.accountbook2.Utils.SetImageUtil;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
-import com.shen.accountbook2.db.biz.UserEx;
+import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.domain.UserInfo;
 import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.ui.ChangePasswordActivity;
@@ -430,14 +430,14 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
         userInfo.setQq(tvQQ.getText().toString());
         userInfo.setPassWord(AccountBookApplication.getUserInfo().getPassWord());
 
-        UserEx userEx = new UserEx(this);
+        TableEx tableEx = new TableEx(this.getApplication());
         ContentValues values = new ContentValues();
         values.put("sex", userInfo.getSex());
         values.put("image", userInfo.getImage());
         values.put("birthday", userInfo.getBirthday());
         values.put("qq", userInfo.getQq());
 
-        int num = userEx.Update(Constant.TABLE_USER, values, "name=? and password=?", new String[]{userInfo.getUserName(),userInfo.getPassWord()});
+        int num = tableEx.Update(Constant.TABLE_USER, values, "name=? and password=?", new String[]{userInfo.getUserName(),userInfo.getPassWord()});
         if(num != 0) {
             AccountBookApplication.setUserInfo(userInfo);
             ToastUtil.show("修改成功");

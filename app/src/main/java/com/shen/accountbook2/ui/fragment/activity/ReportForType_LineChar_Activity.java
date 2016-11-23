@@ -889,6 +889,13 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
                 pvOptionsType1.dismiss();
                 return true;
             }
+
+            if (pop != null) {
+                if(pop.isShowing()){
+                    pop.dismiss();
+                    return true;
+                }
+            }
         }
         return super.onKeyDown(keyCode, event);
     }

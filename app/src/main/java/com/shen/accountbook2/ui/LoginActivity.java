@@ -16,7 +16,7 @@ import android.widget.Toast;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.config.Constant;
-import com.shen.accountbook2.db.biz.UserEx;
+import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.domain.UserInfo;
 import com.shen.accountbook2.global.AccountBookApplication;
 
@@ -89,9 +89,9 @@ public class LoginActivity extends Activity {
                         TextUtils.isEmpty(mPassword.getText().toString())) {
                     Toast.makeText(getBaseContext(), "用户和密码不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    UserEx userEx = new UserEx(getApplication());
+                    TableEx tableEx = new TableEx(AccountBookApplication.getContext());
 
-                    Cursor cursor = userEx.Query(Constant.TABLE_USER,new String[]{"name,password,sex,image,birthday,qq"}, "name=? and password=?",
+                    Cursor cursor = tableEx.Query(Constant.TABLE_USER,new String[]{"name,password,sex,image,birthday,qq"}, "name=? and password=?",
                             new String[]{mUsename.getText().toString(),mPassword.getText().toString()},null,null,null);
 
                     if (!cursor.moveToFirst() == false) {

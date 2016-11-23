@@ -39,7 +39,7 @@
                 android:scaleType="centerCrop"
                 imagecontrol:border_color="@color/orange"
                 imagecontrol:border_width="2dp"
-                android:src="@drawable/icon"/>
+                android:src="@mipmap/icon"/>
         </RelativeLayout>
         <View
             android:layout_width="match_parent"

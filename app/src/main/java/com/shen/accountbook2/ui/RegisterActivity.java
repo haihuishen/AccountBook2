@@ -15,7 +15,8 @@ import android.widget.Toast;
 
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.config.Constant;
-import com.shen.accountbook2.db.biz.UserEx;
+import com.shen.accountbook2.db.biz.TableEx;
+import com.shen.accountbook2.global.AccountBookApplication;
 
 
 /**
@@ -99,8 +100,8 @@ public class RegisterActivity extends Activity{
                         TextUtils.isEmpty(mPassword.getText().toString())) {
                     Toast.makeText(getBaseContext(), "用户和密码不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    UserEx userEx = new UserEx(getApplication());
-                    Cursor cursor = userEx.Query(Constant.TABLE_USER, new String[]{"name"}, "name=?",
+                    TableEx tableEx = new TableEx(AccountBookApplication.getContext());
+                    Cursor cursor = tableEx.Query(Constant.TABLE_USER, new String[]{"name"}, "name=?",
                                 new String[]{mUsename.getText().toString()},null,null,null);
                     String c_name = "";
                     if(cursor.getCount() >= 1) {
@@ -114,7 +115,7 @@ public class RegisterActivity extends Activity{
                             values.put("name", mUsename.getText().toString());                        // 字段  ： 值
                             values.put("password", mPassword.getText().toString());
                             values.put("sex", Sex);
-                            userEx.Add(Constant.TABLE_USER, values);
+                            tableEx.Add(Constant.TABLE_USER, values);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

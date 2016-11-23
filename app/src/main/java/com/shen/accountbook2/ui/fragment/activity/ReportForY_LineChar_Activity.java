@@ -624,9 +624,18 @@ public class ReportForY_LineChar_Activity extends FragmentActivity implements Vi
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {                 // 如果点击的是"返回按钮"
 
-            if(pvTimeYear.isShowing()){
-                pvTimeYear.dismiss();
-                return true;
+            if (pvTimeYear != null) {
+                if(pvTimeYear.isShowing()){
+                    pvTimeYear.dismiss();
+                    return true;
+                }
+            }
+
+            if (pop != null) {
+                if(pop.isShowing()){
+                    pop.dismiss();
+                    return true;
+                }
             }
 
         }
