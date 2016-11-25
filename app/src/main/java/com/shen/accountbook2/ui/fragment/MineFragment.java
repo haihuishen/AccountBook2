@@ -20,6 +20,7 @@ import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.domain.UserInfo;
 import com.shen.accountbook2.global.AccountBookApplication;
+import com.shen.accountbook2.ui.AddActivity;
 import com.shen.accountbook2.ui.AssetManagerActivity;
 import com.shen.accountbook2.ui.LoginActivity;
 import com.shen.accountbook2.ui.RegisterActivity;
@@ -32,13 +33,14 @@ import com.shen.accountbook2.ui.view.CircleImageView;
  */
 public class MineFragment extends BaseFragment{
 
+    private final String TAG = "MineFragment";
 
     private Button mBtnLogin;
     private Button mBtnRegister;
 
-    private static final int REQUEST_LOGIN = 1;
-    private static final int REQUEST_ASSETS = 2;
-    private static final int REQUEST_MINE_INFO = 3;
+    private static final int REQUEST_LOGIN = 1;             // 登录
+    private static final int REQUEST_ASSETS = 2;            // 资产管理
+    private static final int REQUEST_MINE_INFO = 3;         // 用户信息
 
     private CircleImageView mCivHead;
     private Bitmap mBitmap;
@@ -61,6 +63,9 @@ public class MineFragment extends BaseFragment{
     private Cursor cursorTotalAssets;               // 总资产
     private Cursor cursorActualTotalAssets;        // 实际总资产
     private TableEx tableEx;
+
+
+    private Button mBtnAdd;                 // 添加按钮
 
     public MineFragment() {
     }
@@ -90,6 +95,8 @@ public class MineFragment extends BaseFragment{
         mTvChangeTime = (TextView) view.findViewById(R.id.tv_change_time);
         mTvActualTotalAssets = (TextView) view.findViewById(R.id.tv_actual_total_assets);
 
+        mBtnAdd = (Button) view.findViewById(R.id.btn_add);
+
         return view;
     }
 
@@ -101,6 +108,8 @@ public class MineFragment extends BaseFragment{
         mLayoutInfo.setOnClickListener(this);
 
         mLayoutTotalAssets.setOnClickListener(this);
+
+        mBtnAdd.setOnClickListener(this);
     }
 
     @Override
@@ -139,10 +148,12 @@ public class MineFragment extends BaseFragment{
         }
     }
 
+
+
     /**
      * 获取"总资产"
      */
-    private void getTotalAssets(){
+    public void getTotalAssets(){
         if(AccountBookApplication.isLogin()){
             tableEx = new TableEx(AccountBookApplication.getContext());
 
@@ -181,23 +192,23 @@ public class MineFragment extends BaseFragment{
                 System.out.println("总资产error:"+e.getMessage());
             }
 
-            Cursor cursor = tableEx.getDb().rawQuery("select cast(sum(a.asset)-(select sum(price)" +
-                    "from consumption where date>(select max(changetime) from assets where user=?) and user=?) as TEXT)" +
-                    "from assets as a where user=?",
+            cursorActualTotalAssets = tableEx.getDb().rawQuery("select cast(sum(a.asset)-(select sum(price)" +
+                            "from consumption where date>(select max(changetime) from assets where user=?) and user=?) as TEXT)" +
+                            "from assets as a where user=?",
                     new String[]{AccountBookApplication.getUserInfo().getUserName(),
                             AccountBookApplication.getUserInfo().getUserName(),
                             AccountBookApplication.getUserInfo().getUserName()});
 
             try {
-                if (cursor.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
-                    cursor.moveToFirst();
-                    if(cursor.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
-                        if(Float.valueOf(cursor.getString(0)) >= 0) {
+                if (cursorActualTotalAssets.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
+                    cursorActualTotalAssets.moveToFirst();
+                    if(cursorActualTotalAssets.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
+                        if(Float.valueOf(cursorActualTotalAssets.getString(0)) >= 0) {
                             mTvActualTotalAssets.setTextColor(this.getResources().getColor(R.color.forestgreen));
-                            mTvActualTotalAssets.setText("实际总资产: " + ToFormatUtil.stringToDecimalFormat(cursor.getString(0), 2));
+                            mTvActualTotalAssets.setText("实际总资产: " + ToFormatUtil.stringToDecimalFormat(cursorActualTotalAssets.getString(0), 2));
                         }else{
                             mTvActualTotalAssets.setTextColor(this.getResources().getColor(R.color.red));
-                            mTvActualTotalAssets.setText("实际总资产: " + ToFormatUtil.stringToDecimalFormat(cursor.getString(0), 2));
+                            mTvActualTotalAssets.setText("实际总资产: " + ToFormatUtil.stringToDecimalFormat(cursorActualTotalAssets.getString(0), 2));
                         }
                     }else{
                         mTvActualTotalAssets.setTextColor(this.getResources().getColor(R.color.forestgreen));
@@ -221,7 +232,7 @@ public class MineFragment extends BaseFragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("来了这里了：MinePager");
+        System.out.println("来了这里了：MineFragmnet");
         if(requestCode == REQUEST_LOGIN){
             if(resultCode == LoginActivity.OK){
                 Bundle bundle = data.getExtras();
@@ -236,7 +247,7 @@ public class MineFragment extends BaseFragment{
                 boolean b = bundle.getBoolean("refresh");
                 if(b) {
                     ToastUtil.show("刷新");
-                    initData();
+                    login();
                 }
             }
         }
@@ -246,7 +257,7 @@ public class MineFragment extends BaseFragment{
                 boolean b = bundle.getBoolean("refresh");
                 if(b) {
                     ToastUtil.show("刷新");
-                    initData();
+                    login();
                 }
             }
         }
@@ -255,7 +266,8 @@ public class MineFragment extends BaseFragment{
     @Override
     public void onClick(View v) {
         Intent intent;
-        switch (v.getId()){
+
+        switch (v.getId()) {
             case R.id.bt_login:                                             // 登录
                 intent = new Intent(mContext, LoginActivity.class);
                 startActivityForResult(intent, REQUEST_LOGIN);
@@ -267,27 +279,42 @@ public class MineFragment extends BaseFragment{
                 startActivity(intent);
                 break;
             case R.id.btn_logout:                                           // 注销
-                AccountBookApplication.setIsLogin(false);
-                AccountBookApplication.setUserInfo(null);
-                mLayoutLogout.setVisibility(View.VISIBLE);
-                mLayoutLogin.setVisibility(View.GONE);
+                if(AccountBookApplication.isLogin()) {
+                    AccountBookApplication.setIsLogin(false);
+                    AccountBookApplication.setUserInfo(null);
+                    mLayoutLogout.setVisibility(View.VISIBLE);
+                    mLayoutLogin.setVisibility(View.GONE);
+                }else
+                    ToastUtil.show("请登陆后再操作!");
                 break;
             case R.id.layout_info:                                          // 前往"更用户详细的界面"
-                if(AccountBookApplication.isLogin()){
+                if (AccountBookApplication.isLogin()) {                           // 只有登录后才能进去
                     intent = new Intent(mContext, MineInfoActivity.class);
                     startActivityForResult(intent, REQUEST_MINE_INFO);
                 }
-                ToastUtil.show("信息");
                 break;
 
-            case R.id.layout_total_assets:
-                intent = new Intent(mContext, AssetManagerActivity.class);
-                startActivityForResult(intent, REQUEST_ASSETS);
+            case R.id.layout_total_assets:                                  // 点击"总资产layout"跳到资产管理界面
+                if(AccountBookApplication.isLogin()) {
+                    intent = new Intent(mContext, AssetManagerActivity.class);
+                    startActivityForResult(intent, REQUEST_ASSETS);
+                }else
+                    ToastUtil.show("请登陆后再操作!");
                 break;
+
+            case R.id.btn_add:                      // 添加"消费"
+                if(AccountBookApplication.isLogin()) {
+                    intent = new Intent(mContext, AddActivity.class);
+                    startActivity(intent);
+                }else
+                    ToastUtil.show("请登陆后再操作!");
+                break;
+
             default:
                 break;
 
         }
+
 
     }
 }

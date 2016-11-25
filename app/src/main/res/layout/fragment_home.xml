@@ -6,79 +6,107 @@
               android:layout_height="match_parent">
 
     <include layout="@layout/title_bar" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="2">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@mipmap/bg_image4">
+
+
         <LinearLayout
             android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
             <!--<ImageView-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="match_parent"-->
             <!--android:background="@drawable/viewpage_shouye"/>-->
 
-
             <Button
                 android:id="@+id/btn_D"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="日报表"/>
-
-            <Button
-                android:id="@+id/btn_Mixture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="混合类报表"/>
+                android:gravity="center"
+                android:textSize="40dp"
+                android:text="日报表"
+                android:textStyle="bold"
+                android:textColor="@drawable/btn_text_color_b_w"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
 
             <Button
                 android:id="@+id/btn_M"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="月报表"/>
+                android:gravity="center"
+                android:textSize="40dp"
+                android:text="月报表"
+                android:textStyle="bold"
+                android:textColor="@drawable/btn_text_color_b_w"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
 
             <Button
                 android:id="@+id/btn_Y"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="年报表"/>
+                android:gravity="center"
+                android:textSize="40dp"
+                android:text="年报表"
+                android:textStyle="bold"
+                android:textColor="@drawable/btn_text_color_b_w"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
 
             <Button
                 android:id="@+id/btn_type"
-                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:text="分类报表"/>
+                android:gravity="center"
+                android:textSize="40dp"
+                android:text="分类报表"
+                android:textStyle="bold"
+                android:textColor="@drawable/btn_text_color_b_w"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+
+            <Button
+                android:id="@+id/btn_Mixture"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="40dp"
+                android:text="混合类报表"
+                android:textStyle="bold"
+                android:textColor="@drawable/btn_text_color_b_w"
+                android:background="@drawable/btn_bg_white_and_orange_black_stroke"/>
+
+            <Button
+                android:id="@+id/btn_add"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="60dp"
+                android:layout_marginRight="60dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="40dp"
+                android:text="添加消费"
+                android:textStyle="bold"
+                android:background="@drawable/btn_bg_orange_white"/>
+
 
         </LinearLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btn_add"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="添加"
-            />
-
-        <Button
-            android:layout_marginTop="20dp"
-            android:id="@+id/btn_addTest"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="添加测试数据"
-            />
-    </LinearLayout>
 </LinearLayout>

@@ -4,10 +4,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
+import com.shen.accountbook2.Utils.LogUtils;
+
 /**
  * User表业务操作
  *
- * */
+ */
 public class TableEx extends BaseEx {
 
 
@@ -32,11 +34,11 @@ public class TableEx extends BaseEx {
     //    返回值是  -1  失败
 	@Override
 	public long Add(String table, ContentValues values) {
-        long i = 0;
+        long i = 0;         // 返回的是，表中流水号(最大的那个)
 		try {
 			openDBConnect();
             i = getDb().insert(table, "", values);
-            System.out.println(i+"");
+            LogUtils.i("插入:"+i);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -62,7 +64,7 @@ public class TableEx extends BaseEx {
 
 	@Override
 	public int Delete(String table, String whereClause, String[] whereArgs) {
-        int num = 0;
+        int num = 0;                    // 删除的条数
 		try {
 			openDBConnect();
 			num = getDb().delete(table, whereClause, whereArgs);

@@ -12,14 +12,16 @@
     <!--corners 圆角 radius 半径，0为直角-->
     <!--padding text值的相对位置-->
 
-    <!--按下、获取焦点，正常-->
-    <!--state_pressed="true"-->
-    <!--state_focused="true"-->
+    <!--属性介绍：-->
+    <!--android:state_selected 选中-->
+    <!--android:state_focused  获得焦点-->
+    <!--android:state_pressed  点击-->
+    <!--android:state_enabled  设置是否响应事件,指所有事件-->
     <!--默认-->
     <item android:state_pressed="false">
 
         <shape>
-            <solid android:color="#20000000" />
+            <solid android:color="#80ffffff" />
             <corners android:radius="5dp" />
             <stroke
                 android:width="2dp"

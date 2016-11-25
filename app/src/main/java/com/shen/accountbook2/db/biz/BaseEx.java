@@ -20,7 +20,7 @@ public class BaseEx implements BaseInterface {
 	private SQLiteDatabase db = null;
 	public Context mContext = null;
 
-	private int dbVersion = 1;
+	private int dbVersion = 1;    // 当前APP的版本号
 
 	public BaseEx(Context context) {
 
@@ -37,7 +37,7 @@ public class BaseEx implements BaseInterface {
      * 打开数据库
      */
 	public void openDBConnect() {
-		dbHelper = new DatabaseHelper(mContext, Constant.DB_NAME, 1);
+		dbHelper = new DatabaseHelper(mContext, Constant.DB_NAME, dbVersion);
 		db = dbHelper.getWritableDatabase();
 	}
 

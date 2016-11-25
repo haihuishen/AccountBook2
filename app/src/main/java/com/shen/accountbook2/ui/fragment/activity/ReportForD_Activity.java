@@ -279,6 +279,14 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
     }
 
+    /**
+     * 在我们使用CurSorLoader时大家都会考虑一种情况的处理—–当数据库发生变化时如何自动刷新当前UI，
+     * 数据库在数据改变时通过ContentPorvider和ContentResolver发出通知，
+     * 接着ContentProvider通知Cursor的观察者数据发生了变化，
+     * 然后Cursor通知CursorLoader的观察者数据发生了变化，
+     * 然后CursorLoader通过ContentProvider加载新数据，
+     * 完事调用CursorAdapter的changeCursor()用新数据替换旧数据显示。
+     */
     private void initLoader() {
         getLoaderManager().initLoader(1, null,this);
     }
@@ -310,7 +318,6 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             System.out.println("当日消费error:"+e.getMessage());
         }
     }
-
 
     /*************************************   Loader      ***********************************************/
     // LoaderManager.LoaderCallbacks<Cursor>  接口要实现的
@@ -373,6 +380,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
                 });
                 return true;
             }
+
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -387,7 +395,6 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         if(requestCode == ChangeConsumptionInfoActivity.OK) {
             if (resultCode == Activity.RESULT_OK) {
                 if(data.getStringExtra(ChangeConsumptionInfoActivity.CHANGE) == ChangeConsumptionInfoActivity.CHANGE){
-                    //queryPriceOfDay();
                 }
             }
         }

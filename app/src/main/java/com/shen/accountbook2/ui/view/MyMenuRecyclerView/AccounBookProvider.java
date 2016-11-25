@@ -50,6 +50,8 @@ public class AccounBookProvider extends ContentProvider {
 
         db = dbHelper.getReadableDatabase();
         Cursor cursor = db.query(Constant.TABLE_CONSUMPTION,projection,selection,selectionArgs,null,null,sortOrder);
+        // 对获取的Cursor数据设置需要监听的URI（即，在ContentProvider的query()方法
+        // 或者Loader的loadingBackground()方法中调用Cursor的setNotificationUri()方法）；
         cursor.setNotificationUri(getContext().getContentResolver(),URI_ACCOUNTBOOK2_ALL);
         return cursor;
     }

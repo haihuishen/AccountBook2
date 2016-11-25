@@ -16,16 +16,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_gravity="center_horizontal"
             android:textColor="#ffffff"
+            android:text="正在下载"
+            />
+        <TextView
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#ffffff"
+            android:text="测试数据:\n用户名:test  密码:123456\n2015~2017年"
             />
         <ProgressBar
             android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="15dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_centerHorizontal="true"
@@ -59,7 +69,7 @@
         </RelativeLayout>
 
         <Button
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="20dp"
             android:id="@+id/btn_cancel"
             android:layout_width="150dp"
             android:layout_height="wrap_content"

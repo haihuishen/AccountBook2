@@ -22,6 +22,8 @@ public class MainActivity extends FragmentActivity{
     /** 第一次点击的时间(拿到当前系统的时间); 第二次点击时(拿到那时系统的时间)，相减不超过一定的值，就结束程序*/
     private long mExitTime = 0;
 
+
+
     // 底部标签切换的Fragment
     private Fragment mHomeFragment,mMineFragment,mOtherFragment,mCurrentFragment;
 
@@ -46,6 +48,7 @@ public class MainActivity extends FragmentActivity{
 
 
     private void initData(){
+
 
         // "底栏标签" 切换监听
         rgGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {

@@ -14,7 +14,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.shen.accountbook2.R;
@@ -65,15 +64,10 @@ public class CircleImageView extends ImageView {
         super(context, attrs, defStyle);
         super.setScaleType(SCALE_TYPE);
 
-        Log.i(IMAGE, "mBorderColor1: " + mBorderWidth);
-        Log.i(IMAGE, "mBorderColor1: " + mBorderColor);
-
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyle, 0);
 
         mBorderWidth = a.getDimensionPixelSize(R.styleable.CircleImageView_border_width, DEFAULT_BORDER_WIDTH);
         mBorderColor = a.getColor(R.styleable.CircleImageView_border_color, DEFAULT_BORDER_COLOR);
-        Log.i(IMAGE, "mBorderColor2: " + mBorderWidth);
-        Log.i(IMAGE, "mBorderColor2: " + mBorderColor);
 
         // 在TypedArray后调用recycle主要是为了缓存。当recycle被调用后，这就说明这个对象从现在可以被重用了。
         // TypedArray 内部持有部分数组，它们缓存在Resources类中的静态字段中，这样就不用每次使用前都需要分配内存。

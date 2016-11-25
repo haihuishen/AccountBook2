@@ -2,12 +2,113 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:background="@color/border">
 
     <include layout="@layout/title_bar" />
 
-    <ImageView
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_white">
+
+        <TextView
+            android:id="@+id/tv_addTest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/forestgreen"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:text="添加测试资料"
+            android:background="@drawable/bg_white_orange"/>
+        />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/tv_check_version"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/forestgreen"
+                android:textSize="25dp"
+                android:textStyle="bold"
+                android:text="检查版本"
+                android:background="@drawable/bg_white_orange"/>
+            <TextView
+                android:id="@+id/tv_version_state"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical|right"
+                android:textColor="@color/red"
+                android:textSize="15dp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/border"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:id="@+id/tv_versionCode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="10dp"
+                android:hint="versionCode:"/>
+
+            <TextView
+                android:id="@+id/tv_versionName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="10dp"
+                android:hint="versionName:"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@mipmap/viewpage_qita"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_white">
+
+
+    </LinearLayout>
 </LinearLayout>

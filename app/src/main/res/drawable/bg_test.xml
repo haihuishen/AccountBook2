@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!--属性介绍：-->
+    <!--android:state_selected 选中-->
+    <!--android:state_focused  获得焦点-->
+    <!--android:state_pressed  点击-->
+    <!--android:state_enabled  设置是否响应事件,指所有事件-->
+
+
 
     <!--Android中的Selector主要是用来改变ListView和Button控件的默认背景。其使用方法可以按一下步骤来设计:-->
 

@@ -1,7 +1,9 @@
 package com.shen.accountbook2.ui.view;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -56,6 +58,10 @@ public abstract class CommonProgressDialog extends AlertDialog {
         // TODO Auto-generated method stub
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_common_progress);
+
+        setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        // 安卓弹出ProgressDialog进度框之后触摸屏幕就消失了的解决方法
+        setCanceledOnTouchOutside(false);
 
         mProgress=(ProgressBar) findViewById(R.id.progress);
         mProgressNumber=(TextView) findViewById(R.id.progress_number);
@@ -120,6 +126,16 @@ public abstract class CommonProgressDialog extends AlertDialog {
         if (mProgressVal > 0) {
             setProgress(mProgressVal);
         }
+
+        /***点击返回的事件***/
+        //点击取消事件监听（没有点击"更新"或"稍后更新"而是直接点击"返回按钮"）
+        setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                //即使用户点击取消
+                dialog.dismiss();	// 关闭对话框
+            }
+        });
     }
 
 
