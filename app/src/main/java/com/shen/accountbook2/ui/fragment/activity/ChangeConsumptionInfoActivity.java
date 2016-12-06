@@ -26,6 +26,7 @@ import com.bigkoo.pickerview.TimePickerView;
 import com.bm.library.Info;
 import com.bm.library.PhotoView;
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.BitmapUtils.CopyFileUtils;
 import com.shen.accountbook2.Utils.DateTimeFormat;
 import com.shen.accountbook2.Utils.ImageFactory;
 import com.shen.accountbook2.Utils.LogUtils;
@@ -38,12 +39,7 @@ import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.ui.view.MyMenuRecyclerView.AccounBookProvider;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -512,43 +508,13 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
                 Uri uri = data.getData();
                 if (uri != null) {
                     String path = SetImageUtil.getPath(this, uri);       // 从"相册"中获取"图片"的路径要解析的
-                    File mediaFile = new File(path);                    // 相册中的图片文件
-                    ToastUtil.show(path);
 
                     // 将"相册"的图片，复制到，缓存目录中
-                    try {
-                        InputStream in = new FileInputStream(mediaFile);
-                        File toFile = new File(Constant.CACHE_IMAGE_PATH + "CacheImage.jpg");
-                        boolean deleteB;
-                        if(toFile.exists()) {            // 存在这个文件，将其删除
-                            deleteB = toFile.delete();
-                            LogUtils.i("deleteB:"+ deleteB);
-                            LogUtils.i("toFile.getAbsolutePath():"+ toFile.getAbsolutePath());
-                        }
-                        toFile.createNewFile();         // 创建这个文件
-
-                        OutputStream out = new FileOutputStream(toFile);
-
-                        byte[] bytes = new byte[1024];
-                        int len = -1;
-
-                        while((len=in.read(bytes))!=-1)
-                        {
-                            out.write(bytes, 0, len);
-                        }
-                        in.close();
-                        out.close();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
+                    CopyFileUtils.copyFile(path , Constant.CACHE_IMAGE_PATH_CacheImage);
                 }
 
                 mImageChange = true;        // 拍照返回，设置这个标志为true
-                bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"CacheImage.jpg", 300, 300);
+                bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH_CacheImage, 300, 300);
                 pvCamaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
             }
         }

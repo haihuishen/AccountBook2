@@ -68,6 +68,26 @@ public class Constant {
     public final static String CACHE_IMAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() +
             File.separator + "AccountBook2" + File.separator + "CacheImage" + File.separator;
 
+
+    /**
+     * CacheImage.jpg图片文件存放地址    <p>
+     *
+     *  /storage/emulated/0/AccountBook2/CacheImage/CacheImage.jpg <br>
+     *  如果使用"/"==>File.separator<p>
+     */
+    public final static String CACHE_IMAGE_PATH_CacheImage = Environment.getExternalStorageDirectory().getAbsolutePath() +
+            File.separator + "AccountBook2" + File.separator + "CacheImage" + File.separator + "CacheImage.jpg";
+
+    /**
+     * CurrentImage.png截图文件存放的地方    <p>
+     *
+     *  /storage/emulated/0/AccountBook2/CacheImage/CurrentImage.png <br>
+     *  如果使用"/"==>File.separator<p>
+     */
+    public final static String CACHE_IMAGE_PATH_CurrentImage = Environment.getExternalStorageDirectory().getAbsolutePath() +
+            File.separator + "AccountBook2" + File.separator + "CacheImage" + File.separator + "CurrentImage.png";
+
+
     /**
      * Image图片文件存放地址   <p>
      *

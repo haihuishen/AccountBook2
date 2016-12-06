@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:textColor="@drawable/btn_text_color_w_b"
-            android:src="@mipmap/shared"
+            android:src="@drawable/title_shared"
             android:visibility="gone"/>
 
 

@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -30,6 +31,7 @@ import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.GetWindowParaUtils;
 import com.shen.accountbook2.Utils.ImageFactory;
 import com.shen.accountbook2.Utils.LogUtils;
+import com.shen.accountbook2.Utils.MemorySizeUtils;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
@@ -39,6 +41,7 @@ import com.shen.accountbook2.ui.view.MyMenuRecyclerView.RecyclerViewCursorAdapte
 import com.shen.accountbook2.ui.view.MyMenuRecyclerView.SlidingButtonView;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -97,6 +100,8 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     private TableEx mTableEx;
     private Cursor mCursor = null;
     private Cursor mAllCursor = null;
+
+    private Handler handler = AccountBookApplication.getHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -333,7 +338,59 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         }
     }
 
+    /*************************************   分享前的截图      ***************************************/
+    /**
+     *     这种方法状态栏是空白，显示不了状态栏的信息<p>
+     *     截图后分享
+     */
+    private void saveCurrentImage() {
+        btnShared.setEnabled(false);
+        if (!shouldShow) {
+            compactCalendarView.hideCalendarWithAnimation();                            // 隐藏日历
+            shouldShow = !shouldShow;                                           // 更改当前状态
+        }
 
+        handler.postDelayed(new Runnable()                   // 发送个消息(runnable 可执行事件)到"消息队列中"，延时执行
+        {
+            @Override
+            public void run() {
+                //获取当前屏幕的大小
+                int width = getWindow().getDecorView().getRootView().getWidth();
+                int height = getWindow().getDecorView().getRootView().getHeight();
+                //生成相同大小的图片
+                Bitmap temBitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
+                //找到当前页面的跟布局
+                View view =  getWindow().getDecorView().getRootView();
+                //设置缓存
+                view.setDrawingCacheEnabled(true);
+                view.buildDrawingCache();
+                //从缓存中获取当前屏幕的图片
+                temBitmap = view.getDrawingCache();
+
+                //输出到sd卡
+                if (MemorySizeUtils.externalMemoryAvailable()) {
+                    File file = new File(Constant.CACHE_IMAGE_PATH_CurrentImage);
+                    try {
+                        if (!file.exists()) {
+                            file.createNewFile();
+                        }
+                        FileOutputStream foStream = new FileOutputStream(file);
+                        // 将位图写到本地
+                        temBitmap.compress(Bitmap.CompressFormat.PNG, 100, foStream);
+                        foStream.flush();
+                        foStream.close();
+                    } catch (Exception e) {
+                        LogUtils.i("生成截图失败:" + e.toString());
+                    }
+                    LogUtils.i("截图成功");
+                }
+                showShare();    // 截图后分享
+                btnShared.setEnabled(true);
+            }
+        }, 500);
+
+
+    }
 
     /*************************************   SharedSDK      ***************************************/
     private void showShare() {
@@ -343,21 +400,22 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         oks.disableSSOWhenAuthorize();
 
         // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
-        oks.setTitle("标题");
+        // oks.setTitle("标题");
         // titleUrl是标题的网络链接，QQ和QQ空间等使用
-        oks.setTitleUrl("http://sharesdk.cn");
+        // oks.setTitleUrl("http://sharesdk.cn");
         // text是分享文本，所有平台都需要这个字段
-        oks.setText("我是分享文本");
+        oks.setText("日消费");
         // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+        // oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+        oks.setImagePath(Constant.CACHE_IMAGE_PATH_CurrentImage);//确保SDcard下面存在此张图片
         // url仅在微信（包括好友和朋友圈）中使用
-        oks.setUrl("http://sharesdk.cn");
+        // oks.setUrl("http://sharesdk.cn");
         // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-        oks.setComment("我是测试评论文本");
+        // oks.setComment("我是测试评论文本");
         // site是分享此内容的网站名称，仅在QQ空间使用
         oks.setSite(getString(R.string.app_name));
         // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-        oks.setSiteUrl("http://sharesdk.cn");
+        // oks.setSiteUrl("http://sharesdk.cn");
 
         // 启动分享GUI
         oks.show(this);
@@ -399,7 +457,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
                 break;
 
             case R.id.btn_shared:                                         // 分享
-                showShare();
+                saveCurrentImage();                                         // 截图后分享
                 break;
 
             case R.id.tv_date:
