@@ -136,6 +136,7 @@ public abstract class CommonProgressDialog extends AlertDialog {
                 dialog.dismiss();	// 关闭对话框
             }
         });
+
     }
 
 

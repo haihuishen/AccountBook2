@@ -97,6 +97,8 @@ public abstract class VersionUpdateDialog extends AlertDialog implements View.On
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
 
         LogUtils.i("params.flags:"+Integer.toHexString(params.flags));
+
+        //params.alpha = (float) 0.5;  //透明度(背景)     （0.0-1.0）
         window.setAttributes(params);
 
         mTvCurrentVersion.setText(mCurrentVersionName);

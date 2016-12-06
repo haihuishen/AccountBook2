@@ -29,6 +29,7 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.GetWindowParaUtils;
 import com.shen.accountbook2.Utils.ImageFactory;
+import com.shen.accountbook2.Utils.LogUtils;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
@@ -43,6 +44,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
+
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.OnClickListener;
@@ -51,8 +55,6 @@ import static android.view.View.VISIBLE;
 
 //public class ReportForD_Activity extends AppCompatActivity implements Adapter.IonSlidingViewClickListener{
 public class ReportForD_Activity extends Activity implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>{
-
-    private final String TAG = "ReportForD_Activity";
 
     private Context mContext;
 
@@ -72,6 +74,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     private TextView tvTitle;
     private ImageButton btnMenu;
     private ImageButton btnBack;
+    private ImageButton btnShared;
 
     private TextView mTvDate;              // 日期;可弹出收回"日历"
 
@@ -102,6 +105,8 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
         mContext = this;
 
+        ShareSDK.initSDK(mContext);     // 初始化ShareSDK
+
         initView();
         initListener();
         initDate();
@@ -116,6 +121,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         tvTitle = (TextView) findViewById(R.id.tv_title);
         btnMenu = (ImageButton) findViewById(R.id.btn_menu);
         btnBack = (ImageButton) findViewById(R.id.btn_back);
+        btnShared = (ImageButton) findViewById(R.id.btn_shared);
 
         mTvDate = (TextView) findViewById(R.id.tv_date);
         mTvAllPriceOfDay = (TextView) findViewById(R.id.tv_all_price);
@@ -132,6 +138,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     private void initListener(){
         // 标题
         btnBack.setOnClickListener(this);
+        btnShared.setOnClickListener(this);
 
         // 日历的开关，同时显示当前的时间
         mTvDate.setOnClickListener(this);
@@ -202,6 +209,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         /******************************标题***********************************/
         btnMenu.setVisibility(GONE);
         btnBack.setVisibility(VISIBLE);
+        btnShared.setVisibility(VISIBLE);
         tvTitle.setText("日报表");
 
         mTvDate.setText(dateFormatForYMD.format(new Date()));
@@ -214,7 +222,6 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     }
 
     private void setAdapter(){
-
         mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date=? and user=?",
                 new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()}, null);
 
@@ -222,32 +229,39 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         MyRecyclerViewCursorAdapter.IonSlidingViewClickListener ionSlidingViewClickListener = new MyRecyclerViewCursorAdapter.IonSlidingViewClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Log.i(TAG,"点击项："+position);
+                LogUtils.i("点击项："+position);
             }
 
             @Override
-            public void onDeleteBtnCilck(View view, int position,String id) {
-                Log.i(TAG,"删除项："+position);
-                Log.i(TAG,"删除项___________________id："+id);
+            public void onDeleteBtnCilck(View view, int position,String id, String image) {
+                LogUtils.i("删除项："+position);
+                LogUtils.i("删除项___________________id："+id);
 
                 int i = getContentResolver().delete(AccounBookProvider.URI_ACCOUNTBOOK2_ALL,"_id=? and user=?",
                         new String[]{id, AccountBookApplication.getUserInfo().getUserName()});
-                Log.i(TAG,"删除项___________________i："+i);
+                // 删除对应的图片!
+                if(i > 0 && !TextUtils.isEmpty(image)){
+                    File f = new File(Constant.IMAGE_PATH+AccountBookApplication.getUserInfo().getUserName(), image);
+                    if(f.exists())
+                        f.delete();
+                }
+
+                LogUtils.i("删除项___________________i："+i);
             }
 
             @Override
             public void onUpdateBtnCilck(HashMap hashMapItem, int position) {
-                Log.i(TAG,"更新项position："+position);
-                Log.i(TAG,"更新项___________________id："+ hashMapItem.get(Constant.TABLE_CONSUMPTION__id_STRING));
-                Log.i(TAG,"更新项___________________user："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_user_STRING));
-                Log.i(TAG,"更新项___________________mainType："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_maintype_STRING));
-                Log.i(TAG,"更新项___________________type1："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_type1_STRING));
-                Log.i(TAG,"更新项___________________concreteness："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_concreteness_STRING));
-                Log.i(TAG,"更新项___________________unitPrice："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_unitprice_STRING));
-                Log.i(TAG,"更新项___________________number："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_number_STRING));
-                Log.i(TAG,"更新项___________________price："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_price_STRING));
-                Log.i(TAG,"更新项___________________image："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_image_STRING));
-                Log.i(TAG,"更新项___________________date："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_date_STRING));
+                LogUtils.i("更新项position："+position);
+                LogUtils.i("更新项___________________id："+ hashMapItem.get(Constant.TABLE_CONSUMPTION__id_STRING));
+                LogUtils.i("更新项___________________user："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_user_STRING));
+                LogUtils.i("更新项___________________mainType："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_maintype_STRING));
+                LogUtils.i("更新项___________________type1："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_type1_STRING));
+                LogUtils.i("更新项___________________concreteness："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_concreteness_STRING));
+                LogUtils.i("更新项___________________unitPrice："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_unitprice_STRING));
+                LogUtils.i("更新项___________________number："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_number_STRING));
+                LogUtils.i("更新项___________________price："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_price_STRING));
+                LogUtils.i("更新项___________________image："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_image_STRING));
+                LogUtils.i("更新项___________________date："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_date_STRING));
 
                 Intent intent = new Intent(ReportForD_Activity.this, ChangeConsumptionInfoActivity.class);
                 Bundle bundle = new Bundle();
@@ -265,7 +279,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
                 intent.putExtras(bundle);
 
-                startActivityForResult(intent,1);
+                startActivity(intent);
 
             }
 
@@ -319,12 +333,42 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         }
     }
 
+
+
+    /*************************************   SharedSDK      ***************************************/
+    private void showShare() {
+        ShareSDK.initSDK(this);
+        OnekeyShare oks = new OnekeyShare();
+        //关闭sso授权
+        oks.disableSSOWhenAuthorize();
+
+        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
+        oks.setTitle("标题");
+        // titleUrl是标题的网络链接，QQ和QQ空间等使用
+        oks.setTitleUrl("http://sharesdk.cn");
+        // text是分享文本，所有平台都需要这个字段
+        oks.setText("我是分享文本");
+        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+        //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+        // url仅在微信（包括好友和朋友圈）中使用
+        oks.setUrl("http://sharesdk.cn");
+        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+        oks.setComment("我是测试评论文本");
+        // site是分享此内容的网站名称，仅在QQ空间使用
+        oks.setSite(getString(R.string.app_name));
+        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+        oks.setSiteUrl("http://sharesdk.cn");
+
+        // 启动分享GUI
+        oks.show(this);
+    }
+
     /*************************************   Loader      ***********************************************/
     // LoaderManager.LoaderCallbacks<Cursor>  接口要实现的
     // 是 getLoaderManager().initLoader(1, null,this); 的第三参数
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.i(TAG,"调用___________________Loader");
+        LogUtils.i("调用___________________Loader");
         CursorLoader loader = new CursorLoader(ReportForD_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date=? and user=?",
                 new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()}, null);
 
@@ -333,14 +377,14 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.i(TAG,"调用___________________onLoadFinished");
+        LogUtils.i("调用___________________onLoadFinished");
         myRecyclerViewCursorAdapter.swapCursor(data);
         queryPriceOfDay();
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        Log.i(TAG,"调用___________________onLoaderReset");
+        LogUtils.i("调用___________________onLoaderReset");
         myRecyclerViewCursorAdapter.swapCursor(null);
     }
 
@@ -352,6 +396,10 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         switch (v.getId()) {
             case R.id.btn_back:                                         // 退出本Activity
                 finish();
+                break;
+
+            case R.id.btn_shared:                                         // 分享
+                showShare();
                 break;
 
             case R.id.tv_date:
@@ -392,12 +440,6 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         // TODO Auto-generated method stub
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == ChangeConsumptionInfoActivity.OK) {
-            if (resultCode == Activity.RESULT_OK) {
-                if(data.getStringExtra(ChangeConsumptionInfoActivity.CHANGE) == ChangeConsumptionInfoActivity.CHANGE){
-                }
-            }
-        }
     }
 
 
@@ -456,7 +498,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             String unitPrice = cursor.getString(Constant.TABLE_CONSUMPTION_unitprice);
             String number = cursor.getString(Constant.TABLE_CONSUMPTION_number);
             String price = cursor.getString(Constant.TABLE_CONSUMPTION_price);
-            String image = cursor.getString(Constant.TABLE_CONSUMPTION_image);
+            final String image = cursor.getString(Constant.TABLE_CONSUMPTION_image);
             String date = cursor.getString(Constant.TABLE_CONSUMPTION_date);
 
             final HashMap<String,String> hashMapItem = new HashMap<String,String>();
@@ -488,12 +530,12 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             //            System.out.println("这张图片："+ Constant.IMAGE_PATH+"/"+imageName);
             final Bitmap bitmap;
             if(!TextUtils.isEmpty(image)) {
-                if (new File(Constant.IMAGE_PATH, image).exists())
-                    bitmap = ImageFactory.getBitmap(Constant.IMAGE_PATH + "/" + image);
+                if (new File(Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName(), image).exists())     // 有这个文件，才生成位图
+                    bitmap = ImageFactory.getBitmap(Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName() + File.separator + image);
                 else
-                    bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/" + "no_preview_picture.png");
+                    bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "no_preview_picture.png");
             }else{
-                bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/" + "no_preview_picture.png");
+                bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "no_preview_picture.png");
             }
 
             holder.tvMainType.setText(mainType);
@@ -526,7 +568,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             //设置内容布局的宽为屏幕宽度
             holder.layoutContent.getLayoutParams().width = GetWindowParaUtils.getScreenWidth(mContext);
             // 每隔item之间颜色不同
-            holder.layoutContent.setBackgroundResource((holder.getLayoutPosition()) % 2 == 0 ? R.drawable.bg_green : R.drawable.bg_bule);
+            holder.layoutContent.setBackgroundResource((holder.getLayoutPosition()) % 2 == 0 ? R.drawable.bg_pink : R.drawable.bg_bule);
 
             holder.layoutContent.setOnClickListener(new OnClickListener() {
                 @Override
@@ -547,7 +589,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
                 @Override
                 public void onClick(View v) {
                     int position = holder.getLayoutPosition();                     // Recycler中拿到当前项的"索引"
-                    mIonSlidingViewClickListener.onDeleteBtnCilck(v, position, _id);
+                    mIonSlidingViewClickListener.onDeleteBtnCilck(v, position, _id, image);
                 }
             });
 
@@ -691,8 +733,9 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
              * @param view              项中的删除菜单
              * @param position          项的索引
              * @param id                表的_id字段
+             * @param image             表的image字段
              */
-            void onDeleteBtnCilck(View view, int position, String id);
+            void onDeleteBtnCilck(View view, int position, String id, String image);
 
             /**
              *  控件(项被点击)点击事件(菜单中：更新)，子类实现

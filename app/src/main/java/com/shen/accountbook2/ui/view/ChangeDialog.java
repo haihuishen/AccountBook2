@@ -17,11 +17,13 @@ import com.shen.accountbook2.R;
  */
 public abstract class ChangeDialog extends AlertDialog implements View.OnClickListener{
 
-    private TextView tvTitle;
-    private EditText etChange;
+    private TextView mTvTitle;
+    private EditText mEtChange;
 
-    private Button btnConfirm;
-    private Button btnCancel;
+    private Button mBtnConfirm;
+    private Button mBtnCancel;
+
+    private String mTitle;                   // 标题
 
     protected ChangeDialog(Context context) {
         super(context);
@@ -32,6 +34,9 @@ public abstract class ChangeDialog extends AlertDialog implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_change);
 
+        // 安卓弹出ProgressDialog进度框之后触摸屏幕就消失了的解决方法
+        setCanceledOnTouchOutside(false);
+
         initView();
         initListener();
         initData();
@@ -39,22 +44,22 @@ public abstract class ChangeDialog extends AlertDialog implements View.OnClickLi
 
     private void initView(){
 
-        tvTitle = (TextView) findViewById(R.id.tv_title);
-        etChange = (EditText) findViewById(R.id.et_change);
+        mTvTitle = (TextView) findViewById(R.id.tv_title);
+        mEtChange = (EditText) findViewById(R.id.et_change);
 
-        btnConfirm = (Button) findViewById(R.id.btn_confirm);
-        btnCancel = (Button) findViewById(R.id.btn_cancel);
+        mBtnConfirm = (Button) findViewById(R.id.btn_confirm);
+        mBtnCancel = (Button) findViewById(R.id.btn_cancel);
 
 
     }
 
     private void initListener(){
-        btnConfirm.setOnClickListener(this);
-        btnCancel.setOnClickListener(this);
+        mBtnConfirm.setOnClickListener(this);
+        mBtnCancel.setOnClickListener(this);
     }
 
     private void initData(){
-        tvTitle.setText("更改QQ");
+        mTvTitle.setText("更改QQ");
 
         // 设置此窗口的设置
         Window window = this.getWindow();
@@ -71,13 +76,22 @@ public abstract class ChangeDialog extends AlertDialog implements View.OnClickLi
                 WindowManager.LayoutParams.FLAG_SPLIT_TOUCH |
                 WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
         System.out.println("params.flags:"+Integer.toHexString(params.flags));
+        // params.alpha = (float) 0.5;  //透明度(背景)     （0.0-1.0）
         window.setAttributes(params);
 
     }
 
+    /**
+     * 设置"标题"
+     * @param title 标题
+     */
     public void setTitle(String title){
-        tvTitle.setText(title);
+        if(mTvTitle != null)                // 在子类中，new 了窗口，马上设置这个,会是"空指针";因为 .show() 之后才 onCreate
+            mTvTitle.setText(title);
+        else
+            mTitle = title;
     }
+
 
     /**
      * 点击"确定按钮"干的事情
@@ -95,7 +109,7 @@ public abstract class ChangeDialog extends AlertDialog implements View.OnClickLi
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.btn_confirm:
-                confirm(etChange.getText().toString());
+                confirm(mEtChange.getText().toString());
                 break;
             case R.id.btn_cancel:
                 cancel();

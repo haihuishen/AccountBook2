@@ -62,12 +62,11 @@ public class SetImageUtil {
 				final String docId = DocumentsContract.getDocumentId(uri);
 				final String[] split = docId.split(":");
 				final String type = split[0];
-                System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-                System.out.println("docId:"+docId);
-                System.out.println("Environment.getExternalStorageDirectory() + split[1]:"+Environment.getExternalStorageDirectory() + "/" + split[1]);
+                LogUtils.i("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+                LogUtils.i("docId:"+docId);
+                LogUtils.i("Environment.getExternalStorageDirectory() + split[1]:"+Environment.getExternalStorageDirectory() + "/" + split[1]);
 				if ("primary".equalsIgnoreCase(type)) {
-					return Environment.getExternalStorageDirectory() + "/"
-							+ split[1];
+					return Environment.getExternalStorageDirectory() + "/" + split[1];
 				}
 				// TODO handle non-primary volumes
 			} // DownloadsProvider                                      // 下载的？

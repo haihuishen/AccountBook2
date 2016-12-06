@@ -2,6 +2,8 @@ package com.shen.accountbook2.config;
 
 import android.os.Environment;
 
+import java.io.File;
+
 /**
  * 全局变量
  */
@@ -48,11 +50,57 @@ public class Constant {
     public final static String ME = "个人现金";
 
 
-    /** 图片文件存放地址1*/
+
+    /**
+     * 资源文件存放地址    <p>
+     *
+     *  /storage/emulated/0/AccountBook2/ <br>
+     *  如果使用"/"==>File.separator<p>
+     */
+    public final static String APP_RESOURCE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() +
+            File.separator + "AccountBook2" + File.separator ;
+    /**
+     * CacheImage图片文件存放地址    <p>
+     *
+     *  /storage/emulated/0/AccountBook2/CacheImage/ <br>
+     *  如果使用"/"==>File.separator<p>
+     */
     public final static String CACHE_IMAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() +
-            "/AccountBook2/CacheImage";
-    /** 图片文件存放地址2*/
+            File.separator + "AccountBook2" + File.separator + "CacheImage" + File.separator;
+
+    /**
+     * Image图片文件存放地址   <p>
+     *
+     *  /storage/emulated/0/AccountBook2/Image/ <br>
+     *  如果使用"/"==>File.separator<p>
+     */
     public final static String IMAGE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() +
-            "/AccountBook2/Image";
+            File.separator + "AccountBook2" + File.separator + "Image" + File.separator;
+
+
+    /**
+     * Image图片缓存地址   <p>
+     *
+     *  /storage/emulated/0/AccountBook2/AccountBook2_cache/ <br>
+     *  如果使用"/"==>File.separator<p>
+     */
+    public final static String LOCAL_CACHE_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() +
+            File.separator + "AccountBook2" + File.separator + "AccountBook2_local_cache" + File.separator;
+
+
+    /**
+     * 服务器主域名
+     */
+    public static final String SERVER_URL = "http://192.168.23.1:8080/AccountBook2";
+
+    /**
+     * public static final String SERVER_URL = "http://10.0.2.2:8080/zhbj"
+     * <br>服务器主域名
+     *
+     * <p>public static final String PHOTOS_URL = SERVER_URL + "/photos/photos_1.json";
+     * <br>组图信息接口
+     */
+    public static final String PHOTOS_URL = SERVER_URL + "/photos/photos_1.json";
+
 
 }

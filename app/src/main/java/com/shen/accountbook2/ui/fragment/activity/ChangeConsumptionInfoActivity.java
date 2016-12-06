@@ -11,7 +11,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -29,6 +28,8 @@ import com.bm.library.PhotoView;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.DateTimeFormat;
 import com.shen.accountbook2.Utils.ImageFactory;
+import com.shen.accountbook2.Utils.LogUtils;
+import com.shen.accountbook2.Utils.SetImageUtil;
 import com.shen.accountbook2.Utils.ToFormatUtil;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
@@ -37,7 +38,12 @@ import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.ui.view.MyMenuRecyclerView.AccounBookProvider;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -46,9 +52,10 @@ import java.util.Date;
  */
 public class ChangeConsumptionInfoActivity extends Activity implements View.OnClickListener{
 
-    private static final String TAG = "ChangeConsumptionInfo";
-    public static final int OK = 1;
-    public static final String CHANGE = "change";
+    /** 拍照获取图片*/
+    public static final int TAKE_PHOTO = 2000;
+    /** 从"相册"中获取图片*/
+    public static final int PIC_PHOTO = 3000;
 
     private Context mContext;
 
@@ -95,6 +102,8 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
     private PhotoView pvCamaraPhoto;
     /** 拍照按钮*/
     private Button btnCamera;
+    /** 从相册拿图片按钮*/
+    private Button btnPhoto;
     /** 清除按钮*/
     private Button btnClear;
 
@@ -125,16 +134,16 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         Bundle data = intent.getExtras();
 
         if(data != null) {
-            Log.i(TAG, "更新项___________________id：" + data.get(Constant.TABLE_CONSUMPTION__id_STRING));
-            Log.i(TAG, "更新项___________________user：" + data.get(Constant.TABLE_CONSUMPTION_user_STRING));
-            Log.i(TAG, "更新项___________________mainType：" + data.get(Constant.TABLE_CONSUMPTION_maintype_STRING));
-            Log.i(TAG, "更新项___________________type1：" + data.get(Constant.TABLE_CONSUMPTION_type1_STRING));
-            Log.i(TAG, "更新项___________________concreteness：" + data.get(Constant.TABLE_CONSUMPTION_concreteness_STRING));
-            Log.i(TAG, "更新项___________________unitPrice：" + data.get(Constant.TABLE_CONSUMPTION_unitprice_STRING));
-            Log.i(TAG, "更新项___________________number：" + data.get(Constant.TABLE_CONSUMPTION_number_STRING));
-            Log.i(TAG, "更新项___________________price：" + data.get(Constant.TABLE_CONSUMPTION_price_STRING));
-            Log.i(TAG, "更新项___________________image：" + data.get(Constant.TABLE_CONSUMPTION_image_STRING));
-            Log.i(TAG, "更新项___________________date：" + data.get(Constant.TABLE_CONSUMPTION_date_STRING));
+            LogUtils.i("更新项___________________id：" + data.get(Constant.TABLE_CONSUMPTION__id_STRING));
+            LogUtils.i("更新项___________________user：" + data.get(Constant.TABLE_CONSUMPTION_user_STRING));
+            LogUtils.i("更新项___________________mainType：" + data.get(Constant.TABLE_CONSUMPTION_maintype_STRING));
+            LogUtils.i("更新项___________________type1：" + data.get(Constant.TABLE_CONSUMPTION_type1_STRING));
+            LogUtils.i("更新项___________________concreteness：" + data.get(Constant.TABLE_CONSUMPTION_concreteness_STRING));
+            LogUtils.i("更新项___________________unitPrice：" + data.get(Constant.TABLE_CONSUMPTION_unitprice_STRING));
+            LogUtils.i("更新项___________________number：" + data.get(Constant.TABLE_CONSUMPTION_number_STRING));
+            LogUtils.i("更新项___________________price：" + data.get(Constant.TABLE_CONSUMPTION_price_STRING));
+            LogUtils.i("更新项___________________image：" + data.get(Constant.TABLE_CONSUMPTION_image_STRING));
+            LogUtils.i("更新项___________________date：" + data.get(Constant.TABLE_CONSUMPTION_date_STRING));
 
             mId = data.get(Constant.TABLE_CONSUMPTION__id_STRING).toString();
             mUser = data.get(Constant.TABLE_CONSUMPTION_user_STRING).toString();
@@ -175,6 +184,7 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         linearLayoutPv = (LinearLayout) findViewById(R.id.linearLayout_pv);
         pvCamaraPhoto = (PhotoView) findViewById(R.id.pv_image);
         btnCamera = (Button) findViewById(R.id.btn_camera);
+        btnPhoto = (Button) findViewById(R.id.btn_photo);
         btnClear = (Button) findViewById(R.id.btn_clear);
 
         btnUpdate = (Button) findViewById(R.id.btn_add);
@@ -198,6 +208,7 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         etNumber.addTextChangedListener(numberWatcher);
 
         btnCamera.setOnClickListener(this);
+        btnPhoto.setOnClickListener(this);
         btnClear.setOnClickListener(this);
         btnUpdate.setOnClickListener(this);
 
@@ -255,7 +266,7 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
 
         //设置默认选中的三级项目
         //监听确定选择按钮
-        pvOptions.setSelectOptions(1, 1, 0);
+        pvOptions.setSelectOptions(0, 0, 0);
         //选项选择器后回调
         pvOptions.setOnoptionsSelectListener(new OptionsPickerView.OnOptionsSelectListener() {
 
@@ -295,9 +306,9 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
 
         mImageChange = false;
         if(!TextUtils.isEmpty(mImage)) {
-            bitmap = ImageFactory.getBitmap(Constant.IMAGE_PATH + File.separator + mImage);
+            bitmap = ImageFactory.getBitmap(Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName() + File.separator + mImage);
         }else {
-            bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png");
+            bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "no_preview_picture.png");
         }
 
         pvCamaraPhoto.disenable();// 把PhotoView当普通的控件，把触摸功能关掉
@@ -365,7 +376,7 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
 
                         // etNumber.setText(number + "");
                         etPrice.setText(ToFormatUtil.toDecimalFormat(number * unitPrice, 2));
-                        Log.i("TAG", "unitPrice: " + unitPrice + "number: " + number);
+                        LogUtils.i("TAG", "unitPrice: " + unitPrice + "number: " + number);
                     } else
                         etPrice.setText("0");
                 } else
@@ -381,15 +392,24 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
      */
     private void update(){
         // 根据当前的时间，组合成"照片名称"
-        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss:SSS");
+        SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmssSSS");
         String currentTime = sDateFormat.format(new Date());
-        String imageName = currentTime+".jpg";
+        String imageName = AccountBookApplication.getUserInfo().getUserName() +"_"+ currentTime+".jpg";
 
         // 根据全局变量，添加时是否将图片添加到数据库(这个只是"图片名")
         // true:压缩图片保存在指定位置
         if(mImageChange) {  // 换了照片才压缩
             try {
-                ImageFactory.ratioAndGenThumb(Constant.CACHE_IMAGE_PATH + "/CacheImage.jpg", Constant.IMAGE_PATH + "/" + imageName, 300, 300, false);
+                ImageFactory.ratioAndGenThumb(Constant.CACHE_IMAGE_PATH + "CacheImage.jpg",
+                        Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName() + File.separator + imageName,
+                        300, 300, false);
+
+                // 删除对应的图片!
+                if(!TextUtils.isEmpty(mImage)){
+                    File f = new File(Constant.IMAGE_PATH+AccountBookApplication.getUserInfo().getUserName(), mImage);
+                    if(f.exists())
+                        f.delete();
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -461,9 +481,6 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
         int num = getContentResolver().update(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, values, "_id=? and user=?", new String[]{mId, mUser});
         if(num == 1) {
             ToastUtil.show("修改成功");
-            Intent intent = new Intent();
-            intent.putExtra(CHANGE,CHANGE);
-            setResult(OK, intent);
             finish();
         }
         else
@@ -478,9 +495,62 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
 
         if (resultCode == Activity.RESULT_OK) {
             mImageChange = true;        // 拍照返回，设置这个标志为true
-            bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"/CacheImage.jpg", 300, 300);
+            bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"CacheImage.jpg", 300, 300);
             pvCamaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
+        }
 
+        if(requestCode == TAKE_PHOTO){                       // 拍照获取图片
+            if (resultCode == Activity.RESULT_OK) {
+                mImageChange = true;        // 拍照返回，设置这个标志为true
+                bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"CacheImage.jpg", 300, 300);
+                pvCamaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
+            }
+        }else if(requestCode == PIC_PHOTO){                 // 从相册获取图片
+            if (data == null) {
+                return;
+            } else {
+                Uri uri = data.getData();
+                if (uri != null) {
+                    String path = SetImageUtil.getPath(this, uri);       // 从"相册"中获取"图片"的路径要解析的
+                    File mediaFile = new File(path);                    // 相册中的图片文件
+                    ToastUtil.show(path);
+
+                    // 将"相册"的图片，复制到，缓存目录中
+                    try {
+                        InputStream in = new FileInputStream(mediaFile);
+                        File toFile = new File(Constant.CACHE_IMAGE_PATH + "CacheImage.jpg");
+                        boolean deleteB;
+                        if(toFile.exists()) {            // 存在这个文件，将其删除
+                            deleteB = toFile.delete();
+                            LogUtils.i("deleteB:"+ deleteB);
+                            LogUtils.i("toFile.getAbsolutePath():"+ toFile.getAbsolutePath());
+                        }
+                        toFile.createNewFile();         // 创建这个文件
+
+                        OutputStream out = new FileOutputStream(toFile);
+
+                        byte[] bytes = new byte[1024];
+                        int len = -1;
+
+                        while((len=in.read(bytes))!=-1)
+                        {
+                            out.write(bytes, 0, len);
+                        }
+                        in.close();
+                        out.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                }
+
+                mImageChange = true;        // 拍照返回，设置这个标志为true
+                bitmap = ImageFactory.ratio(Constant.CACHE_IMAGE_PATH +"CacheImage.jpg", 300, 300);
+                pvCamaraPhoto.setImageBitmap(bitmap);// 将图片显示在ImageView里
+            }
         }
     }
 
@@ -504,11 +574,17 @@ public class ChangeConsumptionInfoActivity extends Activity implements View.OnCl
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 File file = new File(Constant.CACHE_IMAGE_PATH ,"CacheImage.jpg");  // 携带图片存放路径
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(file));
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, TAKE_PHOTO);
+                break;
+
+            case R.id.btn_photo:                                       // 点击"相册按钮"，跳到"相册界面"
+                Intent intentss = new Intent(Intent.ACTION_PICK);
+                intentss.setType("image/*");
+                startActivityForResult(intentss, PIC_PHOTO);
                 break;
 
             case R.id.btn_clear:                                       // 清除预览控件的图片;为默认图片
-                bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH +"/no_preview_picture.png");
+                bitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH +"no_preview_picture.png");
                 mImage = "";                                        // 将传过来的图片名置为空
                 pvCamaraPhoto.setImageBitmap(bitmap);              // 将图片显示在ImageView里
                 mPhotoView.setImageBitmap(bitmap);

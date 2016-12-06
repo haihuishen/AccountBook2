@@ -1,12 +1,12 @@
 package com.shen.accountbook2.ui.fragment;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.LogUtils;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.ui.AddActivity;
@@ -15,12 +15,15 @@ import com.shen.accountbook2.ui.fragment.activity.ReportForM_LineChar_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForMixture_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForType_LineChar_Activity;
 import com.shen.accountbook2.ui.fragment.activity.ReportForY_LineChar_Activity;
-import com.shen.accountbook2.ui.view.CommonProgressDialog;
 
 /**
  * Created by shen on 9/9 0009.
  */
 public class HomeFragment extends BaseFragment{
+
+    // 标志位，标志已经初始化完成。
+    private boolean isPrepared;
+
     /******************************标题***********************************/
     private TextView tvTitle;
 
@@ -32,11 +35,6 @@ public class HomeFragment extends BaseFragment{
     private Button mBtnReportDay;           // 日报表
 
     private Button mBtnAdd;                 // 添加按钮
-
-    CommonProgressDialog mDialog;             // 进度条对话框
-    Thread thread;
-
-    boolean mStop;                          // 线程停止标志
 
     public HomeFragment() {
     }
@@ -79,25 +77,17 @@ public class HomeFragment extends BaseFragment{
     public void initData(){
 
         tvTitle.setText("首页");
-
-        mStop = false;
-
+        isPrepared = true;
+        lazyLoad();
     }
 
-    private void showDialog(){
-        mDialog = new CommonProgressDialog(getActivity()) {
-            @Override
-            public void cancel() {          // 点击取消按钮
-                mDialog.dismiss();
-                mStop = true;
-            }
-        };
-        mDialog.setMessage("正在添加");
-        mDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-
-        // 安卓弹出ProgressDialog进度框之后触摸屏幕就消失了的解决方法
-        mDialog.setCanceledOnTouchOutside(false);
-        mDialog.show();
+    @Override
+    protected void lazyLoad() {
+        LogUtils.i("HomeFragment:========isPrepared:"+isPrepared+"=======isVisible:"+isVisible);
+        if(!isPrepared || !isVisible) {
+            return;
+        }
+        //填充各控件的数据
     }
 
     @Override
@@ -108,7 +98,7 @@ public class HomeFragment extends BaseFragment{
 
                 case R.id.btn_D:                       // 日报表
                     intent = new Intent(mContext, ReportForD_Activity.class);
-                    startActivityForResult(intent,1);
+                    startActivity(intent);
                     break;
 
                 case R.id.btn_M:                       // 月报表
@@ -149,19 +139,7 @@ public class HomeFragment extends BaseFragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("来了这里了：HomeFragment");
-//        if (requestCode == 1) {
-//            if (resultCode == 1) {
-//                Bundle bundle = data.getExtras();
-//                boolean b = bundle.getBoolean("change");
-//                System.out.print("shen________________________________"+b);
-//                if (b) {
-//                    MineFragment mineFragment = (MineFragment) getActivity()
-//                            .getSupportFragmentManager().findFragmentById(R.layout.fragment_mine);
-//                    mineFragment.getTotalAssets();
-//                }
-//            }
-//        }
+        LogUtils.i("来了这里了：HomeFragment");
     }
 
 }

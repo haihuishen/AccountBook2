@@ -5,19 +5,24 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <!--<com.shen.accountbook2.ui.view.NoScrollViewPager-->
+    <com.shen.accountbook2.ui.view.NoScrollViewPager
+        android:id="@+id/vp_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+    <!--<android.support.v4.view.ViewPager-->
         <!--android:id="@+id/vp_content"-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="0dp"-->
         <!--android:layout_weight="1" />-->
 
-    <FrameLayout
-        android:id="@+id/frame_content"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+    <!--<FrameLayout-->
+        <!--android:id="@+id/frame_content"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1">-->
 
-    </FrameLayout>
+    <!--</FrameLayout>-->
 
 
     <!-- 下面的"标题" -->
@@ -44,6 +49,12 @@
             style="@style/Bottom_Tab_Style"
             android:drawableTop="@drawable/tab_mine_selector"
             android:text="我的" />
+
+        <RadioButton
+            android:id="@+id/rb_shopping"
+            style="@style/Bottom_Tab_Style"
+            android:drawableTop="@drawable/tab_shopping_selector"
+            android:text="商城" />
 
         <RadioButton
             android:id="@+id/rb_other"

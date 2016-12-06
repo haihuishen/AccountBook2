@@ -3,9 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>                        <!--Appbar背景色-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>                <!--状态栏颜色-->
+        <item name="colorAccent">@color/colorAccent</item>                          <!--控制各个控件被选中时的颜色-->
+
     </style>
 
 
@@ -41,5 +42,7 @@ name="android:textColor">@color/txt_tab_selector    	文本颜色选择器-->
         <item name="android:windowEnterAnimation">@anim/menu_fadein</item>
         <item name="android:windowExitAnimation">@anim/menu_fadeout</item>
     </style>
+
+
 
 </resources>

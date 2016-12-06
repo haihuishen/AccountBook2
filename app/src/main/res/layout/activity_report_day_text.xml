@@ -60,7 +60,7 @@
                 android:layout_below="@+id/tv_all_price"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_pink_stroke_black"
+                android:background="@drawable/bg_green_stroke_black"
                 android:orientation="horizontal" >
 
                 <View

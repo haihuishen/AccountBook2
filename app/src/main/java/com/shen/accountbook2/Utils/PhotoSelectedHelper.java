@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -24,6 +23,7 @@ public class PhotoSelectedHelper {
     public static final int PIC_PHOTO = 3000;
     /** 裁剪返回*/
     public static final int PHOTO_CROP = 4000;
+    /** 拍照后，图片存放的路径(没有裁剪的)*/
     public static String camera_path;
     Activity mActivity;
 
@@ -43,6 +43,10 @@ public class PhotoSelectedHelper {
         }
     }
 
+    /**
+     * 使用"拍照"，获取图片
+     * @param user
+     */
     private void intentCamera(String user) {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         captureUri = getOutputMediaFileUri(mActivity, user);
@@ -50,19 +54,22 @@ public class PhotoSelectedHelper {
         mActivity.startActivityForResult(intent, TAKE_PHOTO);
     }
 
+    /**
+     * 从相册中获取"图片"
+     */
     private void intentPhoto() {
-//        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        mActivity.startActivityForResult(i, PICK_PHOTO);
-
-//        Intent intentss = new Intent(Intent.ACTION_GET_CONTENT);
+        // Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // mActivity.startActivityForResult(i, PICK_PHOTO);
+        
+        // Intent intentss = new Intent(Intent.ACTION_GET_CONTENT);
         Intent intentss = new Intent(Intent.ACTION_PICK);
         intentss.setType("image/*");
         mActivity.startActivityForResult(intentss, PIC_PHOTO);
     }
 
     /**
-     * 获取"要被截取"的"图片路径"
-     * @return
+     * 获取"要被截取"的"图片路径"Uri
+     * @return Uri
      */
     public Uri getCaptureUri() {
         return captureUri;
@@ -111,45 +118,53 @@ public class PhotoSelectedHelper {
                 context.getPackageName());
         if (!mediaStorageDir.exists()) {                // 文件不存在
             if (!mediaStorageDir.mkdirs()) {            // 文件创建不成功
-                Log.d("OutputMediaFileUri", "failed to create directory");
+                LogUtils.i("OutputMediaFileUri(拍照后存放的路径):failed to create directory");
                 return null;
             }
         }
         //--> /storage/emulated/0/Pictures/com.shen.accountbook2/test_20161030_224557.jpg
         // 如这里 use是 "test"
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
         camera_path = mediaStorageDir.getPath() + File.separator + user + "_" + timeStamp + ".jpg";
-        System.out.println("camera_path:"+camera_path);
+        LogUtils.i("camera_path:"+camera_path);
         File mediaFile = new File(camera_path);
         return Uri.fromFile(mediaFile);
     }
 
 
-//    public static String getRealPathFromURI(Context context, Uri contentUri) {
-//        String[] proj = {MediaStore.Images.Media.DATA};
-//        Cursor cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
-//        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-//        cursor.moveToFirst();
-//        return cursor.getString(column_index);
-//    }
-//Exta Options Table for image/* crop:
-//附加选项      数据类型                        描述
-//crop          String                          发送裁剪信号
-//aspectX       int                             X方向上的比例
-//aspectY       int                             Y方向上的比例
-//outputX       int                             裁剪区的宽
-//outputY       int                             裁剪区的高
-//scale         boolean                         是否保留比例
-//return-data   boolean                         是否将数据保留在Bitmap中返回
-//data          Parcelable                      相应的Bitmap数据
-//circleCrop    String                          圆形裁剪区域？
-//MediaStore.EXTRA_OUTPUT (“output”) URI 将URI指向相应的file:///…，
-//    .putExtra("scale", true)//黑边
-//    .putExtra("scaleUpIfNeeded", true)//黑边
+    //    public static String getRealPathFromURI(Context context, Uri contentUri) {
+    //        String[] proj = {MediaStore.Images.Media.DATA};
+    //        Cursor cursor = context.getContentResolver().query(contentUri, proj, null, null, null);
+    //        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+    //        cursor.moveToFirst();
+    //        return cursor.getString(column_index);
+    //    }
+    //Exta Options Table for image/* crop:
+    //附加选项      数据类型                        描述
+    //crop          String                          发送裁剪信号
+    //aspectX       int                             X方向上的比例
+    //aspectY       int                             Y方向上的比例
+    //outputX       int                             裁剪区的宽
+    //outputY       int                             裁剪区的高
+    //scale         boolean                         是否保留比例
+    //return-data   boolean                         是否将数据保留在Bitmap中返回
+    //data          Parcelable                      相应的Bitmap数据
+    //circleCrop    String                          圆形裁剪区域？
+    //MediaStore.EXTRA_OUTPUT (“output”) URI 将URI指向相应的file:///…，
+    //    .putExtra("scale", true)//黑边
+    //    .putExtra("scaleUpIfNeeded", true)//黑边
+
+    /**
+     *
+     * @param uri               被裁减图片的路径
+     * @param outputX           裁剪区的宽
+     * @param outputY           裁剪区的高
+     * @param user              用户(用作图片的一部分)
+     */
     public void cropImageUri(Uri uri, int outputX, int outputY, String user) {
-        System.out.println("cropImageUri:"+uri.getPath());
+        LogUtils.i("cropImageUri:(被裁减图片的路径)"+uri.getPath());
         cropUri = getOutputMediaFileUri(mActivity, user);
-        System.out.println("cropUri:"+cropUri);
+        LogUtils.i("cropUri:(裁减图片后的路径)"+cropUri.getPath());
         try {
             Intent intent = new Intent("com.android.camera.action.CROP");
             //circleCrop    String                          圆形裁剪区域？

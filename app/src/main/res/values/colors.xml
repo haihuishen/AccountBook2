@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<color name="colorPrimary">#3F51B5</color>
-<color name="colorPrimaryDark">#303F9F</color>
-<color name="colorAccent">#46ff40</color>
+<color name="colorPrimary">#000000</color>
+<color name="colorPrimaryDark">#000000</color>
+<color name="colorAccent">#000000</color>
 
 <color name="blue">#1ed6ff</color>
 <color name="schedule_week">#40b0fc</color>
@@ -49,5 +49,6 @@
     <!--蓝紫：102,0,255——web颜色值：#6600ff-->
     <!--紫色：255,0,255——web颜色值：#ff00ff-->
     <!--紫红：255,0,102——web颜色值：ff0066-->
+
 
 </resources>

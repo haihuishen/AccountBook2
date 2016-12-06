@@ -28,8 +28,7 @@ public class DataCleanManager {
      * @param context
      */
     public static void cleanDatabases(Context context) {
-        deleteFilesByDirectory(new File("/data/data/"
-                + context.getPackageName() + "/databases"));
+        deleteFilesByDirectory(new File("/data/data/" + context.getPackageName() + "/databases"));
     }
 
     /**
@@ -38,10 +37,12 @@ public class DataCleanManager {
      * @param context
      */
     public static void cleanSharedPreference(Context context) {
-        deleteFilesByDirectory(new File("/data/data/"
-                + context.getPackageName() + "/shared_prefs"));
+        deleteFilesByDirectory(new File("/data/data/" + context.getPackageName() + "/shared_prefs"));
     }
 
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * 按名字清除本应用数据库
      * 
@@ -63,12 +64,11 @@ public class DataCleanManager {
 
     /**
      * 清除外部cache下的内容(/mnt/sdcard/android/data/com.xxx.xxx/cache)
-     * 
+     * <br>不同的厂商，会更改这个挂载文件
      * @param context
      */
     public static void cleanExternalCache(Context context) {
-        if (Environment.getExternalStorageState().equals(
-                Environment.MEDIA_MOUNTED)) {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             deleteFilesByDirectory(context.getExternalCacheDir());
         }
     }

@@ -14,8 +14,9 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.AppUtils;
+import com.shen.accountbook2.Utils.FileSizeUtils;
 import com.shen.accountbook2.Utils.LogUtils;
-import com.shen.accountbook2.Utils.SDCardUtils;
+import com.shen.accountbook2.Utils.MemorySizeUtils;
 import com.shen.accountbook2.Utils.StreamUtil;
 import com.shen.accountbook2.Utils.ToFormatUtil;
 import com.shen.accountbook2.Utils.ToastUtil;
@@ -43,6 +44,10 @@ import java.util.Random;
 public class OtherFragment extends BaseFragment {
 
     protected static final String tag = "OtherFragment";
+
+
+    // 标志位，标志已经初始化完成。
+    private boolean isPrepared;
 
     /**
      * 更新新版本的状态码
@@ -100,6 +105,13 @@ public class OtherFragment extends BaseFragment {
     Thread thread;
     boolean mStop;                                              // 线程停止标志
 
+    /******************************资源详情***********************************/
+    private TextView mTvExternalMemorySize;                     // SD卡存储空间
+    //private TextView mTvInternalMemorySize;                     // 内部存储空间
+    private TextView mTvAppResourceLocation;                    // 本应用资源存放位置
+    private TextView mTvAppResourceSize;                        // 资源占用
+    private TextView mTvAppUserResourceLocation;                // 当前用户资源存放位置
+    private TextView mTvAppUserResourceSize;                    // 资源占用
 
 
     public OtherFragment() {
@@ -114,7 +126,7 @@ public class OtherFragment extends BaseFragment {
                 case UPDATE_VERSION:
                     mTvVersionState.setText("最新版本:"+ msg.obj);
                     //弹出对话框,提示用户更新
-                    showVersionUpdateDialog(mCurrentVersionName,mNewVersionName,mVersionDes);
+                    showVersionUpdateDialog(AppUtils.getVersionName(mContext),mNewVersionName,mVersionDes);
                     break;
                 case LATEST_VERSION:
                     ToastUtil.show("当前是最新版本");
@@ -147,6 +159,15 @@ public class OtherFragment extends BaseFragment {
         mTvVersionCode = (TextView) view.findViewById(R.id.tv_versionCode);
         mTvVersionName = (TextView) view.findViewById(R.id.tv_versionName);
 
+        /******************************资源详情***********************************/
+        mTvExternalMemorySize = (TextView) view.findViewById(R.id.tv_External_Memory_Size);
+        //mTvInternalMemorySize = (TextView) view.findViewById(R.id.tv_Internal_Memory_Size);
+        mTvAppResourceLocation = (TextView) view.findViewById(R.id.tv_app_resource_location);
+        mTvAppResourceSize = (TextView) view.findViewById(R.id.tv_app_resource_size);
+        mTvAppUserResourceLocation = (TextView) view.findViewById(R.id.tv_app_user_resource_location);
+        mTvAppUserResourceSize = (TextView) view.findViewById(R.id.tv_app_user_resource_size);
+
+
         return view;
     }
 
@@ -159,17 +180,46 @@ public class OtherFragment extends BaseFragment {
     @Override
     public void initData() {
         tvTitle.setText("其他");
-
         mStop = false;
 
+        isPrepared = true;
+        lazyLoad();
+
+        checkVersion();
+    }
+
+    @Override
+    protected void lazyLoad() {
+        LogUtils.i("OtherFragment:========isPrepared:"+isPrepared+"=======isVisible:"+isVisible);
+        if(!isPrepared || !isVisible) {
+            return;
+        }
+        //填充各控件的数据
         mCurrentVersionCode = AppUtils.getVersionCode(mContext);
         mCurrentVersionName = AppUtils.getVersionName(mContext);
 
-        mTvVersionState.setText("");
+        //mTvVersionState.setText("");
         mTvVersionCode.setText("versionCode:  "+ mCurrentVersionCode);
         mTvVersionName.setText("versionName:  "+ mCurrentVersionName);
 
-        checkVersion();
+        /******************************资源详情***********************************/
+        mTvExternalMemorySize.setText(MemorySizeUtils.formatFileSize(MemorySizeUtils.getAvailableExternalMemorySize(),false)
+                +"/"+ MemorySizeUtils.formatFileSize(MemorySizeUtils.getTotalExternalMemorySize(),false));
+        //mTvInternalMemorySize.setText(MemorySizeUtils.formatFileSize(MemorySizeUtils.getAvailableInternalMemorySize(),false)
+        //        +"/"+ MemorySizeUtils.formatFileSize(MemorySizeUtils.getTotalInternalMemorySize(),false));
+
+        mTvAppResourceLocation.setText(Constant.APP_RESOURCE_PATH);
+        mTvAppResourceSize.setText(FileSizeUtils.getAutoFileOrFilesSize(Constant.APP_RESOURCE_PATH));
+
+        if(AccountBookApplication.isLogin()) {
+            mTvAppUserResourceLocation.setText(Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName() + File.separator);
+            mTvAppUserResourceSize.setText(
+                    FileSizeUtils.getAutoFileOrFilesSize(Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName() + File.separator));
+        }else{
+            mTvAppUserResourceLocation.setText("");
+            mTvAppUserResourceSize.setText("");
+
+        }
     }
 
     /**
@@ -336,9 +386,9 @@ public class OtherFragment extends BaseFragment {
         //apk下载链接地址,放置apk的所在路径
 
         //1,判断sd卡是否可用,是否挂在上
-        if(SDCardUtils.isSDCardEnable()){
+        if(MemorySizeUtils.externalMemoryAvailable()){
             //2,获取sd路径
-            final String path = SDCardUtils.getSDCardPath()+"test.apk";
+            final String path = Constant.APP_RESOURCE_PATH+"test.apk";
 
             //3,发送请求,获取apk,并且放置到指定路径
             //httpUtils: com.lidroid.xutils.HttpUtils	(xUtils的!!!)
@@ -418,14 +468,15 @@ public class OtherFragment extends BaseFragment {
                 int M = 1;
                 int day = 1;
                 int max = 0;
-                int startYear = 2015;
-                int endYear = 2017;
-                int yearIndex = 1800;           // 每年循环1800次，分摊到每一天
+                int startYear = 2016;
+                int endYear = 2018;
+                int yearIndex = 900;           // 每年循环1800次，分摊到每一天
                 int progress = 0;
 
 
                 TableEx tableEx = new TableEx(AccountBookApplication.getContext());
                 tableEx.Delete(Constant.TABLE_USER,"name=?",new String[]{"test"});
+                tableEx.Delete(Constant.TABLE_CONSUMPTION,"user=?",new String[]{"test"});
 
 //                String path = "data/data/com.shen.accountbook2/databases/AccountBook2.db";
 //                SQLiteDatabase db = SQLiteDatabase.openDatabase(path,null,

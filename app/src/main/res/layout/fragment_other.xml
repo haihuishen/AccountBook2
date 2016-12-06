@@ -104,11 +104,147 @@
     <LinearLayout
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:orientation="vertical"
+        android:background="@drawable/bg_white">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="15dp"
+                android:text="SD卡存储空间: "/>
+            <TextView
+                android:id="@+id/tv_External_Memory_Size"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical|right"
+                android:textColor="@color/black"
+                android:textSize="15dp"/>
+        </LinearLayout>
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="30dp"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:gravity="center">-->
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:paddingLeft="10dp"-->
+                <!--android:gravity="center_vertical"-->
+                <!--android:textColor="@color/black"-->
+                <!--android:textSize="15dp"-->
+                <!--android:text="手机内部存储空间: "/>-->
+            <!--<TextView-->
+                <!--android:id="@+id/tv_Internal_Memory_Size"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:paddingRight="10dp"-->
+                <!--android:gravity="center_vertical|right"-->
+                <!--android:textColor="@color/black"-->
+                <!--android:textSize="15dp"/>-->
+        <!--</LinearLayout>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:text="本应用资源大小以及存放位置: "/>
+                <TextView
+                    android:id="@+id/tv_app_resource_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingRight="10dp"
+                    android:gravity="center_vertical|right"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_app_resource_location"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical|right"
+                android:textColor="@color/black"
+                android:textSize="15dp"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="10dp"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"
+                    android:text="当前用户资源大小以及存放位置: "/>
+                <TextView
+                    android:id="@+id/tv_app_user_resource_size"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingRight="10dp"
+                    android:gravity="center_vertical|right"
+                    android:textColor="@color/black"
+                    android:textSize="15dp"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_app_user_resource_location"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:paddingRight="10dp"
+                android:gravity="center_vertical|right"
+                android:ellipsize="start"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textSize="15dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
         android:background="@drawable/bg_white">
-
 
     </LinearLayout>
 </LinearLayout>

@@ -14,11 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.CreateFilesUtils;
+import com.shen.accountbook2.Utils.LogUtils;
 import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.domain.UserInfo;
 import com.shen.accountbook2.global.AccountBookApplication;
+
+import java.io.File;
 
 
 /**
@@ -132,6 +136,11 @@ public class LoginActivity extends Activity {
                             SharePrefUtil.saveBoolean(getBaseContext(), SharePrefUtil.KEY.AUTO_ISCHECK, mAotu.isChecked());
                         else
                             SharePrefUtil.saveBoolean(getBaseContext(), SharePrefUtil.KEY.AUTO_ISCHECK, mAotu.isChecked());
+
+
+                        File files = CreateFilesUtils.create(Constant.IMAGE_PATH + c_name);     // 创建"用户文件夹"
+                        if(files.exists())
+                            LogUtils.i("Login当前用户文件夹"+files.getAbsolutePath());
 
                         Intent intent = new Intent();
                         Bundle bundle = new Bundle();

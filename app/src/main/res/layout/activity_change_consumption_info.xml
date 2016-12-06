@@ -66,7 +66,8 @@
                 android:drawableRight="@mipmap/delete"
                 android:background="@drawable/bg_et_translucent"
                 android:hint="具体名称(可不填)"
-                android:textSize="25dp"/>
+                android:textSize="25dp"
+                android:textCursorDrawable="@null"/>
 
             <LinearLayout
                 android:layout_marginTop="5dp"
@@ -118,7 +119,8 @@
                     android:inputType="numberDecimal"
                     android:drawableRight="@mipmap/delete"
                     android:background="@drawable/bg_et_translucent"
-                    android:textSize="22dp"/>
+                    android:textSize="22dp"
+                    android:textCursorDrawable="@null"/>
             </LinearLayout>
 
             <LinearLayout
@@ -145,7 +147,8 @@
                     android:inputType="number"
                     android:drawableRight="@mipmap/delete"
                     android:background="@drawable/bg_et_translucent"
-                    android:textSize="22dp"/>
+                    android:textSize="22dp"
+                    android:textCursorDrawable="@null"/>
             </LinearLayout>
 
 
@@ -175,14 +178,26 @@
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:padding="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingLeft="10dp"
                     android:gravity="center"
                     android:orientation="vertical">
                     <Button
                         android:id="@+id/btn_camera"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:text="拍照"
+                        android:textColor="@drawable/btn_text_color_w_b"
+                        android:background="@drawable/btn_bg_transparency"
+                        />
+                    <Button
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/btn_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:text="相册"
                         android:textColor="@drawable/btn_text_color_w_b"
                         android:background="@drawable/btn_bg_transparency"
                         />
@@ -190,11 +205,11 @@
                         android:layout_marginTop="5dp"
                         android:id="@+id/btn_clear"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:text="清除"
                         android:textColor="@drawable/btn_text_color_w_b"
-                        android:background="@drawable/btn_bg_transparency"
-                        />
+                        android:background="@drawable/btn_bg_transparency"/>
                 </LinearLayout>
             </LinearLayout>
             <Button

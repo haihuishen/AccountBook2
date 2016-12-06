@@ -24,12 +24,12 @@ import lecho.lib.hellocharts.view.Chart;
  * Renderer for line chart. Can draw lines, cubic lines, filled area chart and scattered chart.
  */
 public class LineChartRenderer extends AbstractChartRenderer {
-    private static final float LINE_SMOOTHNESS = 0.16f;
-    private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;
-    private static final int DEFAULT_TOUCH_TOLERANCE_MARGIN_DP = 4;
+    private static final float LINE_SMOOTHNESS = 0.16f;                      // 平滑线
+    private static final int DEFAULT_LINE_STROKE_WIDTH_DP = 3;              // 默认的笔划宽度DP行
+    private static final int DEFAULT_TOUCH_TOLERANCE_MARGIN_DP = 4;         // 默认的公差保证金DP联系
 
-    private static final int MODE_DRAW = 0;
-    private static final int MODE_HIGHLIGHT = 1;
+    private static final int MODE_DRAW = 0;                                     // 模式画
+    private static final int MODE_HIGHLIGHT = 1;                                // 模式强调
 
     private LineChartDataProvider dataProvider;
 

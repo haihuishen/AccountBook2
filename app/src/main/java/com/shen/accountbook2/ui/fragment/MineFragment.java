@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.ImageFactory;
+import com.shen.accountbook2.Utils.LogUtils;
 import com.shen.accountbook2.Utils.ToFormatUtil;
 import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
@@ -27,13 +28,16 @@ import com.shen.accountbook2.ui.RegisterActivity;
 import com.shen.accountbook2.ui.fragment.activity.MineInfoActivity;
 import com.shen.accountbook2.ui.view.CircleImageView;
 
+import java.io.File;
+
 /**
  * Created by shen on 9/9 0009.
  * 我的
  */
 public class MineFragment extends BaseFragment{
 
-    private final String TAG = "MineFragment";
+    // 标志位，标志已经初始化完成。
+    private boolean isPrepared;
 
     private Button mBtnLogin;
     private Button mBtnRegister;
@@ -41,6 +45,7 @@ public class MineFragment extends BaseFragment{
     private static final int REQUEST_LOGIN = 1;             // 登录
     private static final int REQUEST_ASSETS = 2;            // 资产管理
     private static final int REQUEST_MINE_INFO = 3;         // 用户信息
+    private static final int REQUEST_ADD = 4;               // 添加消费
 
     private CircleImageView mCivHead;
     private Bitmap mBitmap;
@@ -115,6 +120,8 @@ public class MineFragment extends BaseFragment{
     @Override
     public void initData(){
         login();
+        isPrepared = true;
+        lazyLoad();
     }
 
     /**
@@ -129,12 +136,14 @@ public class MineFragment extends BaseFragment{
                 mIvSex.setImageResource(userInfo.getSex() == 1 ? R.mipmap.man : R.mipmap.woman);
                 mLayoutLogout.setVisibility(View.GONE);
                 mLayoutLogin.setVisibility(View.VISIBLE);
-                if(!TextUtils.isEmpty(userInfo.getImage())){
+
+                if(!TextUtils.isEmpty(userInfo.getImage()) &&
+                        new File(userInfo.getImage()).exists()){                // 如果"注册用户"没有图片
                     mBitmap = ImageFactory.getBitmap(userInfo.getImage());
-                }else {
-                    userInfo.setImage(Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png");
-                    AccountBookApplication.setUserInfo(userInfo);
-                    mBitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png");
+                }else {                                                     // 如果"注册用户"没有图片
+                    userInfo.setImage(Constant.CACHE_IMAGE_PATH + "cat_head.png");
+                    AccountBookApplication.setUserInfo(userInfo);           //
+                    mBitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "cat_head.png");
                 }
                 mCivHead.setImageBitmap(mBitmap);
                 getTotalAssets();
@@ -148,7 +157,19 @@ public class MineFragment extends BaseFragment{
         }
     }
 
-
+    @Override
+    protected void lazyLoad() {
+        LogUtils.i("MineFragment:========isPrepared:"+isPrepared+"=======isVisible:"+isVisible);
+        if(!isPrepared || !isVisible) {
+            return;
+        }
+        if(AccountBookApplication.isLogin()){
+            UserInfo userInfo = AccountBookApplication.getUserInfo();
+            if(userInfo != null){
+                getTotalAssets();
+            }
+        }
+    }
 
     /**
      * 获取"总资产"
@@ -232,13 +253,14 @@ public class MineFragment extends BaseFragment{
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
-        System.out.println("来了这里了：MineFragmnet");
+        LogUtils.i("来了这里了：MineFragmnet");
         if(requestCode == REQUEST_LOGIN){
             if(resultCode == LoginActivity.OK){
                 Bundle bundle = data.getExtras();
                 boolean b = bundle.getBoolean("isLogin");
-                if(b)
+                if(b) {
                     login();
+                }
             }
         }
         if(requestCode == REQUEST_ASSETS){
@@ -246,7 +268,6 @@ public class MineFragment extends BaseFragment{
                 Bundle bundle = data.getExtras();
                 boolean b = bundle.getBoolean("refresh");
                 if(b) {
-                    ToastUtil.show("刷新");
                     login();
                 }
             }
@@ -256,7 +277,15 @@ public class MineFragment extends BaseFragment{
                 Bundle bundle = data.getExtras();
                 boolean b = bundle.getBoolean("refresh");
                 if(b) {
-                    ToastUtil.show("刷新");
+                    login();
+                }
+            }
+        }
+        if(requestCode == REQUEST_ADD){
+            if(resultCode == AddActivity.OK){
+                Bundle bundle = data.getExtras();
+                boolean b = bundle.getBoolean("refresh");
+                if(b) {
                     login();
                 }
             }
@@ -284,6 +313,12 @@ public class MineFragment extends BaseFragment{
                     AccountBookApplication.setUserInfo(null);
                     mLayoutLogout.setVisibility(View.VISIBLE);
                     mLayoutLogin.setVisibility(View.GONE);
+
+                    mTvActualTotalAssets.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                    mTvActualTotalAssets.setText("实际总资产: 0");
+                    mTvTotalAssets.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                    mTvTotalAssets.setText("总资产: 0");
+                    mTvChangeTime.setText("");
                 }else
                     ToastUtil.show("请登陆后再操作!");
                 break;
@@ -305,7 +340,7 @@ public class MineFragment extends BaseFragment{
             case R.id.btn_add:                      // 添加"消费"
                 if(AccountBookApplication.isLogin()) {
                     intent = new Intent(mContext, AddActivity.class);
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_ADD);
                 }else
                     ToastUtil.show("请登陆后再操作!");
                 break;

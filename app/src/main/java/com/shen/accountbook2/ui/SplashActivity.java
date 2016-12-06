@@ -4,16 +4,22 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shen.accountbook2.R;
+import com.shen.accountbook2.Utils.CreateFilesUtils;
+import com.shen.accountbook2.Utils.LogUtils;
+import com.shen.accountbook2.Utils.MemorySizeUtils;
 import com.shen.accountbook2.Utils.SharePrefUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
-import com.shen.accountbook2.db.helper.DatabaseHelper;
 import com.shen.accountbook2.domain.UserInfo;
 import com.shen.accountbook2.global.AccountBookApplication;
 import com.shen.accountbook2.xml.PullTypeParser;
@@ -41,13 +47,12 @@ import java.io.InputStream;
  */
 public class SplashActivity extends Activity implements Thread.UncaughtExceptionHandler {
 
+
     private Handler handler = AccountBookApplication.getHandler();
     private Runnable runnable;
 
-    private DatabaseHelper mdbHelper;
-
-    /** APP当前的版本*/
-    private int dbVersion = 1;
+    private TextView mTvCountDown;//tv_count_down
+    MyCountDownTimer myCountDownTimer;  // 倒计时器
 
     private TableEx mTableEx = null;
 
@@ -65,28 +70,83 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
                 startActivity(intent);
                 finish();
             }
-        }, 3000);
+        }, 6000);
 
         //在此调用下面方法，才能捕获到线程中的异常
         Thread.setDefaultUncaughtExceptionHandler(this);
 
         initTypeXML("Type.xml");
+        initSrc(Constant.CACHE_IMAGE_PATH,"cat_head.png");
         initSrc(Constant.CACHE_IMAGE_PATH,"test.png");
         initSrc(Constant.CACHE_IMAGE_PATH,"no_preview_picture.png");
-        initSrc(Constant.IMAGE_PATH,"test.png");
-        initSrc(Constant.IMAGE_PATH,"no_preview_picture.png");
+        initSrc(Constant.IMAGE_PATH + "test","test.png");
+        initSrc(Constant.IMAGE_PATH + "test","no_preview_picture.png");
 
+        initView();
+        initListener();
         initData();
         initType();
         initLogin();
-//        copy();
+        //copy();
 
     }
 
+    private void initView() {
+        mTvCountDown = (TextView) findViewById(R.id.tv_count_down);
+    }
+
+    private void initListener(){
+
+        mTvCountDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SplashActivity.this, MainActivity.class);        // 跳转到主页面
+                startActivity(intent);
+                finish();
+                //如果之前创建了Runnable对象,那么就把这任务移除
+                if(runnable!=null){
+                    handler.removeCallbacks(runnable);
+                }
+            }
+        });
+
+    }
 
     private void initData() {
-
+        myCountDownTimer = new MyCountDownTimer(6000, 1000);
+        myCountDownTimer.start();
     }
+
+    /**
+     * 继承 CountDownTimer 防范
+     *
+     * 重写 父类的方法 onTick() 、 onFinish()
+     */
+    class MyCountDownTimer extends CountDownTimer {
+        /**
+         * @param millisInFuture    表示以毫秒为单位 倒计时的总数<br>
+         * 例如 millisInFuture=1000 表示1秒
+         * @param countDownInterval 表示 间隔 多少微秒 调用一次 onTick 方法<br>
+         * 例如: countDownInterval =1000 ; 表示每1000毫秒调用一次onTick()
+         *
+         */
+        public MyCountDownTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+        public void onFinish() {
+            mTvCountDown.setTextSize(10);
+            mTvCountDown.setText("正在跳转");
+        }
+        public void onTick(long millisUntilFinished) {
+           // mTvCountDown.setText("倒计时(" + millisUntilFinished / 1000 + ")");
+            mTvCountDown.setTextSize(25);
+            mTvCountDown.setText(millisUntilFinished / 1000 +"");
+        }
+    }
+
+
+
+
 
     /**
      * 获取"消费类型"，添加到全局变量
@@ -159,16 +219,7 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
      * @param imageName     图片文件名(文件名)
      */
     private void initSrc(String path, String imageName){
-        File files = new File(path);
-        if (!files.exists()) {
-            try {
-                //按照指定的路径创建文件夹
-                files.mkdirs();
-            } catch (Exception e) {
-                // TODO: handle exception
-                System.out.println("创建文件夹失败："+path);
-            }
-        }
+        File files = CreateFilesUtils.create(path);     // 创建"文件夹"
         File file = new File(files, imageName);
 //        if(file.exists()){
 //            return;
@@ -212,11 +263,18 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
      * 复制
      */
     private void copy(){
+
+        //  获取该程序的安装包路径
+        String path=getApplicationContext().getPackageResourcePath();
+        File file3 = this.getDatabasePath("AccountBook2.db").getParentFile();
+        File file2 = this.getDatabasePath("AccountBook2.db");
         File file1 = new File("data/data/com.shen.accountbook2/databases/AccountBook2.db");
-        File file = new File(Constant.CACHE_IMAGE_PATH, "AccountBook2.db");
-//        if(file.exists()){
-//            return;
-//        }
+        LogUtils.i("file3:"+file3.getAbsolutePath());           // /data/data/com.shen.accountbook2/databases
+        LogUtils.i("file2:"+file2.getAbsolutePath());           // /data/data/com.shen.accountbook2/databases/AccountBook2.db
+        LogUtils.i("path:"+path);                               // /data/app/com.shen.accountbook2-1.apk
+
+        if(!MemorySizeUtils.externalMemoryAvailable())                // 判断SDCard是否可用
+            return;
 
         InputStream stream = null;
         FileOutputStream fos = null;
@@ -225,11 +283,11 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
         try {
             // getAssets()拿到"资产目录"的文件夹（工程目录下的assets目录）
             // ***打开"dbName名字的文件"    （拿到他的输入流）
-            stream = new FileInputStream(file1);
+            stream = new FileInputStream(file2);
 
             //3,将读取的内容写入到指定文件夹的文件中去
             // ***拿到"file文件"的"输出流"
-            fos = new FileOutputStream(Constant.CACHE_IMAGE_PATH+"/AccountBook.db");
+            fos = new FileOutputStream(Constant.CACHE_IMAGE_PATH+"AccountBook.db");
 
             //4,每次的读取内容大小
             byte[] bs = new byte[1024];
@@ -292,6 +350,10 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
                     userInfo.setQq(c_qq);
 
                     AccountBookApplication.setUserInfo(userInfo);
+
+                    File files = CreateFilesUtils.create(Constant.IMAGE_PATH + c_name);     // 创建"用户文件夹"
+                    if(files.exists())
+                        LogUtils.i("SplashActivity当前用户文件夹"+files.getAbsolutePath());
                 }
                 else{
                     Toast.makeText(this,"自动登录失败：用户或密码错误", Toast.LENGTH_SHORT);
@@ -302,6 +364,9 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
                 AccountBookApplication.setIsLogin(false);
                 AccountBookApplication.setUserInfo(null);
             }
+
+            mTableEx.closeDBConnect();
+            cursor.close();
         }
     }
 
@@ -320,6 +385,22 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
 
         return super.onTouchEvent(event);
     }
+
+    /************************************************************************************/
+    // 按钮监听
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {                 // 如果点击的是"返回按钮"
+
+            //如果之前创建了Runnable对象,那么就把这任务移除
+            if(runnable!=null){
+                handler.removeCallbacks(runnable);
+            }
+
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
 
     @Override
     public void uncaughtException(Thread thread, Throwable ex) {

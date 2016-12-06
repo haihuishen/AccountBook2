@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--  rotate:旋转
+	android:fromDegrees="0"		从0度
+	android:toDegrees="-360"	到-360度
+	
+	旋转中心点
+    android:pivotX="50%"		相对于自己（控件本身）的x轴的一半
+    android:pivotY="50%"		相对于自己（控件本身）的y轴的一半	
+     						-->
+<rotate xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fromDegrees="0"
+    android:pivotX="50%"
+    android:pivotY="50%"
+    android:toDegrees="360" >
+
+    
+    <!-- shape:形状		
+    	android:shape="ring"圆形
+    	android:innerRadius="20dp"  内圆半径 
+    	android:thickness="5dp"		圆环厚度
+    	android:useLevel="false"	？？？
+    	
+    	android:innerRadiusRatio="2.5"		内圆半径比
+        android:thicknessRatio="10"			圆环厚度比
+    	-->
+    <shape
+        android:innerRadius="15dp"
+        android:shape="ring"
+        android:thickness="3dp"
+        android:useLevel="false" >
+        
+        <!-- gradient:倾斜度
+        	android:type="sweep"	"sweep"：扫描类型 -->
+        <gradient
+            android:centerColor="#9f00"
+            android:endColor="#f00"
+            android:startColor="#fff"
+            android:type="sweep" />
+    </shape>
+
+</rotate>

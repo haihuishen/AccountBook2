@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
@@ -107,7 +106,7 @@ public class ReportForM_LineChar_Activity extends FragmentActivity implements Vi
     PlaceholderFragment placeholderFragment;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_month);
 
@@ -118,7 +117,8 @@ public class ReportForM_LineChar_Activity extends FragmentActivity implements Vi
         boolean select = SharePrefUtil.getBoolean(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_MONTH_ISCHECK,false);
         int type = SharePrefUtil.getInt(getApplicationContext(),SharePrefUtil.REPORT_KEY.SELECTYX_MONTH_TYPE,2);
 
-        placeholderFragment = new PlaceholderFragment(label, fill, select, type);
+        placeholderFragment = PlaceholderFragment.newInstance(label, fill, select, type);
+        //placeholderFragment = new PlaceholderFragment(label, fill, select, type);
 
         if (savedInstanceState == null) {
             // 拿到fragment管理器 , 将"PlaceholderFragment" new出来，提交给"R.id.container"
@@ -736,22 +736,52 @@ public class ReportForM_LineChar_Activity extends FragmentActivity implements Vi
         public PlaceholderFragment() {
         }
 
-        /**
-         *
-         * @param showLable     在"节点(峰点)"中显示"文本(峰点值)" false:不显示/true:显示
-         * @param isFill        区域的填充颜色(图形和坐标轴包围的区域) false:不填充/true:填充
-         * @param isZoom        是否可以触摸放大
-         * @param zoomType      触摸放大类型
-         */
-        public PlaceholderFragment(boolean showLable, boolean isFill, boolean isZoom, int zoomType) {
-            hasLabels = showLable;
-            isFilled = isFill;
-            this.isZoom = isZoom;
+//        /**
+//         *
+//         * @param showLable     在"节点(峰点)"中显示"文本(峰点值)" false:不显示/true:显示
+//         * @param isFill        区域的填充颜色(图形和坐标轴包围的区域) false:不填充/true:填充
+//         * @param isZoom        是否可以触摸放大
+//         * @param zoomType      触摸放大类型
+//         */
+//        public PlaceholderFragment(boolean showLable, boolean isFill, boolean isZoom, int zoomType) {
+//            hasLabels = showLable;
+//            isFilled = isFill;
+//            this.isZoom = isZoom;
+//
+//            if(zoomType == 0)this.zoomType = ZoomType.HORIZONTAL;
+//            else if(zoomType == 1)this.zoomType = ZoomType.VERTICAL;
+//            else if(zoomType == 2)this.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL;
+//
+//        }
+        public static PlaceholderFragment newInstance(boolean showLable, boolean isFill, boolean isZoom, int zoomType) {
+            PlaceholderFragment newFragment = new PlaceholderFragment();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("showLable", showLable);
+            bundle.putBoolean("isFill", isFill);
+            bundle.putBoolean("isZoom", isZoom);
+            bundle.putInt("zoomType", zoomType);
 
-            if(zoomType == 0)this.zoomType = ZoomType.HORIZONTAL;
-            else if(zoomType == 1)this.zoomType = ZoomType.VERTICAL;
-            else if(zoomType == 2)this.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL;
+            newFragment.setArguments(bundle);
+            return newFragment;
 
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+
+            Bundle args = getArguments();
+            if (args != null) {
+
+                hasLabels = args.getBoolean("showLable");
+                isFilled = args.getBoolean("isFill");
+                isZoom = args.getBoolean("isZoom");
+                int zoomType = args.getInt("zoomType");
+
+                if(zoomType == 0)this.zoomType = ZoomType.HORIZONTAL;
+                else if(zoomType == 1)this.zoomType = ZoomType.VERTICAL;
+                else if(zoomType == 2)this.zoomType = ZoomType.HORIZONTAL_AND_VERTICAL;
+            }
         }
 
         public int[] getNumberOfPoints() {
@@ -785,6 +815,7 @@ public class ReportForM_LineChar_Activity extends FragmentActivity implements Vi
         public void setRandomNumbersTab(float[][] randomNumbersTab) {
             this.randomNumbersTab = randomNumbersTab;
         }
+
 
 
         @Override

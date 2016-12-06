@@ -73,7 +73,8 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
     private TextView tvQQ;
 
     private Bitmap mBitmap;
-    private String tempImagePath;
+    /** "裁剪"过后图片的"结对路径"*/
+    private String tempImagePath;               // "裁剪"过后图片的"结对路径"
     private CircleImageView civHead;
 
     private ChangeDialog changeDialogQQ;
@@ -202,12 +203,13 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
             tvBirthday.setText(userInfo.getBirthday());
             tvQQ.setText(userInfo.getQq());
 
-            if(!TextUtils.isEmpty(userInfo.getImage())) {
+            if(!TextUtils.isEmpty(userInfo.getImage()) &&
+                new File(userInfo.getImage()).exists()) {                       // 如果"注册用户"有图片
                 tempImagePath = userInfo.getImage();
                 mBitmap = ImageFactory.getBitmap(userInfo.getImage());
-            }else {
-                tempImagePath = Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png";
-                mBitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "/no_preview_picture.png");
+            }else {                                                             // 如果"注册用户"没有图片
+                tempImagePath = Constant.CACHE_IMAGE_PATH + "cat_head.png";
+                mBitmap = ImageFactory.getBitmap(Constant.CACHE_IMAGE_PATH + "cat_head.png");
             }
             civHead.setImageBitmap(mBitmap);
         }
@@ -409,10 +411,8 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
                 changeDialogQQ.dismiss();
             }
         };
-        // changeDialogQQ.setTitle("更改QQ");
 
-        // 安卓弹出ProgressDialog进度框之后触摸屏幕就消失了的解决方法
-        changeDialogQQ.setCanceledOnTouchOutside(false);
+        // changeDialogQQ.setTitle("更改QQ");
         changeDialogQQ.show();
     }
 
@@ -465,12 +465,10 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
 
             case R.id.btn_title_confirm:                               // 确认
                 confirm();
-                ToastUtil.show("确认");
                 break;
 
             case R.id.layout_head_image:                               // 更换头像
                 showPopupWindow(SHOW_POP);
-                ToastUtil.show("更换头像");
                 break;
 
             case R.id.layout_user:                                      // 名称是不能改的
@@ -478,12 +476,10 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
 
             case R.id.layout_sex:                                        // 性别更改
                 pvOptionsSex.show();                                     // 点击弹出选项选择器
-                ToastUtil.show("性别更改");
                 break;
 
             case R.id.layout_birthday:                                         // 年龄更改
                 pvTimeAge.show();                                          // 弹出时间选择器
-                ToastUtil.show("年龄更改");
                 break;
 
             case R.id.layout_qq:                                         // QQ更改
@@ -491,13 +487,11 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
                     showDialogQQ();
                 else
                     changeDialogQQ.show();
-                ToastUtil.show("QQ更改");
                 break;
 
             case R.id.layout_password:                                  // 密码更改
                 intent = new Intent(MineInfoActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
-                ToastUtil.show("密码更改");
                 break;
 
             /******************************* pop ************************************/
@@ -522,12 +516,10 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
                 mBg.startAnimation(in);             // 执行动画
                 mBg.setVisibility(View.VISIBLE);
                 mParent.setVisibility(View.VISIBLE);
-                ToastUtil.show("查看大头像");
                 break;
 
             case R.id.tv_change_image:                                 // popupwindow上的"更换头像"
                 showPopupWindow(SHOW_POPS);
-                ToastUtil.show("更换头像");
                 break;
 
             case R.id.tv_cancel:                                        // popupwindow上的"取消"
@@ -575,61 +567,62 @@ public class MineInfoActivity extends Activity implements View.OnClickListener,O
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 
-        if (requestCode == mPhotoSelectedHelper.TAKE_PHOTO) {
+        if (requestCode == mPhotoSelectedHelper.TAKE_PHOTO) {           // "拍照"的返回
             if (!(resultCode == RESULT_OK)) {
                 return;
             }
 
-            if (data != null) {
-                mPhotoSelectedHelper.cropImageUri(data.getData(), 200, 200, AccountBookApplication.getUserInfo().getUserName());
-            } else {
-                mPhotoSelectedHelper.cropImageUri(mPhotoSelectedHelper.getCaptureUri(), 200, 200, AccountBookApplication.getUserInfo().getUserName());
+            if (data != null) {              // 如果返回的Intent不为"null" 从"Intent"拿到图片数据
+                mPhotoSelectedHelper.cropImageUri(data.getData(), 200, 200,
+                        AccountBookApplication.getUserInfo().getUserName());
+            } else {                        // 如果返回的Intent为"null" 从"拍照前设置的路径"拿到图片数据
+                mPhotoSelectedHelper.cropImageUri(mPhotoSelectedHelper.getCaptureUri(), 200, 200,
+                        AccountBookApplication.getUserInfo().getUserName());
             }
 
 
-        } else if (requestCode == mPhotoSelectedHelper.PHOTO_CROP) {
+        } else if (requestCode == mPhotoSelectedHelper.PHOTO_CROP) {    // "裁剪"的返回
             if (!(resultCode == RESULT_OK)) {
                 return;
             }
             tempImagePath = mPhotoSelectedHelper.getCropPath();
 
             civHead.setImageBitmap(ImageFactory.getBitmap(tempImagePath));
-//            if (cropPath != null) {
-//                pDialog.show();
-//                new Thread() {
-//                    @Override
-//                    public void run() {
-//                        super.run();
-//                        upload(cropPath, "tack");
-//                    }
-//                }.start();
-//            }
-        } else if (requestCode == mPhotoSelectedHelper.PIC_PHOTO) {
+            // 上传到网站
+            // if (cropPath != null) {
+            //     pDialog.show();
+            //     new Thread() {
+            //         @Override
+            //         public void run() {
+            //             super.run();
+            //             upload(cropPath, "tack");
+            //         }
+            //     }.start();
+            // }
+        } else if (requestCode == mPhotoSelectedHelper.PIC_PHOTO) {     // 从"相册"返回
             if (data == null) {
                 return;
             } else {
                 Uri uri = data.getData();
                 if (uri != null) {
-                   String path = SetImageUtil.getPath(this, uri);
-//                    if (path != null) {
-//                        pDialog.show();
-//                        new Thread() {
-//                            @Override
-//                            public void run() {
-//                                super.run();
-//                                upload(path, "pic");
-//                            }
-//                        }.start();
-//                    }
-                    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                    System.out.println("PIC_PHOTO:" + uri.getPath());
-                    System.out.println("path:" + path);
-                    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                   String path = SetImageUtil.getPath(this, uri);       // 从"相册"中获取"图片"的路径要解析的
+                    // 上传到网站
+                    //         if (path != null) {
+                    //             pDialog.show();
+                    //             new Thread() {
+                    //                 @Override
+                    //                 public void run() {
+                    //                     super.run();
+                    //                     upload(path, "pic");
+                    //                 }
+                    //             }.start();
+                    //         }
 
                     File mediaFile = new File(path);
                     //Uri u = Uri.parse("/storage/emulated/0/Pictures/com.shen.accountbook2/test_20161031_014039.jpg");
                     Uri u = Uri.fromFile(mediaFile);
-//                    civHead.setImageBitmap(ImageFactory.getBitmap(path));
+                    // civHead.setImageBitmap(ImageFactory.getBitmap(path));
+                    // 进去裁剪
                     mPhotoSelectedHelper.cropImageUri(u, 200, 200, AccountBookApplication.getUserInfo().getUserName());
                 }
             }

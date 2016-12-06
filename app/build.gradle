@@ -4,6 +4,9 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
+
+    useLibrary 'org.apache.http.legacy'  // httpClient
+
 //    versionCode:主要是用于版本升级所用，是INT类型的，第一个版本定义为1，以后递增，这样只要判断该值就能确定是否需要升级，该值不显示给用户。
 //    versionName:这个是我们常说明的版本号，由三部分组成<major>.<minor>.<point>,该值是个字符串，可以显示给用户。
 //    关于版本号有两个值，如下面的例子
@@ -22,11 +25,57 @@ android {
         versionCode 1
         versionName "1.0.0"
     }
+
+
+//    //签名
+//    signingConfigs {
+//        debug {
+//            storeFile file("/home/lippi/.android/debug.keystore")
+//        }
+//        relealse {
+//            //这样写就得把demo.jk文件放在项目目录
+//            storeFile file("recorder.jks")
+//            storePassword "recorder"
+//            keyAlias "recorder"
+//            keyPassword "recorder"
+//        }
+//    }
+
     buildTypes {
         release {
-            minifyEnabled false
+
+//            // 不显示Log
+//            buildConfigField "boolean", "LOG_DEBUG", "false"
+//            //混淆
+//            minifyEnabled true
+//            //Zipalign优化
+//            zipAlignEnabled true
+//
+//            // 移除无用的resource文件
+//            shrinkResources true
+//            //前一部分代表系统默认的android程序的混淆文件，该文件已经包含了基本的混淆声明
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard.cfg'
+//            //签名
+//            signingConfig signingConfigs.relealse
+
+            //混淆
+            minifyEnabled true
+            //前一部分代表系统默认的android程序的混淆文件，该文件已经包含了基本的混淆声明
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    // 编译后的apk名字!
+    android.applicationVariants.all {
+        variant -> variant.outputs.each {
+            output -> output.outputFile = new File(output.outputFile.parent, "AccountBook2_" + defaultConfig.versionCode +  "_v" + defaultConfig.versionName +"_"+buildType.name+ ".apk");
+        }
+    }
+
+    // Error:(4) Error: "ssdk_instapager_login_html" is not translated in "en" (English) [MissingTranslation]
+    lintOptions{
+        checkReleaseBuilds false
+        //abortOnError false
     }
 }
 
@@ -42,4 +91,14 @@ dependencies {
     compile project(path: ':pickerview')
     compile project(path: ':CompactCalendarView')
     compile 'com.jiechic.library:xUtils:2.6.14'
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/gson-2.2.4.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/MobCommons-2016.1107.1809.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/MobTools-2016.1107.1809.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-Core-2.7.10.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-QZone-2.7.10.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-SinaWeibo-2.7.10.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-Wechat-2.7.10.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-Wechat-Core-2.7.10.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-Wechat-Moments-2.7.10.jar')
+    compile files('F:/AndroidStudioProjects/AccountBook2/libraries/sharedsdk/ShareSDK-YouDao-2.7.10.jar')
 }

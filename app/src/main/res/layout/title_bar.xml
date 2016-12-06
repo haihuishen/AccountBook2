@@ -63,6 +63,8 @@
             android:textColor="@drawable/btn_text_color_w_b"
             android:text="添加"
             android:visibility="gone"/>
+
+        <!--折线图的设置-->
         <ImageButton
             android:id="@+id/btn_title_set"
             android:layout_width="wrap_content"
@@ -71,6 +73,29 @@
             android:textColor="@drawable/btn_text_color_w_b"
             android:src="@mipmap/img_menu"
             android:visibility="gone"/>
+
+        <!--shopping中 图片选择，listview 还是选择宫格(网格)-->
+        <ImageButton
+            android:id="@+id/btn_lv_gv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textColor="@drawable/btn_text_color_w_b"
+            android:src="@mipmap/icon_pic_list_type"
+            android:visibility="gone"/>
+
+
+        <!--分享-->
+        <ImageButton
+            android:id="@+id/btn_shared"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textColor="@drawable/btn_text_color_w_b"
+            android:src="@mipmap/shared"
+            android:visibility="gone"/>
+
+
     </RelativeLayout>
 
 
