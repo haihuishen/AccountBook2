@@ -199,7 +199,7 @@ public class AssetManagerActivity extends Activity implements View.OnClickListen
                 viewHolder.tvBankNum.setVisibility(View.GONE);
 
             if (assetType.equals(Constant.CREDIT)) {                         // 信用卡 : 蓝色
-                viewHolder.layoutBg.setBackgroundResource(R.drawable.bg_bule);
+                viewHolder.layoutBg.setBackgroundResource(R.drawable.bg_bule_asset);
                 viewHolder.tvWhat.setText(what);
                 viewHolder.tvAsset.setTextColor(mContext.getResources().getColor(R.color.red));
                 viewHolder.tvAsset.setText("资金: " + asset);
@@ -209,7 +209,7 @@ public class AssetManagerActivity extends Activity implements View.OnClickListen
                 viewHolder.tvAsset.setTextColor(mContext.getResources().getColor(R.color.forestgreen));
                 viewHolder.tvAsset.setText("资金: " + asset);
             } else if (assetType.equals(Constant.COMPANY)) {                 // 借贷公司 : 粉色
-                viewHolder.layoutBg.setBackgroundResource(R.drawable.bg_pink);
+                viewHolder.layoutBg.setBackgroundResource(R.drawable.bg_pink_asset);
                 viewHolder.tvWhat.setText(what);
                 viewHolder.tvAsset.setTextColor(mContext.getResources().getColor(R.color.red));
                 viewHolder.tvAsset.setText("资金: " + asset);
@@ -229,7 +229,7 @@ public class AssetManagerActivity extends Activity implements View.OnClickListen
                 viewHolder.tvAsset.setTextColor(mContext.getResources().getColor(R.color.forestgreen));
                 viewHolder.tvAsset.setText("资金: " + asset);
             } else if (assetType.equals(Constant.ME)) {                      // 个人现金 : 橙色
-                viewHolder.layoutBg.setBackgroundResource(R.drawable.bg_orange);
+                viewHolder.layoutBg.setBackgroundResource(R.drawable.bg_orange_asset);
                 viewHolder.tvWhat.setText(what);
                 viewHolder.tvAsset.setTextColor(mContext.getResources().getColor(R.color.forestgreen));
                 viewHolder.tvAsset.setText("资金: " + asset);

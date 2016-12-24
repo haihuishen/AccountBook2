@@ -5,7 +5,7 @@
        android:orientation="vertical" >
     <!--  <solid android:color="#EEEEEE" /> 这里是背景的颜色-->
 
-    <solid android:color="#40FF1493" />
+    <solid android:color="#40f2b84b" />
     <!-- 这里是边框的颜色和宽度 -->
     <!--<stroke android:width="2dp" android:color="#30ef4c" />-->
 
