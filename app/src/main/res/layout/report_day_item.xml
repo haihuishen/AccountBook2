@@ -6,55 +6,43 @@
               android:background="@drawable/bg_text_translucent">
     <RelativeLayout
         android:layout_marginBottom="2dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="20dp"
         android:paddingRight="20dp">
 
-        <TextView
-            android:id="@+id/tv_day"
-            android:paddingLeft="5dp"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:text="x日"
-            android:textColor="#000000"
-            android:textSize="15dp"
-            android:textStyle="bold"
-            android:gravity="left"
-            android:layout_alignParentLeft="true"/>
-
         <LinearLayout
             android:id="@+id/layout_money"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:orientation="vertical"
-            >
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_day"
+                android:paddingLeft="5dp"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="x日"
+                android:textColor="#000000"
+                android:textSize="15dp"
+                android:textStyle="bold"
+                android:gravity="left"/>
 
             <TextView
                 android:id="@+id/tv_Price"
                 android:paddingRight="5dp"
-                android:layout_width="120dp"
-                android:layout_height="0dp"
+                android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:text="-0"
                 android:textColor="#f52116"
                 android:textSize="15dp"
                 android:textStyle="bold"
-                android:gravity="right"
-                android:layout_alignParentLeft="true"/>
+                android:gravity="right"/>
 
-            <!--<TextView-->
-            <!--android:id="@+id/tv_AllPrice"-->
-            <!--android:layout_width="70dp"-->
-            <!--android:layout_height="0dp"-->
-            <!--android:layout_weight="1"-->
-            <!--android:text="-0"-->
-            <!--android:textColor="#0bab16"-->
-            <!--android:textSize="15dp"-->
-            <!--android:gravity="center"-->
-            <!--android:layout_alignParentLeft="true"/>-->
         </LinearLayout>
 
     </RelativeLayout>

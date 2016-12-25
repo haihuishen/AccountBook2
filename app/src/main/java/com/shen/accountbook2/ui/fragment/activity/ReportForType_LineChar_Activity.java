@@ -591,7 +591,6 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
 
         /*年月*/
         if(dates.length == 1){                                // 年
-            ToastUtil.show("dates.length == 1");
             numberOfPoints[0] = 12 + 1;                     // 因为从0开始的，但是这里从 1开始，所以要多加一个点
             NumbersTab = new float[1][numberOfPoints[0]];
 
@@ -603,7 +602,6 @@ public class ReportForType_LineChar_Activity extends FragmentActivity implements
                         "strftime('%Y-%m',date)", null, null);
 
             }else if(types.length == 2) {                                 // 次类型
-                ToastUtil.show("types.length == 2");
                 cursor = tableEx.Query(Constant.TABLE_CONSUMPTION,
                         new String[]{"sum(price),strftime('%Y-%m',date)"}, "date like ? and user=? and maintype=? and type1=?",
                         new String[]{date + "%", AccountBookApplication.getUserInfo().getUserName(), types[0], types[1]},

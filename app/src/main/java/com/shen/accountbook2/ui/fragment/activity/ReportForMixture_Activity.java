@@ -1,6 +1,7 @@
 package com.shen.accountbook2.ui.fragment.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -40,9 +41,20 @@ import java.util.Date;
  */
 public class ReportForMixture_Activity extends BaseReportActivity implements PopupWindow.OnDismissListener {
 
+    public static final int DATE_YEAR = 1;
+    public static final int DATE_YEARMONTH = 2;
+    public static final int DATE_MAINTYPE = 3;
+    public static final int DATE_TYPE1 = 4;
+
+    public static final int REQ_CODE = 1;               // 请求码 到ConsumerDetalis_Activity
+
+    // 传递过去的内容
+    private int mCurrentState;
+    private String mCurrentTime;
+    private String mCurrentContent;
+
     private Context mContext;
     private TextView mTvChoiceYM;
-
 
     //popwindow
     RelativeLayout mRlPopNull;
@@ -238,23 +250,27 @@ public class ReportForMixture_Activity extends BaseReportActivity implements Pop
     private void query() {
 
         TableEx tableEx = new TableEx(AccountBookApplication.getContext());
-        String ChoiceYM_Y = mTvChoiceYM.getText().toString();
+        String ChoiceYM_Y = mTvChoiceYM.getText().toString();               // 选择的时间——"年月"或"年"
         String y_ym;
         if(!TextUtils.isEmpty(ChoiceYM_Y)) {
             y_ym = ChoiceYM_Y + "-%";
+            mCurrentTime = y_ym;
 
-            if (mCbType.isChecked()) {
-
+            if (mCbType.isChecked()) {                                          // 选择了"按类型查询"
                 if(!TextUtils.isEmpty(mTvType.getText().toString())) {
                     if(mTvType.getText().toString().equals("主类型")) {
                         cursor = tableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"sum(price) as _id", "maintype"},
                                 "date like ? and user=?", new String[]{y_ym, AccountBookApplication.getUserInfo().getUserName()},
-                                "maintype", null, null);
+                                "maintype", null, "maintype");
+
+                        mCurrentState = DATE_MAINTYPE;
                     }else{
                         // 不要使用 "+" 连接字段; 会当作"数值"的， 使用 "||" 代替 "+"
                         cursor = tableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"sum(price) as _id", "(maintype||'-'||type1)"},
                                 "date like ? and user=?", new String[]{y_ym, AccountBookApplication.getUserInfo().getUserName()},
-                                "type1", null, "maintype");
+                                "maintype,type1", null, "maintype");
+
+                        mCurrentState = DATE_TYPE1;
                     }
                 }else{
                     ToastUtil.show("请选择\"主类型\"或\"次类型\"");
@@ -266,10 +282,14 @@ public class ReportForMixture_Activity extends BaseReportActivity implements Pop
                             "date like ? and user=?", new String[]{y_ym, AccountBookApplication.getUserInfo().getUserName()},
                             "strftime('%Y年%m月',date)", null, null);         // 以"年月"分组，合计
 
+                    mCurrentState = DATE_YEAR;
+
                 }else if (ChoiceYM_Y.split("-").length == 2) {                  // 2016-11 ==> length==2
                     cursor = tableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"sum(price) as _id", "strftime('%d日',date)"},
                             "date like ? and user=?", new String[]{y_ym, AccountBookApplication.getUserInfo().getUserName()},
                             "strftime('%Y年%m月%d日',date)", null, null);   // 以"年月日"分组，合计
+
+                    mCurrentState = DATE_YEARMONTH;
                 }
             }
 
@@ -314,7 +334,7 @@ public class ReportForMixture_Activity extends BaseReportActivity implements Pop
     //        但是在重绘(比如修改条目里的TextView的内容)的时候不会被调用
     //    (2)bindView：从代码中可以看出在绘制Item之前一定会调用bindView方法它在重绘的时候也同样被调用
     //          CursorAdapter还有一个重要的方法 public void changeCursor (Cursor cursor)：
-    public static class MyCursorAdapter extends CursorAdapter {
+    public class MyCursorAdapter extends CursorAdapter {
 
         //超重点，cursor 中查询出来的字段 必须有一个是"_id"， 没有的话，可以将"列"重命名
         // 如：——"sum(price) as _id"
@@ -353,7 +373,7 @@ public class ReportForMixture_Activity extends BaseReportActivity implements Pop
             final ViewHolder viewHolder=(ViewHolder) view.getTag();   // 拿出来
 
             float sumPrice = Float.valueOf(cursor.getString(0));
-            String dateOrType = cursor.getString(1);
+            final String dateOrType = cursor.getString(1);
 
             viewHolder.pbPrice.setMax(100);
             viewHolder.pbPrice.setProgress((int)((sumPrice/progressMax)*100));
@@ -362,9 +382,23 @@ public class ReportForMixture_Activity extends BaseReportActivity implements Pop
             viewHolder.tvProgressbar.setText(ToFormatUtil.toDecimalFormat((sumPrice/progressMax)*100,2)+"%");
             viewHolder.tvPrice.setText("-"+ToFormatUtil.toDecimalFormat(sumPrice,2));
 
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ReportForMixture_Activity.this, ConsumerDetails_Activity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("type", mCurrentState);
+                    bundle.putString("time", mCurrentTime);
+                    bundle.putString("content", dateOrType);
+
+                    intent.putExtras(bundle);
+                    startActivityForResult(intent, REQ_CODE);
+                }
+            });
+
         }
 
-        static class ViewHolder{
+        class ViewHolder{
             TextView tvDay;
             ProgressBar pbPrice;
             TextView tvProgressbar;
@@ -456,4 +490,40 @@ public class ReportForMixture_Activity extends BaseReportActivity implements Pop
         return super.onKeyDown(keyCode, event);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // TODO Auto-generated method stub
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQ_CODE){                       // 拍照获取图片
+            if (resultCode == ConsumerDetails_Activity.OK) {
+                Bundle bundle = data.getExtras();
+                int type = bundle.getInt("type");
+                String time = bundle.getString("time");
+                switch (type){
+                    case DATE_YEAR:
+                        mCbType.setChecked(false);
+                        mTvType.setText("");
+                        break;
+                    case DATE_YEARMONTH:
+                        mCbType.setChecked(false);
+                        mTvType.setText("");
+                        break;
+                    case DATE_MAINTYPE:
+                        mCbType.setChecked(true);
+                        mTvType.setText("主类型");
+                        break;
+                    case DATE_TYPE1:
+                        mCbType.setChecked(true);
+                        mTvType.setText("次类型");
+                        break;
+                }
+
+                mTvChoiceYM.setText(time.replace("-%", ""));
+                query();
+
+            }
+        }
+    }
 }

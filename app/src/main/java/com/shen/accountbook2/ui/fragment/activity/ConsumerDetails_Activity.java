@@ -26,13 +26,10 @@ import android.widget.TextView;
 
 import com.bm.library.Info;
 import com.bm.library.PhotoView;
-import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.shen.accountbook2.R;
 import com.shen.accountbook2.Utils.GetWindowParaUtils;
 import com.shen.accountbook2.Utils.ImageFactory;
 import com.shen.accountbook2.Utils.LogUtils;
-import com.shen.accountbook2.Utils.MemorySizeUtils;
-import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.global.AccountBookApplication;
@@ -41,14 +38,7 @@ import com.shen.accountbook2.ui.view.MyMenuRecyclerView.RecyclerViewCursorAdapte
 import com.shen.accountbook2.ui.view.MyMenuRecyclerView.SlidingButtonView;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
-
-import cn.sharesdk.framework.ShareSDK;
-import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -57,29 +47,17 @@ import static android.view.View.VISIBLE;
 
 
 //public class ReportForD_Activity extends AppCompatActivity implements Adapter.IonSlidingViewClickListener{
-public class ReportForD_Activity extends Activity implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>{
+public class ConsumerDetails_Activity extends Activity implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>{
+
+    public static final int OK = 1;
 
     private Context mContext;
-
-    // String[] dayNames = {"Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"};
-    String[] dayNames = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
-
-    // 日历实例
-    // private Calendar currentCalender = Calendar.getInstance(Locale.getDefault());
-    // Locale.getDefault()获取当前的语言环境，把返回值放进SimpleDateFormat的构造里，就能实现通用化，
-    // 因此format.format(date)方法返回的值也会根据当前语言来返回对应的值
-    // private SimpleDateFormat dateFormatForDisplaying = new SimpleDateFormat("dd-M-yyyy hh:mm:ss a", Locale.getDefault());
-    private SimpleDateFormat dateFormatForYMD = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private boolean shouldShow = false;                             // false:关闭 true:打开
-    private CompactCalendarView compactCalendarView;
 
     /******************************标题***********************************/
     private TextView tvTitle;
     private ImageButton btnMenu;
     private ImageButton btnBack;
     private ImageButton btnShared;
-
-    private TextView mTvDate;              // 日期;可弹出收回"日历"
 
     private TextView mTvAllPriceOfDay;    // 日总消费
     /*****************************列表************************************/
@@ -103,14 +81,22 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
 
     private Handler handler = AccountBookApplication.getHandler();
 
+    // 传递过来的内容
+    private static int mCurrentState;
+    public static String mCurrentTime;
+    public static String mCurrentContent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report_day_text);
+        setContentView(R.layout.activity_consumer_details);
 
         mContext = this;
 
-        ShareSDK.initSDK(mContext);     // 初始化ShareSDK
+        Intent intent = getIntent();
+        mCurrentState = intent.getExtras().getInt("type");
+        mCurrentTime = intent.getExtras().getString("time");
+        mCurrentContent = intent.getExtras().getString("content");
 
         initView();
         initListener();
@@ -128,10 +114,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         btnBack = (ImageButton) findViewById(R.id.btn_back);
         btnShared = (ImageButton) findViewById(R.id.btn_shared);
 
-        mTvDate = (TextView) findViewById(R.id.tv_date);
         mTvAllPriceOfDay = (TextView) findViewById(R.id.tv_all_price);
-
-        compactCalendarView = (CompactCalendarView) findViewById(R.id.compactcalendar_view);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
 
@@ -145,8 +128,6 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
         btnBack.setOnClickListener(this);
         btnShared.setOnClickListener(this);
 
-        // 日历的开关，同时显示当前的时间
-        mTvDate.setOnClickListener(this);
 
         // 全屏图片
         in.setDuration(300);
@@ -180,46 +161,14 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             }
         });
 
-        // 日历的监听
-        compactCalendarView.setListener(new CompactCalendarView.CompactCalendarViewListener() {
-            // 点击"日"
-            @Override
-            public void onDayClick(Date dateClicked) {                                          // 点击"日"
-
-                ToastUtil.show(dateFormatForYMD.format(dateClicked));
-                mTvDate.setText(dateFormatForYMD.format(dateClicked));
-
-//                mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date=? and user=?",
-//                        new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()}, null);
-
-                getLoaderManager().restartLoader(1, null, ReportForD_Activity.this);       // 重启 Loader
-            }
-
-            // 月份滑动监听
-            @Override
-            public void onMonthScroll(Date firstDayOfNewMonth) {
-                ToastUtil.show(dateFormatForYMD.format(firstDayOfNewMonth));                // 得到这个月的第一天
-                mTvDate.setText(dateFormatForYMD.format(firstDayOfNewMonth));
-
-//                mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date=? and user=?",
-//                        new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()}, null);
-
-                getLoaderManager().restartLoader(1, null, ReportForD_Activity.this);       // 重启 Loader
-
-            }
-        });
     }
 
     private void initDate(){
         /******************************标题***********************************/
         btnMenu.setVisibility(GONE);
         btnBack.setVisibility(VISIBLE);
-        btnShared.setVisibility(VISIBLE);
-        tvTitle.setText("日报表");
-
-        mTvDate.setText(dateFormatForYMD.format(new Date()));
-
-        compactCalendarView.setDayColumnNames(dayNames);            // 周一到周末
+        btnShared.setVisibility(GONE);
+        tvTitle.setText("");
 
         mTableEx = new TableEx(AccountBookApplication.getContext());
 
@@ -227,9 +176,35 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     }
 
     private void setAdapter(){
-        mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date=? and user=?",
-                new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()}, null);
 
+        String time = mCurrentTime;
+        String content = mCurrentContent;
+        switch (mCurrentState){
+            case ReportForMixture_Activity.DATE_YEAR:
+                time = time.replace("%","")  + content.replace("月","") + "-%";
+                LogUtils.i("time:" + time);
+                mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName()}, "date");
+                break;
+            case ReportForMixture_Activity.DATE_YEARMONTH:
+                time = time.replace("%","")  + content.replace("日","");
+                LogUtils.i("time:" + time);
+                mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName()}, "date");
+                break;
+            case ReportForMixture_Activity.DATE_MAINTYPE:
+                LogUtils.i("time:" + time);
+                LogUtils.i("content:" + content);
+                mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=? and maintype=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName(), content}, "date");
+                break;
+            case ReportForMixture_Activity.DATE_TYPE1:
+                LogUtils.i("time:" + time);
+                LogUtils.i("content:" + content);
+                mCursor = getContentResolver().query(AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=? and maintype=? and type1=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName(), content.split("-")[0], content.split("-")[1]}, "date");
+                break;
+        }
 
         MyRecyclerViewCursorAdapter.IonSlidingViewClickListener ionSlidingViewClickListener = new MyRecyclerViewCursorAdapter.IonSlidingViewClickListener() {
             @Override
@@ -268,7 +243,7 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
                 LogUtils.i("更新项___________________image："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_image_STRING));
                 LogUtils.i("更新项___________________date："+ hashMapItem.get(Constant.TABLE_CONSUMPTION_date_STRING));
 
-                Intent intent = new Intent(ReportForD_Activity.this, ChangeConsumptionInfoActivity.class);
+                Intent intent = new Intent(ConsumerDetails_Activity.this, ChangeConsumptionInfoActivity.class);
                 Bundle bundle = new Bundle();
 
                 bundle.putString(Constant.TABLE_CONSUMPTION__id_STRING, hashMapItem.get(Constant.TABLE_CONSUMPTION__id_STRING).toString());
@@ -314,112 +289,119 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
      * 查询"当日消费"
      */
     private void queryPriceOfDay(){
-        // cast(sum(asset) as TEXT)--> 这样就不会变成"科学计数法"
-        // sum(asset) -->asset 就算是 varchar(20),不是decimal(18,2)，使用sum(asset)后还是"会使用科学计数法"
-        mAllCursor = mTableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"cast(sum(price) as TEXT)"},
-                "date=? and user=?", new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()},
-                null, null, null);
-        try {
-            if (mAllCursor.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
-                mAllCursor.moveToFirst();
-                if(mAllCursor.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
-                        mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.red));
-                        mTvAllPriceOfDay.setText("当日消费: " + mAllCursor.getString(0));
-                }else{
-                    mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
-                    mTvAllPriceOfDay.setText("当日消费: 0");
-                }
-            }else{
-                mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
-                mTvAllPriceOfDay.setText("当日消费: 0");
-            }
-        }catch (Exception e){
-            System.out.println("当日消费error:"+e.getMessage());
-        }
-    }
 
-    /*************************************   分享前的截图      ***************************************/
-    /**
-     *     这种方法状态栏是空白，显示不了状态栏的信息<p>
-     *     截图后分享
-     */
-    private void saveCurrentImage() {
-        btnShared.setEnabled(false);
-        if (!shouldShow) {
-            compactCalendarView.hideCalendarWithAnimation();                            // 隐藏日历
-            shouldShow = !shouldShow;                                           // 更改当前状态
-        }
+        String time = mCurrentTime;
+        String content = mCurrentContent;
+        String mycontent = "";
 
-        handler.postDelayed(new Runnable()                   // 发送个消息(runnable 可执行事件)到"消息队列中"，延时执行
-        {
-            @Override
-            public void run() {
-                //获取当前屏幕的大小
-                int width = getWindow().getDecorView().getRootView().getWidth();
-                int height = getWindow().getDecorView().getRootView().getHeight();
-                //生成相同大小的图片
-                Bitmap temBitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
-                //找到当前页面的跟布局
-                View view =  getWindow().getDecorView().getRootView();
-                //设置缓存
-                view.setDrawingCacheEnabled(true);
-                view.buildDrawingCache();
-                //从缓存中获取当前屏幕的图片
-                temBitmap = view.getDrawingCache();
+        switch (mCurrentState){
+            case ReportForMixture_Activity.DATE_YEAR:
+                time = time.replace("%","")  + content.replace("月","") + "-%";
+                // cast(sum(asset) as TEXT)--> 这样就不会变成"科学计数法"
+                // sum(asset) -->asset 就算是 varchar(20),不是decimal(18,2)，使用sum(asset)后还是"会使用科学计数法"
+                mAllCursor = mTableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"cast(sum(price) as TEXT)"},
+                        "date like ? and user=?", new String[]{time, AccountBookApplication.getUserInfo().getUserName()},
+                        null, null, "date");
 
-                //输出到sd卡
-                if (MemorySizeUtils.externalMemoryAvailable()) {
-                    File file = new File(Constant.CACHE_IMAGE_PATH_CurrentImage);
-                    try {
-                        if (!file.exists()) {
-                            file.createNewFile();
+                mycontent = time.replace("-%","")  + "月";
+                tvTitle.setText(mycontent);
+                try {
+                    if (mAllCursor.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
+                        mAllCursor.moveToFirst();
+                        if(mAllCursor.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.red));
+                            mTvAllPriceOfDay.setText("消费: " + mAllCursor.getString(0));
+                        }else{
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                            mTvAllPriceOfDay.setText("消费: 0");
                         }
-                        FileOutputStream foStream = new FileOutputStream(file);
-                        // 将位图写到本地
-                        temBitmap.compress(Bitmap.CompressFormat.PNG, 100, foStream);
-                        foStream.flush();
-                        foStream.close();
-                    } catch (Exception e) {
-                        LogUtils.i("生成截图失败:" + e.toString());
+                    }else{
+                        mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                        mTvAllPriceOfDay.setText("消费: 0");
                     }
-                    LogUtils.i("截图成功");
+                }catch (Exception e){
+                    System.out.println("消费error:"+e.getMessage());
                 }
-                showShare();    // 截图后分享
-                btnShared.setEnabled(true);
-            }
-        }, 500);
+                break;
+            case ReportForMixture_Activity.DATE_YEARMONTH:
+                time = time.replace("%","")  + content.replace("日","");
+                mAllCursor = mTableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"cast(sum(price) as TEXT)"},
+                        "date like ? and user=?", new String[]{time, AccountBookApplication.getUserInfo().getUserName()},
+                        null, null, "date");
 
+                mycontent = time.replace("-%","")  + "日";
+                tvTitle.setText(mycontent);
+                try {
+                    if (mAllCursor.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
+                        mAllCursor.moveToFirst();
+                        if(mAllCursor.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.red));
+                            mTvAllPriceOfDay.setText("消费: " + mAllCursor.getString(0));
+                        }else{
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                            mTvAllPriceOfDay.setText("消费: 0");
+                        }
+                    }else{
+                        mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                        mTvAllPriceOfDay.setText("消费: 0");
+                    }
+                }catch (Exception e){
+                    System.out.println("消费error:"+e.getMessage());
+                }
+                break;
+            case ReportForMixture_Activity.DATE_MAINTYPE:
+                mAllCursor = mTableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"cast(sum(price) as TEXT)"},
+                        "date like ? and user=? and maintype=?", new String[]{time, AccountBookApplication.getUserInfo().getUserName(), content},
+                        null, null, "date");
 
+                mycontent = time.replace("%","") + content;
+                tvTitle.setText(mycontent);
+                try {
+                    if (mAllCursor.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
+                        mAllCursor.moveToFirst();
+                        if(mAllCursor.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.red));
+                            mTvAllPriceOfDay.setText("消费: " + mAllCursor.getString(0));
+                        }else{
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                            mTvAllPriceOfDay.setText("消费: 0");
+                        }
+                    }else{
+                        mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                        mTvAllPriceOfDay.setText("消费: 0");
+                    }
+                }catch (Exception e){
+                    System.out.println("消费error:"+e.getMessage());
+                }
+                break;
+            case ReportForMixture_Activity.DATE_TYPE1:
+                mAllCursor = mTableEx.Query(Constant.TABLE_CONSUMPTION, new String[]{"cast(sum(price) as TEXT)"},
+                        "date like ? and user=? and maintype=? and type1=?", new String[]{time, AccountBookApplication.getUserInfo().getUserName(),
+                                content.split("-")[0], content.split("-")[1]}, null, null, "date");
+
+                mycontent = time.replace("%","")  + content;
+                tvTitle.setText(mycontent);
+                try {
+                    if (mAllCursor.getCount() != 0) {        // 查询：带"函数"字段，就算"没记录"，返回的也是"1"
+                        mAllCursor.moveToFirst();
+                        if(mAllCursor.getString(0) != null){        // 没记录，返回1，这里返回的是 "null"
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.red));
+                            mTvAllPriceOfDay.setText("消费: " + mAllCursor.getString(0));
+                        }else{
+                            mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                            mTvAllPriceOfDay.setText("消费: 0");
+                        }
+                    }else{
+                        mTvAllPriceOfDay.setTextColor(this.getResources().getColor(R.color.forestgreen));
+                        mTvAllPriceOfDay.setText("消费: 0");
+                    }
+                }catch (Exception e){
+                    System.out.println("消费error:"+e.getMessage());
+                }
+                break;
+        }
     }
 
-    /*************************************   SharedSDK      ***************************************/
-    private void showShare() {
-        ShareSDK.initSDK(this);
-        OnekeyShare oks = new OnekeyShare();
-        //关闭sso授权
-        oks.disableSSOWhenAuthorize();
-
-        // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间等使用
-        // oks.setTitle("标题");
-        // titleUrl是标题的网络链接，QQ和QQ空间等使用
-        // oks.setTitleUrl("http://sharesdk.cn");
-        // text是分享文本，所有平台都需要这个字段
-        oks.setText("日消费");
-        // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-        // oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
-        oks.setImagePath(Constant.CACHE_IMAGE_PATH_CurrentImage);//确保SDcard下面存在此张图片
-        // url仅在微信（包括好友和朋友圈）中使用
-        // oks.setUrl("http://sharesdk.cn");
-        // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-        // oks.setComment("我是测试评论文本");
-        // site是分享此内容的网站名称，仅在QQ空间使用
-        oks.setSite(getString(R.string.app_name));
-        // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-        // oks.setSiteUrl("http://sharesdk.cn");
-
-        // 启动分享GUI
-        oks.show(this);
-    }
 
     /*************************************   Loader      ***********************************************/
     // LoaderManager.LoaderCallbacks<Cursor>  接口要实现的
@@ -427,8 +409,35 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         LogUtils.i("调用___________________Loader");
-        CursorLoader loader = new CursorLoader(ReportForD_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date=? and user=?",
-                new String[]{mTvDate.getText().toString(), AccountBookApplication.getUserInfo().getUserName()}, null);
+
+        CursorLoader loader = null;
+
+        String time = mCurrentTime;
+        String content = mCurrentContent;
+        switch (mCurrentState){
+            case ReportForMixture_Activity.DATE_YEAR:
+                time = time.replace("%","")  + content.replace("月","") + "-%";
+                loader = new CursorLoader(ConsumerDetails_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName()}, "date");
+                break;
+            case ReportForMixture_Activity.DATE_YEARMONTH:
+                time = time.replace("%","")  + content.replace("日","");
+                loader = new CursorLoader(ConsumerDetails_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName()}, "date");
+                break;
+            case ReportForMixture_Activity.DATE_MAINTYPE:
+                loader = new CursorLoader(ConsumerDetails_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=? and maintype=?",
+                        new String[]{time, AccountBookApplication.getUserInfo().getUserName(), content}, "date");
+                break;
+            case ReportForMixture_Activity.DATE_TYPE1:
+                loader = new CursorLoader(ConsumerDetails_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=? and maintype=? and type1=?",
+                        new String[]{mCurrentTime, AccountBookApplication.getUserInfo().getUserName(), content.split("-")[0], content.split("-")[1]}, "date");
+                break;
+            default:
+                loader = new CursorLoader(ConsumerDetails_Activity.this, AccounBookProvider.URI_ACCOUNTBOOK2_ALL, null, "date like ? and user=?",
+                        new String[]{mCurrentTime, AccountBookApplication.getUserInfo().getUserName()}, "date");
+                break;
+        }
 
         return loader;
     }
@@ -453,20 +462,14 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_back:                                         // 退出本Activity
+
+                Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putInt("type", mCurrentState);
+                bundle.putString("time", mCurrentTime);
+                intent.putExtras(bundle);
+                setResult(OK, intent);
                 finish();
-                break;
-
-            case R.id.btn_shared:                                         // 分享
-                saveCurrentImage();                                         // 截图后分享
-                break;
-
-            case R.id.tv_date:
-                if (shouldShow) {
-                    compactCalendarView.showCalendarWithAnimation();                            // 打开日历
-                } else {
-                    compactCalendarView.hideCalendarWithAnimation();                            // 隐藏日历
-                }
-                shouldShow = !shouldShow;                                           // 更改当前状态
                 break;
         }
     }
@@ -487,6 +490,14 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
                 });
                 return true;
             }
+
+            Intent intent = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putInt("type", mCurrentState);
+            bundle.putString("time", mCurrentTime);
+            intent.putExtras(bundle);
+            setResult(OK, intent);
+            finish();
 
         }
         return super.onKeyDown(keyCode, event);
@@ -572,21 +583,21 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             hashMapItem.put(Constant.TABLE_CONSUMPTION_image_STRING, image);
             hashMapItem.put(Constant.TABLE_CONSUMPTION_date_STRING, date);
 
-            Log.i("shenshenshenshen","调用123456___________________image:"+image);
-            //
-            //            System.out.println(
-            //                    "_id" + mCursor.getString(Constant.TABLE_CONSUMPTION__id)+
-            //                    "maintype:" + mainType+
-            //                    "type1:" + type1+
-            //                    "concreteness:" + concreteness+
-            //                    "price:" + price+
-            //                    "number:" + number+
-            //                    "unitPrice:" + unitPrice+
-            //
-            //                    "date:" + mCursor.getString(Constant.TABLE_CONSUMPTION_date)+"\n"+
-            //                    "imageName:" + imageName
-            //            );
-            //            System.out.println("这张图片："+ Constant.IMAGE_PATH+"/"+imageName);
+//            LogUtils.i("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+//            LogUtils.i("cursor.getCount():" + cursor.getCount());
+//            LogUtils.i(
+//                                "_id:" + _id +"\n"+
+//                                "maintype:" + mainType+"\n"+
+//                                "type1:" + type1+"\n"+
+//                                "concreteness:" + concreteness+"\n"+
+//                                "price:" + price+"\n"+
+//                                "number:" + number+"\n"+
+//                                "unitPrice:" + unitPrice+"\n"+
+//                                "date:" + date+"\n"+
+//                                "imageName:" + image
+//                        );
+//            Log.i("shenshenshenshen","这张图片："+ Constant.IMAGE_PATH+"/"+image);
+
             final Bitmap bitmap;
             if(!TextUtils.isEmpty(image)) {
                 if (new File(Constant.IMAGE_PATH + AccountBookApplication.getUserInfo().getUserName(), image).exists())     // 有这个文件，才生成位图
@@ -608,6 +619,37 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             holder.tvPrice.setText(price);
             holder.pvImage.setImageBitmap(bitmap);
 
+            /*******************************************************************************************/
+            if(holder.getLayoutPosition()>0){
+                //获取上一个item的 时间
+                Cursor myCursor = cursor;
+                String previousDate = "";
+                if(myCursor.moveToPosition(holder.getLayoutPosition() - 1)){
+                    previousDate = myCursor.getString(Constant.TABLE_CONSUMPTION_date);
+                }
+
+//                LogUtils.i("holder.getLayoutPosition() - 1:" + (holder.getLayoutPosition() - 1));
+//                LogUtils.i("newDate:" + date);
+//                LogUtils.i("previousDate:" + previousDate);
+
+                //拿当前的item的时间和上一个item的时间比较
+                if(date.equals(previousDate)){
+                    //说明item的时间相同，需要隐藏当前item的时间
+                    holder.tvTopDay.setVisibility(View.GONE);
+                    LogUtils.i("if:");
+                }else {
+                    // 不一样，需要显示当前的item的时间
+                    // 由于布局是复用的，
+                    // ***所以在需要显示的时候，再次将item的时间设置为可见
+                    holder.tvTopDay.setVisibility(View.VISIBLE);
+                    holder.tvTopDay.setText(date);
+                    LogUtils.i("else:");
+                }
+            }else {			// 第1个必须显示
+                holder.tvTopDay.setVisibility(View.VISIBLE);
+                holder.tvTopDay.setText(date);
+            }
+            /*******************************************************************************************/
 
             // 把PhotoView当普通的控件把触摸功能关掉
             holder.pvImage.disenable();
@@ -642,7 +684,6 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
                 }
             });
 
-
             // 滑出菜单里面的控件：删除
             holder.tvDelete.setOnClickListener(new OnClickListener() {
                 @Override
@@ -663,13 +704,12 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
             });
 
         }
-
         @Override
         protected void onContentChanged() {}
 
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v=inflater.inflate(R.layout.recyclerview_item,parent,false);         // "项布局"
+            View v=inflater.inflate(R.layout.item_list,parent,false);         // "项布局"
             return new MyViewHolder(v);
         }
 
@@ -677,6 +717,9 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
          * 项布局里面的控件
          */
         class MyViewHolder extends RecyclerView.ViewHolder {
+
+            public TextView tvTopDay;
+
             public TextView tvDelete;
             public TextView tvUpdate;
 
@@ -696,6 +739,8 @@ public class ReportForD_Activity extends Activity implements OnClickListener, Lo
              */
             public MyViewHolder(View itemView) {
                 super(itemView);
+
+                tvTopDay = (TextView) itemView.findViewById(R.id.tv_top_day);
                 tvDelete = (TextView) itemView.findViewById(R.id.tv_RecyclerViewItem_delete);
                 tvUpdate = (TextView) itemView.findViewById(R.id.tv_RecyclerViewItem_update);
 

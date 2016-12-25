@@ -66,6 +66,8 @@
         <activity android:name=".ui.fragment.activity.MineInfoActivity" android:screenOrientation="portrait"></activity>
         <activity android:name=".ui.fragment.activity.ChangeConsumptionInfoActivity" android:screenOrientation="portrait"></activity>
 
+        <activity android:name=".ui.fragment.activity.ConsumerDetails_Activity" android:screenOrientation="portrait"></activity>
+
         <!-- 不要忘记exported这个属性，如果不加，可能会导致外部程序访问失败，错误信息为权限拒绝 -->
         <!-- authorities这个属性就是我们在ContentProvider中使用的addURI方法时的第一个参数的取值 -->
         <provider

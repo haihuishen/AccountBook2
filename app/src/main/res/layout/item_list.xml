@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.shen.accountbook2.ui.view.MyMenuRecyclerView.SlidingButtonView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:layout_marginBottom="1dp">
+
+        <RelativeLayout
+            android:id="@+id/layout_aaa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- 顶部日期 -->
+            <TextView
+                android:id="@+id/tv_top_day"
+                android:layout_alignRight="@+id/layout_RecyclerViewItem_menu"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:textSize="20dp"
+                android:background="#3c3c3c"
+                android:textColor="#fff"
+                android:padding="3dp"
+                android:textStyle="bold"
+                android:text="A"/>
+
+            <!--删除在内容的后面 android:layout_toRightOf="@+id/layout_RecyclerViewItem_content"-->
+            <LinearLayout
+                android:id="@+id/layout_RecyclerViewItem_menu"
+                android:layout_below="@+id/tv_top_day"
+                android:layout_toRightOf="@+id/layout_RecyclerViewItem_content"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp">
+                <TextView
+                    android:id="@+id/tv_RecyclerViewItem_delete"
+                    android:layout_height="match_parent"
+                    android:layout_width="50dp"
+                    android:gravity="center"
+                    android:text="删 除"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/btn_bg_red_stroke_black"
+                    android:textColor="@color/white"
+                    />
+                <TextView
+                    android:id="@+id/tv_RecyclerViewItem_update"
+                    android:layout_marginRight="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_width="50dp"
+                    android:gravity="center"
+                    android:text="修改"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/btn_bg_green_stroke_black"
+                    android:textColor="@color/white"
+                    />
+            </LinearLayout>
+            <RelativeLayout
+                android:layout_below="@+id/tv_top_day"
+                android:id="@+id/layout_RecyclerViewItem_content"
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <View
+                        android:layout_width="0.5px"
+                        android:layout_height="match_parent"
+                        android:background="#B8B8B8"
+                        android:visibility="visible" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="40dp"
+                        android:padding="3dp"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:id="@+id/tableItem_tv_ProductName_maintype"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:textColor="#CD3700"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:text="shen0"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:textColor="#CD3700"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:text="-"/>
+                            <TextView
+                                android:id="@+id/tableItem_tv_ProductName_type1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:textColor="#CD3700"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:text="shen1"/>
+                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/tableItem_tv_ProductName_concreteness"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            android:text="shen2"/>
+                    </LinearLayout>
+                    <View
+                        android:layout_width="0.5px"
+                        android:layout_height="match_parent"
+                        android:background="#B8B8B8"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/tableItem_tv_UnitPrice"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:gravity="right|center_vertical"/>
+
+                    <View
+                        android:layout_width="0.5px"
+                        android:layout_height="match_parent"
+                        android:background="#B8B8B8"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/tableItem_tv_Number"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:gravity="right|center_vertical"/>
+
+                    <View
+                        android:layout_width="0.5px"
+                        android:layout_height="match_parent"
+                        android:background="#B8B8B8"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/tableItem_tv_Price"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:gravity="right|center_vertical"/>
+
+                    <View
+                        android:layout_width="0.5px"
+                        android:layout_height="match_parent"
+                        android:background="#B8B8B8"
+                        android:visibility="visible" />
+
+                    <com.bm.library.PhotoView
+                        android:layout_marginRight="4dp"
+                        android:id="@+id/tableItem_pv_image"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+        </RelativeLayout>
+</com.shen.accountbook2.ui.view.MyMenuRecyclerView.SlidingButtonView>
+

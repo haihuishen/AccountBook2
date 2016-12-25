@@ -26,7 +26,8 @@ public class MemorySizeUtils {
     }
 
     /**
-     * SDCard是否存
+     * SDCard是否存<p>
+     *     true:挂载了 false:没有<br>
      */
     public static boolean externalMemoryAvailable() {
         return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);

@@ -8,8 +8,15 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
+
+        <!-- View -->
+        <TextView
+            android:id="@+id/tv_top_day"
+            android:layout_width="500dp"
+            android:layout_height="0dp"
+            android:background="#00000000"/>
+
         <!--删除在内容的后面 android:layout_toRightOf="@+id/layout_RecyclerViewItem_content"-->
         <LinearLayout
             android:id="@+id/layout_RecyclerViewItem_menu"

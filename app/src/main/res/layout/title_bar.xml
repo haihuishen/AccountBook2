@@ -39,6 +39,7 @@
         android:layout_centerVertical="true"
         android:textColor="#fff"
         android:textSize="22sp"
+        android:textStyle="bold"
         android:text="shen"/>
 
     <RelativeLayout

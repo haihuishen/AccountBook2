@@ -18,6 +18,7 @@ import com.shen.accountbook2.Utils.CreateFilesUtils;
 import com.shen.accountbook2.Utils.LogUtils;
 import com.shen.accountbook2.Utils.MemorySizeUtils;
 import com.shen.accountbook2.Utils.SharePrefUtil;
+import com.shen.accountbook2.Utils.ToastUtil;
 import com.shen.accountbook2.config.Constant;
 import com.shen.accountbook2.db.biz.TableEx;
 import com.shen.accountbook2.domain.UserInfo;
@@ -75,6 +76,7 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
         //在此调用下面方法，才能捕获到线程中的异常
         Thread.setDefaultUncaughtExceptionHandler(this);
 
+        checkExtra();
         initTypeXML("Type.xml");
         initSrc(Constant.CACHE_IMAGE_PATH,"cat_head.png");
         initSrc(Constant.CACHE_IMAGE_PATH,"test.png");
@@ -89,6 +91,18 @@ public class SplashActivity extends Activity implements Thread.UncaughtException
         initLogin();
         //copy();
 
+    }
+
+    /**
+     * 检查挂载内存(内部内存)
+     * 没有直接退出
+     */
+    private void checkExtra(){
+        if(!MemorySizeUtils.externalMemoryAvailable()){
+            ToastUtil.show("没有挂载＇内部内存＇");
+            finish();
+            System.exit(0);
+        }
     }
 
     private void initView() {

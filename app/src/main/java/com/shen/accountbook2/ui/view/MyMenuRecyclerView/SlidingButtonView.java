@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.shen.accountbook2.R;
 
@@ -33,9 +34,11 @@ import com.shen.accountbook2.R;
  */
 public class SlidingButtonView extends HorizontalScrollView {
 
+    private TextView mTvTopDate;
     private LinearLayout mLinearLayoutMenu;
 
     private int mScrollWidth;
+    private int mScrollWidthTv;
 
     private IonSlidingButtonListener mIonSlidingButtonListener;
 
@@ -68,6 +71,7 @@ public class SlidingButtonView extends HorizontalScrollView {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         if(!once){
+            mTvTopDate = (TextView) findViewById(R.id.tv_top_day);
             mLinearLayoutMenu = (LinearLayout) findViewById(R.id.layout_RecyclerViewItem_menu);
             once = true;
         }
@@ -91,6 +95,7 @@ public class SlidingButtonView extends HorizontalScrollView {
             this.scrollTo(0,0);
             //获取水平滚动条可以滑动的范围，即右侧菜单的宽度
             mScrollWidth = mLinearLayoutMenu.getWidth();
+            //mScrollWidthTv = mTvTopDate.getWidth();
 
             Log.i("asd", "mScrollWidth:" + mScrollWidth);
         }
@@ -125,7 +130,7 @@ public class SlidingButtonView extends HorizontalScrollView {
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         mLinearLayoutMenu.setTranslationX(l - mScrollWidth);     // 删除控件右边和屏幕右边对齐
-
+        mTvTopDate.setTranslationX(l);     // 删除控件右边和屏幕右边对齐
     }
 
     /**

@@ -3,109 +3,129 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:background="@drawable/bg_pink"
-              android:orientation="horizontal" >
+              android:orientation="vertical" >
 
-    <View
-        android:layout_width="0.5px"
-        android:layout_height="match_parent"
-        android:background="#B8B8B8"
-        android:visibility="visible" />
+
+
+    <!-- 首字母 -->
+    <TextView
+        android:id="@+id/tv_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:background="#3c3c3c"
+        android:textColor="#fff"
+        android:padding="10dp"
+        android:text="A"/>
+
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="2"
-        android:layout_height="40dp"
-        android:padding="3dp"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_pink"
+        android:orientation="horizontal" >
+
+        <View
+            android:layout_width="0.5px"
+            android:layout_height="match_parent"
+            android:background="#B8B8B8"
+            android:visibility="visible" />
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="40dp"
+            android:padding="3dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/tableItem_tv_ProductName_maintype"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="#CD3700"
+                    android:textSize="14sp"
+                    android:text="shen0"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="#CD3700"
+                    android:textSize="14sp"
+                    android:text="-"/>
+                <TextView
+                    android:id="@+id/tableItem_tv_ProductName_type1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="#CD3700"
+                    android:textSize="14sp"
+                    android:text="shen1"/>
+            </LinearLayout>
             <TextView
-                android:id="@+id/tableItem_tv_ProductName_maintype"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:id="@+id/tableItem_tv_ProductName_concreteness"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:textColor="#CD3700"
                 android:textSize="14sp"
-                android:text="shen0"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textColor="#CD3700"
-                android:textSize="14sp"
-                android:text="-"/>
-            <TextView
-                android:id="@+id/tableItem_tv_ProductName_type1"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textColor="#CD3700"
-                android:textSize="14sp"
-                android:text="shen1"/>
+                android:text="shen2"/>
         </LinearLayout>
+        <View
+            android:layout_width="0.5px"
+            android:layout_height="match_parent"
+            android:background="#B8B8B8"
+            android:visibility="visible" />
+
         <TextView
-            android:id="@+id/tableItem_tv_ProductName_concreteness"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:id="@+id/tableItem_tv_UnitPrice"
+            android:layout_width="0dp"
             android:layout_weight="1"
-            android:textColor="#CD3700"
-            android:textSize="14sp"
-            android:text="shen2"/>
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:gravity="right|center_vertical"/>
+
+        <View
+            android:layout_width="0.5px"
+            android:layout_height="match_parent"
+            android:background="#B8B8B8"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tableItem_tv_Number"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:gravity="right|center_vertical"/>
+
+        <View
+            android:layout_width="0.5px"
+            android:layout_height="match_parent"
+            android:background="#B8B8B8"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tableItem_tv_Price"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            android:gravity="right|center_vertical"/>
+
+        <View
+            android:layout_width="0.5px"
+            android:layout_height="match_parent"
+            android:background="#B8B8B8"
+            android:visibility="visible" />
+
+        <com.bm.library.PhotoView
+            android:layout_marginRight="4dp"
+            android:id="@+id/tableItem_pv_image"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"/>
     </LinearLayout>
-    <View
-        android:layout_width="0.5px"
-        android:layout_height="match_parent"
-        android:background="#B8B8B8"
-        android:visibility="visible" />
-
-    <TextView
-        android:id="@+id/tableItem_tv_UnitPrice"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:gravity="right|center_vertical"/>
-
-    <View
-        android:layout_width="0.5px"
-        android:layout_height="match_parent"
-        android:background="#B8B8B8"
-        android:visibility="visible" />
-
-    <TextView
-        android:id="@+id/tableItem_tv_Number"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:gravity="right|center_vertical"/>
-
-    <View
-        android:layout_width="0.5px"
-        android:layout_height="match_parent"
-        android:background="#B8B8B8"
-        android:visibility="visible" />
-
-    <TextView
-        android:id="@+id/tableItem_tv_Price"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"
-        android:textColor="#000000"
-        android:textSize="15sp"
-        android:gravity="right|center_vertical"/>
-
-    <View
-        android:layout_width="0.5px"
-        android:layout_height="match_parent"
-        android:background="#B8B8B8"
-        android:visibility="visible" />
-
-    <com.bm.library.PhotoView
-        android:layout_marginRight="4dp"
-        android:id="@+id/tableItem_pv_image"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="match_parent"/>
 </LinearLayout>
